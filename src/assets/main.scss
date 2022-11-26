@@ -1,0 +1,42 @@
+$light: #95bec0;
+$primary: #0f7b75;
+$black: #002f3e;
+$blue: #169c93;
+
+@media (hover: hover) {
+
+}
+
+.fs-sm {
+  font-size: small;
+}
+
+@import './base.scss';
+
+a {
+  text-decoration: underline;
+  color: $black;
+  transition: 0.4s;
+
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+.btn-submit {
+  background-color: $blue;
+  color: white;
+
+  &:hover {
+    background-color: $primary;
+    color: white;
+  }
+}
+
+.input-required-lbl::after {
+  content: "*";
+  color: $danger;
+  padding-left: 0.3rem;
+}
+
+@import './transitions/fade';
