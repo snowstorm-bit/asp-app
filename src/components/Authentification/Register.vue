@@ -138,11 +138,11 @@ export default {
         try {
           let result = await this.register(
               {
+                username: this.username,
                 email: this.email,
                 password: this.password
               });
 
-          console.log('result', result);
           if (result.status === status.error) {
             event.stopPropagation();
 
@@ -159,15 +159,12 @@ export default {
             this.formInSubmission = !this.formInSubmission;
           } else {
             this.formInSubmission = !this.formInSubmission;
+            this.$router.go();
           }
         } catch {
           event.stopPropagation();
           this.formInSubmission = !this.formInSubmission;
         }
-
-        console.log(this.$route);
-        console.log(this.$router);
-        // window.location.reload();
       } else {
         event.stopPropagation();
         this.formInValidation = formIsValid;

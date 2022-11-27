@@ -9,6 +9,7 @@ export default {
   name: 'Home-View',
   methods: {
     event() {
+      this.$router.push({name: 'notFound'})
       console.log('home');
     }
   }

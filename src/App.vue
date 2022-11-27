@@ -33,7 +33,7 @@ export default {
     ...mapState(useUserStore, ['userLoggedIn'])
   },
   watch: {
-    '$router'() {
+    $route() {
       this.authIsValid = validateAuth(this.$router.meta?.requiresAuth, this.userLoggedIn);
       if (localStorage.hasOwnProperty('globalMessage')) {
         let globalMessage = localStorage.getItem('globalMessage');

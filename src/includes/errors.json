@@ -26,7 +26,16 @@
   },
   "routes": {
     "register": "errors.routes.register",
-    "login": "errors.routes.login"
+    "login": "errors.routes.login",
+    "get": {
+      
+    },
+    "post": {
+      
+    },
+    "put": {
+      
+    }
   },
   "auth": {
     "login_required": "errors.auth.login_expired",
