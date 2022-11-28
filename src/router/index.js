@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 import HomeView from '@/views/HomeView.vue';
 import NotFound from '@/views/NotFound.vue';
 import PlaceForm from '@/views/Place/PlaceForm.vue';
+import ClimbForm from '@/views/Climb/ClimbForm.vue';
 
 const routes = [
     {
@@ -27,16 +28,16 @@ const routes = [
         meta: { requiresAuth: true }
     },
     {
-        path: '/climbs/create',
+        path: '/climb/create',
         name: 'ClimbCreate',
-        component: HomeView,
+        component: ClimbForm,
         meta: { requiresAuth: true }
     },
     {
-        path: '/climbs/update/:climbTitle',
-        name: 'ClimbsCreate',
+        path: '/climb/update/:climbTitle',
+        name: 'PlaceUpdate',
         props: true,
-        component: HomeView,
+        component: ClimbForm,
         meta: { requiresAuth: true }
     },
     {

@@ -3,20 +3,22 @@
     <h2 class="text-center">{{ getFormTitle }}</h2>
     <asp-alert v-if="requestStatus.length > 0" :code="requestMessage" :status="requestStatus" />
     <form class="px-4 py-3" @submit.prevent="validateForm">
-      <div class="mb-3 d-flex justify-content-center">
-        <div>
+      <div class="mb-3 row">
+        <div class="col-md-6">
           <label class="form-label input-required-lbl" for="title">{{ $t('fields.title') }}</label>
           <input v-model="title" :class="hiddenClass.title" :placeholder="$t('fields.title')"
                  class="form-control" name="title" required="required" type="text"
                  @focusin="resetValidationOnField('title')" @focusout="validateTitleField">
           <invalid-feedback :error="errors.title" />
         </div>
-        <div>
-          <label class="form-label input-required-lbl" for="title">{{ $t('fields.place_title') }}</label>
-          <input v-model="placeTitle" :class="hiddenClass.placeTitle" :placeholder="$t('fields.place_title')"
-                 class="form-control" name="place_title" required="required" type="text"
-                 @focusin="resetValidationOnField('place_title')" @focusout="validatePlaceTitleField">
-          <invalid-feedback :error="errors.placeTitle" />
+        <div class="col-md-6">
+          <label class="form-label input-required-lbl" for="placeTitle">{{ $t('fields.place_title') }}</label>
+          <select v-model="placeTitle" :class="hiddenClass.placeTitle" class="form-select" required="required"
+                  @focusin="resetValidationOnField('placeTitle')" @focusout="validatePlaceTitleField">
+            <option v-for="onePlaceTitle in placeTitles" :key="onePlaceTitle.title" value="{{ onePlaceTitle.title }}">
+              {{ onePlaceTitle.title }}
+            </option>
+          </select>
         </div>
       </div>
       <div class="row">
@@ -31,34 +33,36 @@
           <invalid-feedback :error="errors.description" />
         </div>
         <div class="mb-3 col-md-6">
-          <div class="form-floating">
-          <textarea v-model="difficulty_level" :class="hiddenClass.difficulty_level"
-                    :placeholder="$t('fields.difficulty_level')" class="form-control" name="difficulty_level"
-                    required="required" @focusin="resetValidationOnField('difficulty_level')"
-                    @focusout="validateDifficultyLevelField"></textarea>
-            <label for="difficulty_level">{{ $t('fields.difficulty_level') }}</label>
+          <label class="form-label input-required-lbl" for="difficultyLevel">
+            {{ $t('fields.difficulty_level') }}
+          </label>
+          <div aria-label="Basic example" class="btn-group d-flex" role="group">
+            <button class="btn btn-primary" type="button" @click="decrement">-</button>
+            <div class="btn btn-light">{{ difficultyLevel }}</div>
+            <button class="btn btn-primary" type="button" @click="increment">+</button>
           </div>
-          <invalid-feedback :error="errors.difficulty_level" />
+          <invalid-feedback :error="errors.difficultyLevel" />
         </div>
       </div>
       <div class="row">
         <div class="mb-3 col-sm-6">
-          <label class="form-label input-required-lbl" for="style">
-            {{ $t('fields.style') }}
-          </label>
-          <input v-model="style" :class="hiddenClass.style" :placeholder="$t('fields.style')"
-                 class="form-control" name="style" required="required" type="number"
-                 @focusin="resetValidationOnField('style')" @focusout="validateStyleField">
+          <label class="form-label input-required-lbl" for="title">{{ $t('fields.style') }}</label>
+          <select v-model="style" :class="hiddenClass.style" class="form-select" required="required"
+                  @focusin="resetValidationOnField('style')" @focusout="validateStyleField">
+            <option v-for="oneStyle in styles" :key="oneStyle" value="{{ oneStyle }}">
+              {{ $t(`climb_style.${ oneStyle }`) }}
+            </option>
+          </select>
           <invalid-feedback :error="errors.style" />
         </div>
         <div class="mb-3 col-sm-6">
-<!--          <label class="form-label input-required-lbl" for="longitude">-->
-<!--            {{ $t('fields.longitude') }}-->
-<!--          </label>-->
-<!--          <input v-model="longitude" :class="hiddenClass.longitude" :placeholder="$t('fields.longitude')"-->
-<!--                 class="form-control" name="longitude" required="required" type="number"-->
-<!--                 @focusin="resetValidationOnField('longitude')" @focusout="validateLongitudeField">-->
-<!--          <invalid-feedback :error="errors.longitude" />-->
+          <!--          <label class="form-label input-required-lbl" for="longitude">-->
+          <!--            {{ $t('fields.longitude') }}-->
+          <!--          </label>-->
+          <!--          <input v-model="longitude" :class="hiddenClass.longitude" :placeholder="$t('fields.longitude')"-->
+          <!--                 class="form-control" name="longitude" required="required" type="number"-->
+          <!--                 @focusin="resetValidationOnField('longitude')" @focusout="validateLongitudeField">-->
+          <!--          <invalid-feedback :error="errors.longitude" />-->
         </div>
       </div>
       <div class="d-flex justify-content-end">
@@ -93,9 +97,12 @@ export default {
   components: { InvalidFeedback, AspAlert },
   props: ['climbTitle'],
   data() {
-    let data = getFormData(['title', 'description', 'difficulty_level', 'style', 'place_title', 'image']);
+    let data = getFormData(['title', 'description', 'difficultyLevel', 'style', 'placeTitle']);
     data.isUpdate = this.climbTitle !== undefined;
     data.climbTitleValid = false;
+    data.difficultyLevel = 5.9;
+    data.decrementHiddenAttibute = '';
+    data.incrementHiddenAttibute = '';
     return data;
   },
   computed: {
@@ -143,6 +150,19 @@ export default {
 
       this.setValidationOnField('title', indicateIsValid);
     },
+    validatePlaceTitleField() {
+      let indicateIsValid = typeof this.errors.placeTitle !== 'string';
+      this.errors.placeTitle = '';
+      let value = this.placeTitle;
+
+      if (!validateEmptyOrWhiteSpace(value)) {
+        this.errors.placeTitle = errors.climb.place_title.empty_or_white_spaces;
+      } else if (!validateRange(value, 3, 50)) {
+        this.errors.placeTitle = errors.climb.place_title.length;
+      }
+
+      this.setValidationOnField('placeTitle', indicateIsValid);
+    },
     validateDescriptionField() {
       let indicateIsValid = typeof this.errors.description !== 'string';
       this.errors.description = '';
@@ -156,44 +176,65 @@ export default {
 
       this.setValidationOnField('description', indicateIsValid);
     },
-    validateStepsField() {
-      let indicateIsValid = typeof this.errors.steps !== 'string';
-      this.errors.steps = '';
-      let value = this.steps;
-
-      if (!validateEmptyOrWhiteSpace(value)) {
-        this.errors.steps = errors.climb.steps.empty_or_white_spaces;
-      } else if (!validateRange(value, 3, 500)) {
-        this.errors.steps = errors.climb.steps.length;
+    decrement() {
+      if (this.difficultyLevel === 5.1) {
+        this.difficultyLevel = 5.9;
+      } else {
+        if (!this.validateDifficultyLevelField(this.difficultyLevel - 0.1)) {
+          this.decrementHiddenAttibute = 'disabled';
+        } else {
+          this.decrementHiddenAttibute = '';
+        }
+        this.difficultyLevel--;
       }
-
-      this.setValidationOnField('steps', indicateIsValid);
     },
-    validateLatitudeField() {
-      let indicateIsValid = typeof this.errors.latitude !== 'string';
-      this.errors.latitude = '';
-      let value = this.latitude;
-
-      if (!validateEmptyOrWhiteSpace(value)) {
-        this.errors.latitude = errors.climb.latitude.empty_or_white_spaces;
-      } else if (!validateRange(value, -90, 90, false)) {
-        this.errors.latitude = errors.climb.latitude.range;
+    increment() {
+      if (this.difficultyLevel === 5.9) {
+        this.difficultyLevel = 5.1;
+      }else {
+        if (!this.validateDifficultyLevelField(this.difficultyLevel + 0.2)) {
+          this.incrementHiddenAttibute = 'disabled';
+        } else {
+          this.incrementHiddenAttibute = '';
+        }
+        this.difficultyLevel--;
       }
-
-      this.setValidationOnField('latitude', indicateIsValid);
     },
-    validateLongitudeField() {
-      let indicateIsValid = typeof this.errors.longitude !== 'string';
-      this.errors.longitude = '';
-      let value = this.longitude;
+    validateDifficultyLevelField(valToTest = null) {
+      let indicateIsValid = typeof this.errors.difficultyLevel !== 'number';
+      this.errors.difficultyLevel = '';
+      let value = valToTest === null ? this.difficultyLevel : valToTest;
 
       if (!validateEmptyOrWhiteSpace(value)) {
-        this.errors.longitude = errors.climb.longitude.empty_or_white_spaces;
-      } else if (!validateRange(value, -180, 180, false)) {
-        this.errors.longitude = errors.climb.longitude.range;
+        this.errors.difficultyLevel = errors.climb.difficulty_level.empty_or_white_spaces;
       }
 
-      this.setValidationOnField('longitude', indicateIsValid);
+      let [integer, decimal] = String(value).split('.');
+      integer = Number(integer);
+      decimal = Number(decimal);
+      let expression = integer < 5 || integer > 5 || decimal < 6 || decimal > 15;
+
+      if (valToTest !== null) {
+        return expression;
+      }
+
+      if (expression) {
+        this.difficultyLevel = 5.9;
+        this.errors.difficultyLevel = errors.climb.difficulty_level.range;
+      }
+
+      this.setValidationOnField('difficultyLevel', indicateIsValid);
+    },
+    validateStyleField() {
+      let indicateIsValid = typeof this.errors.style !== 'string';
+      this.errors.style = '';
+      let value = this.style;
+
+      if (!validateEmptyOrWhiteSpace(value)) {
+        this.errors.style = errors.climb.style.empty_or_white_spaces;
+      }
+
+      this.setValidationOnField('style', indicateIsValid);
     },
     async validateForm(event) {
       // Désactiver le bouton afin d'éviter que l'utilisateur 
@@ -201,10 +242,10 @@ export default {
       this.formInValidation = true;
 
       this.validateTitleField();
+      this.validatePlaceTitleField();
       this.validateDescriptionField();
-      this.validateStepsField();
-      this.validateLatitudeField();
-      this.validateLongitudeField();
+      this.validateDifficultyLevelField();
+      this.validateStyleField();
 
       let formIsValid = validateForm(this.errors);
 
@@ -238,7 +279,7 @@ export default {
         this.formInValidation = formIsValid;
       }
     },
-    mapInvalidResponse(result, mapForInvalidFields = true) {
+    mapInvalidResponse(result, mapInvalidFields = true) {
       let globalErrorCode = this.isUpdate ? 'update_climb' : 'create_climb';
       if (globalErrorCode in result.codes) {
         this.requestStatus = result.status;
@@ -247,7 +288,7 @@ export default {
         this.$router.go();
       } else if ('not_found' in result.codes) {
         this.redirectTo404(result.codes);
-      } else if (mapForInvalidFields) {
+      } else if (mapInvalidFields) {
         // Map errors returned by the request
         for (const [key, value] of Object.entries(result.codes)) {
           this.errors[key] = value;
@@ -259,9 +300,9 @@ export default {
       let payload = {
         'title': this.title,
         'description': this.description,
-        'steps': this.steps,
-        'latitude': this.latitude,
-        'longitude': this.longitude
+        'style': this.style,
+        'difficultyLevel': this.difficultyLevel,
+        'placeTitle': this.placeTitle
       };
 
       let response;
@@ -305,9 +346,9 @@ export default {
       let payload = {
         'title': this.title,
         'description': this.description,
-        'steps': this.steps,
-        'latitude': this.latitude,
-        'longitude': this.longitude
+        'style': this.style,
+        'difficultyLevel': this.difficultyLevel,
+        'placeTitle': this.placeTitle
       };
 
       let response;
@@ -347,7 +388,42 @@ export default {
 
       return { status: status.success };
     },
-    async getData() {
+    async getCreateData() {
+      let response;
+      try {
+        response = await fetch(`http://localhost:8080/climb`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': getHeaderAuthorization()
+          }
+        });
+      } catch {
+        return {
+          codes: { 'create_climb': errors.routes.get.create.climb },
+          status: status.error
+        };
+      }
+
+      if (!await validateAuthFromResponse(response.status, this.userLoggedIn)) {
+        return {
+          codes: { refresh: true },
+          status: status.error
+        };
+      }
+
+      let data = await response.json();
+
+      if (response.status === 404) {
+        return {
+          codes: { not_found: errors.climb.not_found },
+          status: status.error
+        };
+      }
+
+      return data;
+    },
+    async getUpdateData() {
       let response;
       try {
         response = await fetch(`http://localhost:8080/climb/${ this.climbTitle }`, {
@@ -385,16 +461,15 @@ export default {
   },
   async mounted() {
     if (!useAlertStore().hasAuthInvalidMessage) {
-      if (this.isUpdate) {
-        let updateData = await this.getData();
-        if (updateData.status === status.error) {
-          this.mapInvalidResponse(updateData, false);
-        }
-
-        for (const [key, value] of Object.entries(updateData.result)) {
-          this[key] = value;
-        }
+      let data = this.isUpdate ? await this.getUpdateData() : await this.getCreateData();
+      if (data.status === status.error) {
+        this.mapInvalidResponse(data, false);
       }
+
+      for (const [key, value] of Object.entries(data.result)) {
+        this[key] = value;
+      }
+
       this.climbTitleValid = true;
     }
   }

@@ -78,6 +78,8 @@
 		},
 		"place_title": {
 			"is_null": "errors.fields.climb.place_title.is_null",
+			"empty_or_white_spaces": "errors.fields.climb.place_title.empty_or_white_spaces",
+			"length": "errors.fields.climb.place_title.length",
 			"not_found": "errors.field.climb.place_title.not_found",
 			"unauthorized": "errors.fields.climb.place_title.unauthorized"
 		}

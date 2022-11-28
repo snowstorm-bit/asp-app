@@ -72,7 +72,7 @@ export default {
       this.setValidationOnField('email', indicateIsValid);
     },
     validatePasswordField() {
-      let indicateIsValid = typeof this.errors.password.length > 0;
+      let indicateIsValid = 'wasValidated' in this.errors.password;
       this.errors.password = [];
       let value = this.password;
 

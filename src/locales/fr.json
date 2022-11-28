@@ -36,9 +36,9 @@
 		"steps": "Directives",
 		"latitude": "Latitude",
 		"longitude": "Longitude",
-		"style": "Style",
+		"style": "Choisir un style",
 		"difficulty_level": "Niveau de difficulté",
-		"place_title": "Titre du lieu"
+		"place_title": "Choisir un lieu"
 	},
 	"successes": {
 		"routes": {
@@ -173,5 +173,10 @@
 				"climb": "Une erreur s'est produite. Il n'a pas été possible d'enregistrer les modifications pour la présente grimpe"
 			}
 		}
+	},
+	"climb_style": {
+		"traditional": "Traditionnelle",
+		"sport": "Sportive",
+		"top_roping": "Moulinette"
 	}
 }
