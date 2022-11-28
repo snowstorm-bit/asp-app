@@ -1,17 +1,18 @@
+import useAlertStore from '@/stores/alert';
 import { defineStore } from 'pinia';
 import { status } from '@/includes/enums.js';
 import errors from '@/includes/errors.json';
 
 export default defineStore('user', {
     state: () => ({
-        userLoggedIn: false,
-        user: {}
+        modalIsOpened: false,
+        userLoggedIn: localStorage.hasOwnProperty('token') && localStorage.hasOwnProperty('user')
     }),
     actions: {
         async register(payload) {
             let response;
             try {
-                response = await fetch('http://localhost:8080/user/register', {
+                response = await fetch('http://localhost:8080/user/registr', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -20,23 +21,7 @@ export default defineStore('user', {
                 });
             } catch (e) {
                 return {
-                    code: errors.routes.register,
-                    status: status.error
-                };
-            }
-
-            if (response.status === 401) {
-                let errorCode = this.userLoggedIn
-                    ? errors.auth.session_expired
-                    : errors.auth.login_required;
-
-                return {
-                    code: errorCode,
-                    status: status.error
-                };
-            } else if (response.status === 403) {
-                return {
-                    code: errors.auth.unauthorized,
+                    codes: { 'register': errors.routes.register },
                     status: status.error
                 };
             }
@@ -48,22 +33,60 @@ export default defineStore('user', {
             }
 
             localStorage.setItem('token', data.token);
-            this.user = data.result;
-            this.userLoggedIn = true;
-            localStorage.setItem('globalMessage', JSON.stringify({ code: data.code, status: data.status }));
+            localStorage.setItem('user', JSON.stringify(data.result));
+
+            useAlertStore().setMessage({
+                code: data.code,
+                status: data.status
+            });
 
             return { status: status.success };
         },
         async authenticate(payload) {
             console.log(payload);
+            let response;
+            try {
+                response = await fetch('http://localhost:8080/user/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+            } catch (e) {
+                return {
+                    codes: { 'login': errors.routes.login },
+                    status: status.error
+                };
+            }
 
-            // await auth.signInWithEmailAndPassword(values.email, values.password);
-            // mapper.mapfromObject(codes, errors);
-            // this.userLoggedIn = true;
+            let data = await response.json();
+
+            if (data.status === status.error) {
+                return data;
+            }
+
+            localStorage.setItem('token', data.token);
+            localStorage.setItem('user', JSON.stringify(data.result));
+
+            useAlertStore().setMessage({
+                code: data.code,
+                status: data.status
+            });
+
+            return { status: status.success };
         },
-        async signOut() {
+        signOut() {
             this.userLoggedIn = false;
             localStorage.removeItem('token');
+            localStorage.removeItem('user');
+
+            useAlertStore().setMessage({
+                code: 'successes.routes.sign_out',
+                status: status.success
+            });
+
+            return true;
         }
     }
 });

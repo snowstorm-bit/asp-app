@@ -1,25 +1,41 @@
 <template>
-  <div :class="alertClass" class="alert div-alert" role="alert">
-    {{ $t(message) }}
+  <div :class="getHiddenClass" class="alert fade show" role="alert">
+    <template v-if="hasMessage">
+      <span class="text-center">{{ $t(code) }}</span>
+    </template>
+    <template v-else>
+      {{ $t(code) }}
+    </template>
+
+    <button aria-label="Close" class="btn-close btn-sm btn" data-bs-dismiss="alert" type="button"></button>
   </div>
 </template>
 
 <script>
+
+import { mapState } from 'pinia';
+import useAlertStore from '@/stores/alert';
+
 export default {
   name: 'Asp-Alert',
-  props: ['status', 'message'],
-  data() {
-    return {
-      alertClass: status.success
+  props: ['status', 'code'],
+  computed: {
+    ...mapState(useAlertStore, ['hasMessage']),
+    getHiddenClass() {
+      console.log(this.status);
+      let alertColorClass = this.status === 'success'
           ? 'alert-success'
-          : 'alert-danger'
-    };
+          : 'alert-danger';
+      let alertClass = this.hasMessage ? 'div-global-alert' : 'div-alert';
+      return `${ alertColorClass } ${ alertClass }`;
+    }
   }
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 /*Alerte*/
+
 .div-alert {
   padding: 0.3rem 0.5rem !important;
   justify-content: space-between;
@@ -27,8 +43,15 @@ export default {
   display: flex;
 }
 
-.close-btn {
-  padding: 0 0.4rem !important;
+.div-global-alert {
+  @extend .div-alert;
+
+  position: fixed;
+  margin: 1rem auto;
+  left: 12.5%;
+  width: 75%;
+  z-index: 99999998;
+  padding: 0.4rem 0.5rem !important;
 }
 
 </style>

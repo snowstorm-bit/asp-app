@@ -2,16 +2,17 @@
   <asp-auth :authIsValid="authIsValid" />
   <asp-header :authIsValid="authIsValid" />
   <main>
-    <asp-alert v-if="message.length > 0" :message="message" :status="status" />
+    <asp-alert v-if="hasMessage" :code="code" :status="status" />
     <router-view v-if="authIsValid"></router-view>
   </main>
 </template>
 
 <script>
 import AspHeader from '@/components/Header.vue';
+import AspAlert from '@/components/Alert.vue';
 import AspAuth from '@/components/Authentification/Auth.vue';
-import AspAlert from '@/components/Header.vue';
 import useUserStore from '@/stores/user';
+import useAlertStore from '@/stores/alert';
 import { mapState } from 'pinia';
 import { validateAuth } from '@/includes/validation.js';
 
@@ -25,19 +26,20 @@ export default {
   data() {
     return {
       authIsValid: true,
-      message: '',
+      code: '',
       status: ''
     };
   },
   computed: {
-    ...mapState(useUserStore, ['userLoggedIn'])
+    ...mapState(useUserStore, ['userLoggedIn']),
+    ...mapState(useAlertStore, ['hasMessage'])
   },
   watch: {
-    $route() {
+    '$route'() {
       this.authIsValid = validateAuth(this.$router.meta?.requiresAuth, this.userLoggedIn);
-      if (localStorage.hasOwnProperty('globalMessage')) {
-        let globalMessage = localStorage.getItem('globalMessage');
-        this.message = globalMessage.code;
+      if (this.hasMessage) {
+        let globalMessage = useAlertStore().getMessage();
+        this.code = globalMessage.code;
         this.status = globalMessage.status;
       }
     }

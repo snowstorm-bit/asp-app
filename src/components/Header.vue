@@ -11,9 +11,6 @@
           <router-link id="logo-link" :to="{ name: 'home' }" class="navbar-brand">
             <img id="logo" alt="Logo" src="/logo.png" />
           </router-link>
-          <router-link :to="{ name: 'home' }" class="navbar-brand">
-            {{ $t('app_name') }}
-          </router-link>
         </div>
         <div id="asp-navbar-toggler" class="collapse navbar-collapse">
           <div class="navbar-nav me-auto mb-lg-0">
@@ -30,7 +27,7 @@
           <!--              <i class="bi bi-search"></i>-->
           <!--            </button>-->
           <!--          </form>-->
-          <div v-if="userLoggedIn" class="btn-group">
+          <div v-if="userLoggedIn" id="user-menu" class="btn-group">
             <button aria-expanded="false" class="btn btn-outline-primary dropdown-toggle"
                     data-bs-toggle="dropdown" type="button">
               <i class="bi bi-person-fill"></i>
@@ -39,7 +36,8 @@
               <a class="ps-2" @click.prevent="signOut">Déconnexion</a>
             </div>
           </div>
-          <a v-else ref="authLink" class="ps-2 nav-link-header" data-bs-target="#auth-modal" data-bs-toggle="modal">
+          <a v-else ref="authLink" class="ps-2 nav-link-header" data-bs-target="#auth-modal" data-bs-toggle="modal"
+             @click="onOpenModal">
             {{ $t('auth.login_tab') }} / {{ $t('auth.register_tab') }}
           </a>
         </div>
@@ -49,22 +47,31 @@
 </template>
 
 <script>
-import { mapActions, mapState } from 'pinia';
+import { mapActions, mapState, mapWritableState } from 'pinia';
 import useUserStore from '@/stores/user';
 
 export default {
   name: 'Asp-Header',
   props: ['authIsValid'],
+  emits: ['authResetModal'],
   computed: {
-    ...mapState(useUserStore, ['userLoggedIn'])
+    ...mapState(useUserStore, ['userLoggedIn']),
+    ...mapWritableState(useUserStore, ['modalIsOpened'])
   },
   methods: {
-    ...mapActions(useUserStore, ['signOut']),
-    async signOut() {
-      await this.signOut();
+    ...mapActions(useUserStore, { userStoreSignOut: 'signOut' }),
+    signOut() {
+      this.userStoreSignOut();
 
       if (this.$router.meta?.requiresAuth) {
         this.$router.push({ name: 'home' });
+      }
+
+      this.$router.go();
+    },
+    onOpenModal() {
+      if (!this.modalIsOpened) {
+        this.modalIsOpened = true;
       }
     }
   },
@@ -77,6 +84,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+#user-menu {
+  z-index: 99999999999;
+}
+
 nav {
   padding: 0.5rem 2rem !important;
 }

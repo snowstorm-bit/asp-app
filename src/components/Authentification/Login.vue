@@ -1,5 +1,5 @@
 <template>
-  <asp-alert v-if="requestStatus.length > 0" :message="requestMessage" :status="requestStatus" />
+  <asp-alert v-if="requestStatus.length > 0" :code="requestMessage" :status="requestStatus" />
   <form class="px-4 py-3" @submit.prevent="validateForm">
     <div class="mb-3">
       <label class="form-label input-required-lbl" for="email">{{ $t('fields.email') }}</label>
@@ -29,7 +29,7 @@ import InvalidFeedback from '@/components/InvalidFeedback.vue';
 import AspAlert from '@/components/Alert.vue';
 import { mapActions } from 'pinia';
 import useUserStore from '@/stores/user';
-import { getFormData, validateEmail, validatePassword, validateForm } from '@/includes/validation.js';
+import { getFormData, validateEmail, validateForm, validatePassword } from '@/includes/validation.js';
 import { status, validationHiddenClass } from '@/includes/enums.js';
 
 export default {
@@ -40,6 +40,13 @@ export default {
   },
   methods: {
     ...mapActions(useUserStore, ['authenticate']),
+    resetForm() {
+      let defaultData = getFormData(['username', 'email', 'password;array', 'confirmPassword']);
+
+      for (const [key, value] of Object.entries(defaultData)) {
+        this[key] = value;
+      }
+    },
     resetValidationOnField(field) {
       if (this.hiddenClass[field].length > 0)
         this.errors[field] = { wasValidated: '' };

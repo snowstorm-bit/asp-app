@@ -1,5 +1,5 @@
 <template>
-  <asp-alert v-if="requestStatus.length > 0" :message="requestMessage" :status="requestStatus" />
+  <asp-alert v-if="requestStatus.length > 0" :code="requestMessage" :status="requestStatus" />
   <form class="px-4 py-3" @submit.prevent="validateForm">
     <div class="mb-3">
       <label class="form-label input-required-lbl" for="username">{{ $t('fields.username') }}</label>
@@ -63,6 +63,13 @@ export default {
   },
   methods: {
     ...mapActions(useUserStore, ['register']),
+    resetForm() {
+      let defaultData = getFormData(['username', 'email', 'password;array', 'confirmPassword']);
+
+      for (const [key, value] of Object.entries(defaultData)) {
+        this[key] = value;
+      }
+    },
     resetValidationOnField(field) {
       if (this.hiddenClass[field].length > 0)
         this.errors[field] = { wasValidated: '' };
@@ -85,9 +92,9 @@ export default {
       let value = this.username;
 
       if (!validateEmptyOrWhiteSpace(value)) {
-        this.errors.username = errors.fields.username.empty_or_white_spaces;
+        this.errors.username = errors.user.username.empty_or_white_spaces;
       } else if (!validateRange(value, 3, 50)) {
-        this.errors.username = errors.fields.username.length;
+        this.errors.username = errors.user.username.length;
       }
 
       this.setValidationOnField('username', indicateIsValid);
@@ -113,7 +120,7 @@ export default {
       this.errors.confirmPassword = '';
 
       if (this.confirmPassword !== this.password) {
-        this.errors.confirmPassword = errors.fields.password.not_equal;
+        this.errors.confirmPassword = errors.user.password.not_equal;
       }
 
       this.setValidationOnField('confirmPassword', indicateIsValid, false);

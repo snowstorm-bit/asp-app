@@ -69,11 +69,11 @@ function validateEmail(value) {
     let emailRegex = '^\\w+([-+.\']\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*$';
 
     if (!validateEmptyOrWhiteSpace(value)) {
-        return errors.fields.email.empty_or_white_spaces;
+        return errors.user.email.empty_or_white_spaces;
     } else if (!validateMaxLength(value, 50)) {
-        return errors.fields.email.length_exceeded;
+        return errors.user.email.length_exceeded;
     } else if (value.match(emailRegex) === null) {
-        return errors.fields.email.invalid;
+        return errors.user.email.invalid;
     }
 
     return '';
@@ -81,21 +81,21 @@ function validateEmail(value) {
 
 function validatePassword(value) {
     if (!validateEmptyOrWhiteSpace(value)) {
-        return errors.fields.password.empty_or_white_spaces;
+        return errors.user.password.empty_or_white_spaces;
     } else if (!validateRange(value, 6, 12)) {
-        return errors.fields.password.length;
+        return errors.user.password.length;
     }
 
     let errorsToThrow = [];
 
     if (value.match('[0-9]') === null) {
-        errorsToThrow.push(errors.fields.password.no_number);
+        errorsToThrow.push(errors.user.password.no_number);
     }
     if (value.match('[#?!@$%^&*-]') === null) {
-        errorsToThrow.push(errors.fields.password.no_symbol);
+        errorsToThrow.push(errors.user.password.no_symbol);
     }
     if (value.match('[A-Z]') === null) {
-        errorsToThrow.push(errors.fields.password.no_uppercase_letter);
+        errorsToThrow.push(errors.user.password.no_uppercase_letter);
     }
 
     return errorsToThrow;
@@ -119,15 +119,26 @@ function validateAuth(requiresAuth, userLoggedIn) {
     return !authRequired || authRequired && userLoggedIn;
 }
 
+/**
+ * Valide la réponse d'une requête pour une route requiérant une authentification
+ * @param responseStatus
+ * @param userLoggedIn
+ * @returns {boolean}
+ */
 function validateAuthFromResponse(responseStatus, userLoggedIn) {
     let errorCode;
 
+    // TODO
     if (responseStatus === 401) {
         errorCode = userLoggedIn
             ? errors.auth.session_expired
             : errors.auth.login_required;
     } else if (responseStatus === 403) {
         errorCode = errors.auth.unauthorized;
+    }
+    /// First thing to validate !! Go back after
+    else if (responseStatus === 500) {
+        // localStorage.setItem('globalMessage', JSON.stringify({ code: errors.routes[][], status: status.error }));
     }
 
     if (errorCode > 0) {

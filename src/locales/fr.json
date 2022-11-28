@@ -1,69 +1,167 @@
 {
-  "app_name": "Trouve ta voie",
-  "home": {
-  },
-  "header": {
-    "nav_items": {
-      "home": "Accueil"
-    },
-    "search_placeholder": "Recherche"
-  },
-  "auth": {
-    "title": "Authentification",
-    "login_tab": "Connexion",
-    "register_tab": "Créer un compte",
-    "signing_in": "Connexion en cours",
-    "registrating": "Incription en cours"
-  },
-  "buttons": {
-    "sign_in": "S'identifier",
-    "register": "S'inscrire"
-  },
-  "fields": {
-    "username": "Nom d'utilisateur",
-    "email": "Courriel",
-    "password": "Mot de passe",
-    "confirm_password": "Confirmation du mot de passe"
-  },
-  "successes": {
-    "register": "Succès de la création du compte utilisateur!",
-    "login": "Succès de la connexion!"
-  },
-  "errors": {
-    "404": "OUPS ! La page à laquelle vous avez essayé d'accéder est introuvable!",
-    "auth": {
-      "login_required": "Il faut d'abord vous connecter pour pouvoir accéder à cette page",
-      "session_expired": "Votre session est expirée. S'il vous plaît vous reconnecter",
-      "unauthorized": "Non autorisé | Vous n'avez pas les accès nécessaires pour accéder à cette page"
-    },
-    "fields": {
-      "username": {
-        "is_null": "Le nom d'utilisateur ne peut être vide",
-        "empty_or_white_spaces": "Le nom d'utilisateur ne peut être vide ou composé uniquement d'espace blancs",
-        "length": "Le nom d'utilisateur doit contenir entre 3 et 50 caractères"
-      },
-      "email": {
-        "already_taken": "Le courriel saisi est déjà associé à un compte utilisateur",
-        "not_found": "Le courriel saisi est introuvable",
-        "is_null": "Le courriel ne peut être vide",
-        "empty_or_white_spaces": "Le courriel ne peut être vide ou composé uniquement d'espace blancs",
-        "length_exceeded": "Le courriel ne peut contenir plus de 50 caractères",
-        "invalid": "Veuillez saisir un courriel dont le format est valide"
-      },
-      "password": {
-        "not_equal": "Les mots de passes ne sont pas identiques",
-        "is_null": "Le mot de passe ne peut être vide",
-        "empty_or_white_spaces": "Le mot de passe doit comprendre entre 6 et 12 caractères ayant au moins 1 majuscule, 1 chiffre et 1 des symboles suivants : #?!{'@'}$%^&*-",
-        "length": "Le mot de passe doit contenir entre 6 et 12 caractères",
-        "no_number": "Le mot de passe doit comprendre au moins 1 chiffre",
-        "no_symbol": "Le mot de passe doit comprendre au moins 1 des symboles suivants : '#?!{'@'}$%^&*-'",
-        "no_uppercase_letter": "Le mot de passe doit comprendre au moins 1 majuscule",
-        "invalid": "Le mot de passe est invalide. Il doit comprendre 1 majuscule, 1 chiffre et 1 des symboles suivants : '#?!{'@'}$%^&*-'"
-      }
-    },
-    "routes": {
-      "register": "Une erreur s'est produite à la création de votre compte utilisateur. Veuillez réessayer plus tard",
-      "login": "Une erreur s'est produite lors de la connexion à votre compte utilisateur"
-    }
-  }
+	"app_name": "Trouve ta voie",
+	"header": {
+		"nav_items": {
+			"home": "Accueil"
+		},
+		"search_placeholder": "Recherche"
+	},
+	"auth": {
+		"title": "Authentification",
+		"login_tab": "Connexion",
+		"register_tab": "Créer un compte"
+	},
+	"buttons": {
+		"sign_in": "S'identifier",
+		"register": "S'inscrire",
+		"create": "Créer",
+		"save_changes": "Enregistrer les modifications",
+		"delete": "Supprimer"
+	},
+	"fields": {
+		"username": "Nom d'utilisateur",
+		"email": "Courriel",
+		"password": "Mot de passe",
+		"confirm_password": "Confirmation du mot de passe",
+		"title": "Titre",
+		"description": "Description",
+		"steps": "Directives",
+		"latitude": "Latitude",
+		"longitude": "Longitude",
+		"style": "Style",
+		"difficulty_level": "Niveau de difficulté",
+		"place_title": "Titre du lieu"
+	},
+	"successes": {
+		"routes": {
+			"register": "Succès de la création du compte utilisateur!",
+			"login": "Succès de la connexion!",
+			"sign_out": "Succès de la déconnexion! Au revoir",
+			"create": {
+				"place": "Le lieu a été créé avec succès!",
+				"climb": "La grimpe a été créé avec succès!"
+			},
+			"update": {
+				"place": "Les modifications ont été enregistrées avec succès!",
+				"climb": "Les modifications ont été enregistrées avec succès!"
+			},
+			"delete": {
+			}
+		}
+	},
+	"errors": {
+		"404": "OUPS ! La page à laquelle vous avez essayé d'accéder est introuvable!",
+		"401": "",
+		"403": "",
+		"500": "",
+		"auth": {
+			"login_required": "Il faut d'abord vous connecter pour pouvoir accéder à cette page",
+			"session_expired": "Votre session est expirée. S'il vous plaît vous reconnecter",
+			"unauthorized": "Non autorisé | Vous n'avez pas les accès nécessaires pour accéder à cette page"
+		},
+		"fields": {
+			"user": {
+				"username": {
+					"is_null": "Le nom d'utilisateur ne peut être vide",
+					"empty_or_white_spaces": "Le nom d'utilisateur ne peut être vide ou composé uniquement d'espace blancs",
+					"length": "Le nom d'utilisateur doit contenir entre 3 et 50 caractères"
+				},
+				"email": {
+					"already_taken": "Le courriel saisi est déjà associé à un compte utilisateur",
+					"not_found": "Le courriel saisi est introuvable",
+					"is_null": "Le courriel ne peut être vide",
+					"empty_or_white_spaces": "Le courriel ne peut être vide ou composé uniquement d'espace blancs",
+					"length_exceeded": "Le courriel ne peut contenir plus de 50 caractères",
+					"invalid": "Veuillez saisir un courriel dont le format est valide"
+				},
+				"password": {
+					"not_equal": "Les mots de passes ne sont pas identiques",
+					"is_null": "Le mot de passe ne peut être vide",
+					"empty_or_white_spaces": "Le mot de passe doit comprendre entre 6 et 12 caractères ayant au moins 1 majuscule, 1 chiffre et 1 des symboles suivants : #?!{'@'}$%^&*-",
+					"length": "Le mot de passe doit contenir entre 6 et 12 caractères",
+					"no_number": "Le mot de passe doit comprendre au moins 1 chiffre",
+					"no_symbol": "Le mot de passe doit comprendre au moins 1 des symboles suivants : '#?!{'@'}$%^&*-'",
+					"no_uppercase_letter": "Le mot de passe doit comprendre au moins 1 majuscule",
+					"invalid": "Le mot de passe est invalide. Il doit comprendre 1 majuscule, 1 chiffre et 1 des symboles suivants : '#?!{'@'}$%^&*-'"
+				},
+				"invalid": "Le courriel ou le mot de passe saisi est invalide"
+			},
+			"place": {
+				"not_found": "La place est introuvable !",
+				"title": {
+					"already_taken": "Le titre du lieu saisi est déjà associé à une autre place",
+					"is_null": "Le titre du lieu ne peut être vide",
+					"empty_or_white_spaces": "Le titre du lieu ne peut être vide ou composé uniquement d'espaces blancs",
+					"length": "Le titre du lieu doit contenir entre 3 et 50 caractères"
+				},
+				"description": {
+					"is_null": "La description du lieu ne peut être vide",
+					"empty_or_white_spaces": "La description du lieu ne peut être vide ou composé uniquement d'espaces blancs",
+					"length": "La description du lieu doit contenir entre 3 et 500 caractères"
+				},
+				"steps": {
+					"is_null": "Les directives pour se rendre au lieu ne peut être vide",
+					"empty_or_white_spaces": "Les directives pour se rendre au lieu ne peut être vide ou composé uniquement d'espaces blancs",
+					"length": "Les directives pour se rendre au lieu doit contenir entre 3 et 500 caractères"
+				},
+				"latitude": {
+					"is_null": "La latitude ne peut être vide",
+					"range": "La latitude doit être entre -90 et 90"
+				},
+				"longitude": {
+					"is_null": "La longitude ne peut être vide",
+					"range": "La longitude doit être entre -180 et 180"
+				}
+			},
+			"climb": {
+				"not_found": "La grimpe est introuvable !",
+				"title": {
+					"already_taken": "Le titre de la grimpe saisi est déjà associé à une autre grimpe pour un même lieu",
+					"is_null": "Le titre de la grimpe ne peut être vide",
+					"empty_or_white_spaces": "Le titre de la grimpe ne peut être vide ou composé uniquement d'espaces blancs",
+					"length": "Le titre de la grimpe doit contenir entre 3 et 50 caractères"
+				},
+				"description": {
+					"is_null": "La description de la grimpe ne peut être vide",
+					"empty_or_white_spaces": "La description de la grimpe ne peut être vide ou composé uniquement d'espaces blancs",
+					"length": "La description de la grimpe doit contenir entre 3 et 500 caractères"
+				},
+				"style": {
+					"is_null": "Veuillez sélectionner une des valeurs dans le champs associé au style de la grimpe",
+					"empty_or_white_spaces": "Veuillez sélectionner une des valeurs dans le champs associé au style de la grimpe",
+					"not_in": "Veuillez sélectionner une des valeurs dans le champs associé au style de la grimpe"
+				},
+				"difficulty_level": {
+					"not_decimal": "Le niveau de difficulté doit être une valeur numérique",
+					"empty_or_white_spaces": "Le niveau de difficulté de la grimpe ne peut être vide ou composé uniquement d'espaces blancs",
+					"range": "Le niveau de difficulté doit être entre 5.6 et 5.15"
+				},
+				"place_title": {
+					"is_null": "La place associée  longitude ne peut être vide"
+				}
+			}
+		},
+		"routes": {
+			"register": "Une erreur s'est produite à la création de votre compte utilisateur. Veuillez réessayer plus tard",
+			"login": "Une erreur s'est produite lors de la connexion à votre compte utilisateur",
+			"get": {
+				"create": {
+					"place": "Une erreur s'est produite lors de l'obtention du formulaire pour créer un lieu. Veuillez réessayer plus tard",
+					"climb": "Une erreur s'est produite lors de l'obtention du formulaire pour créer une grimpe. Veuillez réessayer plus tard"
+				},
+				"update": {
+					"place": "Une erreur s'est produite lors de l'obtention du formulaire pour modifier un lieu. Veuillez réessayer plus tard",
+					"climb": "Une erreur s'est produite lors de l'obtention du formulaire pour modifier une grimpe. Veuillez réessayer plus tard"
+				}
+			},
+			"create": {
+				"place": "Une erreur s'est produite. Il n'a pas été possible de créer le lieu",
+				"climb": "Une erreur s'est produite. Il n'a pas été possible de créer la grimpe"
+			},
+			"update": {
+				"place": "Une erreur s'est produite. Il n'a pas été possible d'enregistrer les modifications pour le présent lieu",
+				"climb": "Une erreur s'est produite. Il n'a pas été possible d'enregistrer les modifications pour la présente grimpe"
+			}
+		}
+	}
 }
