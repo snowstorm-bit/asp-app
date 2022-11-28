@@ -1,6 +1,6 @@
 <template>
   <div :class="getHiddenClass" class="alert fade show" role="alert">
-    <template v-if="hasMessage">
+    <template v-if="hasGlobalMessage">
       <span class="text-center">{{ $t(code) }}</span>
     </template>
     <template v-else>
@@ -20,13 +20,12 @@ export default {
   name: 'Asp-Alert',
   props: ['status', 'code'],
   computed: {
-    ...mapState(useAlertStore, ['hasMessage']),
+    ...mapState(useAlertStore, ['hasGlobalMessage']),
     getHiddenClass() {
-      console.log(this.status);
       let alertColorClass = this.status === 'success'
           ? 'alert-success'
           : 'alert-danger';
-      let alertClass = this.hasMessage ? 'div-global-alert' : 'div-alert';
+      let alertClass = this.hasGlobalMessage ? 'div-global-alert' : 'div-alert';
       return `${ alertColorClass } ${ alertClass }`;
     }
   }
@@ -48,6 +47,7 @@ export default {
 
   position: fixed;
   margin: 1rem auto;
+  top: 3.5rem;
   left: 12.5%;
   width: 75%;
   z-index: 99999998;

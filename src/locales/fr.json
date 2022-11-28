@@ -108,16 +108,18 @@
 					"length": "La description du lieu doit contenir entre 3 et 500 caractères"
 				},
 				"steps": {
-					"is_null": "Les directives pour se rendre au lieu ne peut être vide",
-					"empty_or_white_spaces": "Les directives pour se rendre au lieu ne peut être vide ou composé uniquement d'espaces blancs",
+					"is_null": "Le champ pour les directives pour se rendre au lieu ne peut être vide",
+					"empty_or_white_spaces": "Le champ pour les directives pour se rendre au lieu ne peut être vide ou composé uniquement d'espaces blancs",
 					"length": "Les directives pour se rendre au lieu doit contenir entre 3 et 500 caractères"
 				},
 				"latitude": {
 					"is_null": "La latitude ne peut être vide",
+					"empty_or_white_spaces": "La latitude ne peut être vide ou composée uniquement d'espaces blancs",
 					"range": "La latitude doit être entre -90 et 90"
 				},
 				"longitude": {
 					"is_null": "La longitude ne peut être vide",
+					"empty_or_white_spaces": "La longitude ne peut être vide ou composée uniquement d'espaces blancs",
 					"range": "La longitude doit être entre -180 et 180"
 				}
 			},

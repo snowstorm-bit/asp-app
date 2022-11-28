@@ -22,6 +22,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+main {
+  margin: 0 !important;
+}
+
 div {
   position: relative;
   text-align: center;

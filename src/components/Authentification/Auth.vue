@@ -1,7 +1,9 @@
 <template>
-  <div id="auth-modal" aria-hidden="true"
-       aria-labelledby="Modal d'authentification" class="modal fade" tabindex="-1"
-  >
+  <div id="auth-modal" :data-bs-backdrop="authIsValid ? 'false' : 'static'" :data-bs-keyboard="authIsValid"
+       aria-hidden="true"
+       aria-labelledby="Modal d'authentification"
+       class="modal fade"
+       tabindex="-1">
     <div class="modal-lg modal-dialog modal-dialog-centered">
       <div class="modal-content p-2">
         <!-- header -->
@@ -34,7 +36,7 @@
             </button>
           </div>
 
-          <asp-alert v-if="message.length > 0" :message="message" :status="status" />
+          <asp-alert v-if="message.length > 0" :code="message" :status="status" />
 
           <!-- Form -->
           <auth-login v-if="tab === 'login'" ref="login" />
@@ -49,8 +51,9 @@
 import { mapState, mapWritableState } from 'pinia';
 import AuthLogin from '@/components/Authentification/Login.vue';
 import AuthRegister from '@/components/Authentification/Register.vue';
-import AspAlert from '@/components/Header.vue';
+import AspAlert from '@/components/Alert.vue';
 import useUserStore from '@/stores/user';
+import useAlertStore from '@/stores/alert';
 
 export default {
   name: 'Asp-Auth',
@@ -69,13 +72,14 @@ export default {
   },
   computed: {
     ...mapState(useUserStore, ['userLoggedIn']),
+    ...mapState(useAlertStore, ['hasAuthInvalidMessage']),
     ...mapWritableState(useUserStore, ['modalIsOpened'])
   },
   watch: {
-    '$router'() {
-      if (localStorage.hasOwnProperty('authInvalid')) {
-        let authInvalid = localStorage.getItem('authInvalid');
-        this.message = authInvalid.code;
+    '$route'() {
+      if (this.hasAuthInvalidMessage) {
+        let authInvalid = useAlertStore().getAuthInvalid();
+        this.code = authInvalid.code;
         this.status = authInvalid.status;
       }
     },

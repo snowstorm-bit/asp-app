@@ -108,6 +108,7 @@ export default {
               this.requestStatus = result.status;
               this.requestMessage = result.codes.login;
             } else {
+              // Map errors returned by the request
               for (const [key, value] of Object.entries(result.codes)) {
                 this.errors[key] = value;
                 this.hiddenClass[key] = validationHiddenClass.isInvalid;

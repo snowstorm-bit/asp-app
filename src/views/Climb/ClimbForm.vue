@@ -1,5 +1,5 @@
 <template>
-  <div v-if="placeTitleValid">
+  <div v-if="climbTitleValid">
     <h2 class="text-center">{{ getFormTitle }}</h2>
     <asp-alert v-if="requestStatus.length > 0" :code="requestMessage" :status="requestStatus" />
     <form class="px-4 py-3" @submit.prevent="validateForm">
@@ -10,6 +10,13 @@
                  class="form-control" name="title" required="required" type="text"
                  @focusin="resetValidationOnField('title')" @focusout="validateTitleField">
           <invalid-feedback :error="errors.title" />
+        </div>
+        <div>
+          <label class="form-label input-required-lbl" for="title">{{ $t('fields.place_title') }}</label>
+          <input v-model="placeTitle" :class="hiddenClass.placeTitle" :placeholder="$t('fields.place_title')"
+                 class="form-control" name="place_title" required="required" type="text"
+                 @focusin="resetValidationOnField('place_title')" @focusout="validatePlaceTitleField">
+          <invalid-feedback :error="errors.placeTitle" />
         </div>
       </div>
       <div class="row">
@@ -25,33 +32,33 @@
         </div>
         <div class="mb-3 col-md-6">
           <div class="form-floating">
-          <textarea v-model="steps" :class="hiddenClass.steps"
-                    :placeholder="$t('fields.steps')" class="form-control" name="steps"
-                    required="required" @focusin="resetValidationOnField('steps')"
-                    @focusout="validateStepsField"></textarea>
-            <label for="steps">{{ $t('fields.steps') }}</label>
+          <textarea v-model="difficulty_level" :class="hiddenClass.difficulty_level"
+                    :placeholder="$t('fields.difficulty_level')" class="form-control" name="difficulty_level"
+                    required="required" @focusin="resetValidationOnField('difficulty_level')"
+                    @focusout="validateDifficultyLevelField"></textarea>
+            <label for="difficulty_level">{{ $t('fields.difficulty_level') }}</label>
           </div>
-          <invalid-feedback :error="errors.steps" />
+          <invalid-feedback :error="errors.difficulty_level" />
         </div>
       </div>
       <div class="row">
         <div class="mb-3 col-sm-6">
-          <label class="form-label input-required-lbl" for="latitude">
-            {{ $t('fields.latitude') }}
+          <label class="form-label input-required-lbl" for="style">
+            {{ $t('fields.style') }}
           </label>
-          <input v-model="latitude" :class="hiddenClass.latitude" :placeholder="$t('fields.latitude')"
-                 class="form-control" name="latitude" required="required" type="number"
-                 @focusin="resetValidationOnField('latitude')" @focusout="validateLatitudeField">
-          <invalid-feedback :error="errors.latitude" />
+          <input v-model="style" :class="hiddenClass.style" :placeholder="$t('fields.style')"
+                 class="form-control" name="style" required="required" type="number"
+                 @focusin="resetValidationOnField('style')" @focusout="validateStyleField">
+          <invalid-feedback :error="errors.style" />
         </div>
         <div class="mb-3 col-sm-6">
-          <label class="form-label input-required-lbl" for="longitude">
-            {{ $t('fields.longitude') }}
-          </label>
-          <input v-model="longitude" :class="hiddenClass.longitude" :placeholder="$t('fields.longitude')"
-                 class="form-control" name="longitude" required="required" type="number"
-                 @focusin="resetValidationOnField('longitude')" @focusout="validateLongitudeField">
-          <invalid-feedback :error="errors.longitude" />
+<!--          <label class="form-label input-required-lbl" for="longitude">-->
+<!--            {{ $t('fields.longitude') }}-->
+<!--          </label>-->
+<!--          <input v-model="longitude" :class="hiddenClass.longitude" :placeholder="$t('fields.longitude')"-->
+<!--                 class="form-control" name="longitude" required="required" type="number"-->
+<!--                 @focusin="resetValidationOnField('longitude')" @focusout="validateLongitudeField">-->
+<!--          <invalid-feedback :error="errors.longitude" />-->
         </div>
       </div>
       <div class="d-flex justify-content-end">
@@ -82,13 +89,13 @@ import useUserStore from '@/stores/user';
 import useAlertStore from '@/stores/alert';
 
 export default {
-  name: 'Place-Form',
+  name: 'Climb-Form',
   components: { InvalidFeedback, AspAlert },
-  props: ['placeTitle'],
+  props: ['climbTitle'],
   data() {
-    let data = getFormData(['title', 'description', 'steps', 'latitude', 'longitude']);
-    data.isUpdate = this.placeTitle !== undefined;
-    data.placeTitleValid = false;
+    let data = getFormData(['title', 'description', 'difficulty_level', 'style', 'place_title', 'image']);
+    data.isUpdate = this.climbTitle !== undefined;
+    data.climbTitleValid = false;
     return data;
   },
   computed: {
@@ -97,8 +104,8 @@ export default {
       return this.isUpdate ? 'buttons.save_changes' : 'buttons.create';
     },
     getFormTitle() {
-      let title = this.$t(this.isUpdate ? 'update.place' : 'create.place');
-      return this.isUpdate ? `${ title } - ${ this.placeTitle }` : title;
+      let title = this.$t(this.isUpdate ? 'update.climb' : 'create.climb');
+      return this.isUpdate ? `${ title } - ${ this.climbTitle }` : title;
     }
   },
   methods: {
@@ -129,9 +136,9 @@ export default {
       let value = this.title;
 
       if (!validateEmptyOrWhiteSpace(value)) {
-        this.errors.title = errors.place.title.empty_or_white_spaces;
+        this.errors.title = errors.climb.title.empty_or_white_spaces;
       } else if (!validateRange(value, 3, 50)) {
-        this.errors.title = errors.place.title.length;
+        this.errors.title = errors.climb.title.length;
       }
 
       this.setValidationOnField('title', indicateIsValid);
@@ -142,9 +149,9 @@ export default {
       let value = this.description;
 
       if (!validateEmptyOrWhiteSpace(value)) {
-        this.errors.description = errors.place.description.empty_or_white_spaces;
+        this.errors.description = errors.climb.description.empty_or_white_spaces;
       } else if (!validateRange(value, 3, 500)) {
-        this.errors.description = errors.place.description.length;
+        this.errors.description = errors.climb.description.length;
       }
 
       this.setValidationOnField('description', indicateIsValid);
@@ -155,9 +162,9 @@ export default {
       let value = this.steps;
 
       if (!validateEmptyOrWhiteSpace(value)) {
-        this.errors.steps = errors.place.steps.empty_or_white_spaces;
+        this.errors.steps = errors.climb.steps.empty_or_white_spaces;
       } else if (!validateRange(value, 3, 500)) {
-        this.errors.steps = errors.place.steps.length;
+        this.errors.steps = errors.climb.steps.length;
       }
 
       this.setValidationOnField('steps', indicateIsValid);
@@ -168,9 +175,9 @@ export default {
       let value = this.latitude;
 
       if (!validateEmptyOrWhiteSpace(value)) {
-        this.errors.latitude = errors.place.latitude.empty_or_white_spaces;
+        this.errors.latitude = errors.climb.latitude.empty_or_white_spaces;
       } else if (!validateRange(value, -90, 90, false)) {
-        this.errors.latitude = errors.place.latitude.range;
+        this.errors.latitude = errors.climb.latitude.range;
       }
 
       this.setValidationOnField('latitude', indicateIsValid);
@@ -181,9 +188,9 @@ export default {
       let value = this.longitude;
 
       if (!validateEmptyOrWhiteSpace(value)) {
-        this.errors.longitude = errors.place.longitude.empty_or_white_spaces;
+        this.errors.longitude = errors.climb.longitude.empty_or_white_spaces;
       } else if (!validateRange(value, -180, 180, false)) {
-        this.errors.longitude = errors.place.longitude.range;
+        this.errors.longitude = errors.climb.longitude.range;
       }
 
       this.setValidationOnField('longitude', indicateIsValid);
@@ -232,7 +239,7 @@ export default {
       }
     },
     mapInvalidResponse(result, mapForInvalidFields = true) {
-      let globalErrorCode = this.isUpdate ? 'update_place' : 'create_place';
+      let globalErrorCode = this.isUpdate ? 'update_climb' : 'create_climb';
       if (globalErrorCode in result.codes) {
         this.requestStatus = result.status;
         this.requestMessage = result.codes[globalErrorCode];
@@ -259,7 +266,7 @@ export default {
 
       let response;
       try {
-        response = await fetch('http://localhost:8080/place', {
+        response = await fetch('http://localhost:8080/climb', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -269,7 +276,7 @@ export default {
         });
       } catch {
         return {
-          codes: { 'create_place': errors.routes.create.place },
+          codes: { 'create_climb': errors.routes.create.climb },
           status: status.error
         };
       }
@@ -305,7 +312,7 @@ export default {
 
       let response;
       try {
-        response = await fetch(`http://localhost:8080/place/${ this.placeTitle }`, {
+        response = await fetch(`http://localhost:8080/climb/${ this.climbTitle }`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
@@ -315,7 +322,7 @@ export default {
         });
       } catch {
         return {
-          codes: { 'update_place': errors.routes.update.place },
+          codes: { 'update_climb': errors.routes.update.climb },
           status: status.error
         };
       }
@@ -343,7 +350,7 @@ export default {
     async getData() {
       let response;
       try {
-        response = await fetch(`http://localhost:8080/place/${ this.placeTitle }`, {
+        response = await fetch(`http://localhost:8080/climb/${ this.climbTitle }`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -352,7 +359,7 @@ export default {
         });
       } catch {
         return {
-          codes: { 'update_place': errors.routes.get.update.place },
+          codes: { 'update_climb': errors.routes.get.update.climb },
           status: status.error
         };
       }
@@ -368,7 +375,7 @@ export default {
 
       if (response.status === 404) {
         return {
-          codes: { not_found: errors.place.not_found },
+          codes: { not_found: errors.climb.not_found },
           status: status.error
         };
       }
@@ -388,7 +395,7 @@ export default {
           this[key] = value;
         }
       }
-      this.placeTitleValid = true;
+      this.climbTitleValid = true;
     }
   }
 };

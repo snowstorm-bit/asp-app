@@ -1,83 +1,110 @@
 <template>
-  <!--  {{ a }}-->
-  <asp-alert v-if="requestStatus.length > 0" :code="requestMessage" :status="requestStatus" />
-  <form class="px-4 py-3" @submit.prevent="validateForm">
-    <div class="mb-3 d-flex justify-content-center">
-      <label class="form-label input-required-lbl" for="title">{{ $t('fields.username') }}</label>
-      <input v-model="title" :class="hiddenClass.title" :placeholder="$t('fields.title')"
-             class="form-control" name="title" required="required" type="text"
-             @focusin="resetValidationOnField('title')" @focusout="validateTitleField">
-      <invalid-feedback :error="errors.title" />
-    </div>
-    <div class="row">
-      <div class="mb-3 col-md-6">
-        <label class="form-label input-required-lbl" for="description">{{ $t('fields.description') }}</label>
-        <input v-model="description" :class="hiddenClass.description" :placeholder="$t('fields.description')"
-               class="form-control" name="description" required="required" type="text"
-               @focusin="resetValidationOnField('description')" @focusout="validateDescriptionField">
-        <invalid-feedback :error="errors.description" />
+  <div v-if="placeTitleValid">
+    <h2 class="text-center">{{ getFormTitle }}</h2>
+    <asp-alert v-if="requestStatus.length > 0" :code="requestMessage" :status="requestStatus" />
+    <form class="px-4 py-3" @submit.prevent="validateForm">
+      <div class="mb-3 d-flex justify-content-center">
+        <div>
+          <label class="form-label input-required-lbl" for="title">{{ $t('fields.title') }}</label>
+          <input v-model="title" :class="hiddenClass.title" :placeholder="$t('fields.title')"
+                 class="form-control" name="title" required="required" type="text"
+                 @focusin="resetValidationOnField('title')" @focusout="validateTitleField">
+          <invalid-feedback :error="errors.title" />
+        </div>
       </div>
-      <div class="mb-3 col-md-6">
-        <label class="form-label input-required-lbl" for="steps">{{ $t('fields.steps') }}</label>
-        <input v-model="steps" :class="hiddenClass.steps" :placeholder="$t('fields.password')"
-               class="form-control" name="steps" required="required" type="text"
-               @focusin="resetValidationOnField('steps')" @focusout="validateStepsField">
-        <invalid-feedback :error="errors.steps" />
+      <div class="row">
+        <div class="mb-3 col-md-6">
+          <div class="form-floating">
+          <textarea v-model="description" :class="hiddenClass.description"
+                    :placeholder="$t('fields.description')" class="form-control" name="description"
+                    required="required" @focusin="resetValidationOnField('description')"
+                    @focusout="validateDescriptionField"></textarea>
+            <label for="description">{{ $t('fields.description') }}</label>
+          </div>
+          <invalid-feedback :error="errors.description" />
+        </div>
+        <div class="mb-3 col-md-6">
+          <div class="form-floating">
+          <textarea v-model="steps" :class="hiddenClass.steps"
+                    :placeholder="$t('fields.steps')" class="form-control" name="steps"
+                    required="required" @focusin="resetValidationOnField('steps')"
+                    @focusout="validateStepsField"></textarea>
+            <label for="steps">{{ $t('fields.steps') }}</label>
+          </div>
+          <invalid-feedback :error="errors.steps" />
+        </div>
       </div>
-    </div>
-    <div class="row">
-      <div class="mb-3 col-sm-6">
-        <label class="form-label input-required-lbl" for="latitude">
-          {{ $t('fields.latitude') }}
-        </label>
-        <input v-model="latitude" :class="hiddenClass.latitude" :placeholder="$t('fields.latitude')"
-               class="form-control" name="latitude" required="required" type="number"
-               @focusin="resetValidationOnField('latitude')" @focusout="validateLatitudeField">
-        <invalid-feedback :error="errors.latitude" />
+      <div class="row">
+        <div class="mb-3 col-sm-6">
+          <label class="form-label input-required-lbl" for="latitude">
+            {{ $t('fields.latitude') }}
+          </label>
+          <input v-model="latitude" :class="hiddenClass.latitude" :placeholder="$t('fields.latitude')"
+                 class="form-control" name="latitude" required="required" type="number"
+                 @focusin="resetValidationOnField('latitude')" @focusout="validateLatitudeField">
+          <invalid-feedback :error="errors.latitude" />
+        </div>
+        <div class="mb-3 col-sm-6">
+          <label class="form-label input-required-lbl" for="longitude">
+            {{ $t('fields.longitude') }}
+          </label>
+          <input v-model="longitude" :class="hiddenClass.longitude" :placeholder="$t('fields.longitude')"
+                 class="form-control" name="longitude" required="required" type="number"
+                 @focusin="resetValidationOnField('longitude')" @focusout="validateLongitudeField">
+          <invalid-feedback :error="errors.longitude" />
+        </div>
       </div>
-      <div class="mb-3 col-sm-6">
-        <label class="form-label input-required-lbl" for="longitude">
-          {{ $t('fields.longitude') }}
-        </label>
-        <input v-model="longitude" :class="hiddenClass.longitude" :placeholder="$t('fields.longitude')"
-               class="form-control" name="longitude" required="required" type="number"
-               @focusin="resetValidationOnField('longitude')" @focusout="validateLongitudeField">
-        <invalid-feedback :error="errors.longitude" />
+      <div class="d-flex justify-content-end">
+        <button :disabled="formInValidation||formInSubmission" class="btn btn-lg fs-6 btn-submit" type="submit">
+          <i v-show="formInValidation||formInSubmission" class="bi bi-hourglass-split"></i>
+          {{ $t(getFormButtonSubmitCode) }}
+        </button>
       </div>
-    </div>
-    <div class="d-flex justify-content-end">
-      <button :disabled="formInValidation||formInSubmission" class="btn btn-lg fs-6 btn-submit" type="submit">
-        <i v-show="formInValidation||formInSubmission" class="bi bi-hourglass-split"></i>
-        {{ $t(getFormButtonSubmitCode) }}
-      </button>
-    </div>
-  </form>
+    </form>
+  </div>
 </template>
 
 <script>
-
-import { getFormData, validateEmptyOrWhiteSpace, validateForm, validateRange } from '@/includes/validation';
+import {
+  getFormData,
+  getHeaderAuthorization,
+  validateAuthFromResponse,
+  validateEmptyOrWhiteSpace,
+  validateForm,
+  validateRange
+} from '@/includes/validation';
 import { status, validationHiddenClass } from '@/includes/enums';
 import errors from '@/includes/errors.json';
 import InvalidFeedback from '@/components/InvalidFeedback.vue';
 import AspAlert from '@/components/Alert.vue';
+import { mapState } from 'pinia';
+import useUserStore from '@/stores/user';
+import useAlertStore from '@/stores/alert';
 
 export default {
   name: 'Place-Form',
   components: { InvalidFeedback, AspAlert },
+  props: ['placeTitle'],
   data() {
-    return {
-      isUpdate: ''
-    };
+    let data = getFormData(['title', 'description', 'steps', 'latitude', 'longitude']);
+    data.isUpdate = this.placeTitle !== undefined;
+    data.placeTitleValid = false;
+    return data;
   },
   computed: {
+    ...mapState(useUserStore, ['userLoggedIn']),
     getFormButtonSubmitCode() {
-      return this.isUpdate ? 'buttons.create' : 'buttons.save_changes';
+      return this.isUpdate ? 'buttons.save_changes' : 'buttons.create';
+    },
+    getFormTitle() {
+      let title = this.$t(this.isUpdate ? 'update.place' : 'create.place');
+      return this.isUpdate ? `${ title } - ${ this.placeTitle }` : title;
     }
   },
   methods: {
     redirectTo404(error = null) {
       // TODO use useAlertStore to create error message if necessary
+      useAlertStore().setMessage('globalMessage', error);
       this.$router.push({ name: 'NotFound' });
     },
     resetValidationOnField(field) {
@@ -143,7 +170,7 @@ export default {
       if (!validateEmptyOrWhiteSpace(value)) {
         this.errors.latitude = errors.place.latitude.empty_or_white_spaces;
       } else if (!validateRange(value, -90, 90, false)) {
-        this.errors.latitude = errors.place.latitude.length;
+        this.errors.latitude = errors.place.latitude.range;
       }
 
       this.setValidationOnField('latitude', indicateIsValid);
@@ -156,7 +183,7 @@ export default {
       if (!validateEmptyOrWhiteSpace(value)) {
         this.errors.longitude = errors.place.longitude.empty_or_white_spaces;
       } else if (!validateRange(value, -180, 180, false)) {
-        this.errors.longitude = errors.place.longitude.length;
+        this.errors.longitude = errors.place.longitude.range;
       }
 
       this.setValidationOnField('longitude', indicateIsValid);
@@ -180,30 +207,19 @@ export default {
 
         // Manage creation here
         try {
-          let result = await this.create(
-              {
-                email: this.email,
-                password: this.password
-              });
+          let result = this.isUpdate ? await this.update() : await this.create();
 
           if (result.status === status.error) {
             event.stopPropagation();
 
-            let globalErrorCode = this.isUpdate ? 'update_place' : 'create_place';
-            if (globalErrorCode in result.codes) {
-              this.requestStatus = result.status;
-              this.requestMessage = result.codes[globalErrorCode];
-            } else {
-              for (const [key, value] of Object.entries(result.codes)) {
-                this.errors[key] = value;
-                this.hiddenClass[key] = validationHiddenClass.isInvalid;
-              }
-            }
+            this.mapInvalidResponse(result);
 
             // Map response to the component validation data
             this.formInSubmission = !this.formInSubmission;
           } else if (result.status === status.success) {
             this.formInSubmission = !this.formInSubmission;
+
+            // TODO : Replace redirection to go to places view
             this.$router.go();
           }
         } catch {
@@ -215,19 +231,52 @@ export default {
         this.formInValidation = formIsValid;
       }
     },
-    async create(){
+    mapInvalidResponse(result, mapForInvalidFields = true) {
+      let globalErrorCode = this.isUpdate ? 'update_place' : 'create_place';
+      if (globalErrorCode in result.codes) {
+        this.requestStatus = result.status;
+        this.requestMessage = result.codes[globalErrorCode];
+      } else if ('refresh' in result.codes) {
+        this.$router.go();
+      } else if ('not_found' in result.codes) {
+        this.redirectTo404(result.codes);
+      } else if (mapForInvalidFields) {
+        // Map errors returned by the request
+        for (const [key, value] of Object.entries(result.codes)) {
+          this.errors[key] = value;
+          this.hiddenClass[key] = validationHiddenClass.isInvalid;
+        }
+      }
+    },
+    async create() {
+      let payload = {
+        'title': this.title,
+        'description': this.description,
+        'steps': this.steps,
+        'latitude': this.latitude,
+        'longitude': this.longitude
+      };
+
       let response;
       try {
-        response = await fetch('http://localhost:8080/user/registr', {
+        response = await fetch('http://localhost:8080/place', {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'Authorization': getHeaderAuthorization()
           },
           body: JSON.stringify(payload)
         });
-      } catch (e) {
+      } catch {
         return {
           codes: { 'create_place': errors.routes.create.place },
+          status: status.error
+        };
+      }
+
+      if (!await validateAuthFromResponse(response.status, this.userLoggedIn)) {
+        return {
+          codes: { refresh: true },
           status: status.error
         };
       }
@@ -237,32 +286,125 @@ export default {
       if (data.status === status.error) {
         return data;
       }
-    },
-    async update(){
-      
-    },
-    async getData(){
-      
-    },
-    async validateAuthForResponse(){
-      
-    },
-    
-  },
-  created() {
-    console.log('this.$route.params', this.$route.params);
 
-    if (Object.entries(this.$route.params).length > 0) {
-      this.isUpdate = this.$route.params.title;
+      useAlertStore().setMessage('globalMessage', {
+        code: data.code,
+        status: data.status
+      });
+
+      return { status: status.success };
+    },
+    async update() {
+      let payload = {
+        'title': this.title,
+        'description': this.description,
+        'steps': this.steps,
+        'latitude': this.latitude,
+        'longitude': this.longitude
+      };
+
+      let response;
+      try {
+        response = await fetch(`http://localhost:8080/place/${ this.placeTitle }`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': getHeaderAuthorization()
+          },
+          body: JSON.stringify(payload)
+        });
+      } catch {
+        return {
+          codes: { 'update_place': errors.routes.update.place },
+          status: status.error
+        };
+      }
+
+      if (!await validateAuthFromResponse(response.status, this.userLoggedIn)) {
+        return {
+          codes: { refresh: true },
+          status: status.error
+        };
+      }
+
+      let data = await response.json();
+
+      if (data.status === status.error) {
+        return data;
+      }
+
+      useAlertStore().setMessage('globalMessage', {
+        code: data.code,
+        status: data.status
+      });
+
+      return { status: status.success };
+    },
+    async getData() {
+      let response;
+      try {
+        response = await fetch(`http://localhost:8080/place/${ this.placeTitle }`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': getHeaderAuthorization()
+          }
+        });
+      } catch {
+        return {
+          codes: { 'update_place': errors.routes.get.update.place },
+          status: status.error
+        };
+      }
+
+      if (!await validateAuthFromResponse(response.status, this.userLoggedIn)) {
+        return {
+          codes: { refresh: true },
+          status: status.error
+        };
+      }
+
+      let data = await response.json();
+
+      if (response.status === 404) {
+        return {
+          codes: { not_found: errors.place.not_found },
+          status: status.error
+        };
+      }
+
+      return data;
     }
-    // TODO : Validate request is ok
-    console.log(getFormData(['title', 'description', 'steps', 'latitude', 'longitude']));
-    // TODO : Initialize form data
-    // this.a = 'a';
+  },
+  async mounted() {
+    if (!useAlertStore().hasAuthInvalidMessage) {
+      if (this.isUpdate) {
+        let updateData = await this.getData();
+        if (updateData.status === status.error) {
+          this.mapInvalidResponse(updateData, false);
+        }
+
+        for (const [key, value] of Object.entries(updateData.result)) {
+          this[key] = value;
+        }
+      }
+      this.placeTitleValid = true;
+    }
   }
 };
 </script>
 
 <style scoped>
+h2 {
+  margin-top: 4rem;
+}
 
+form {
+  margin: 0 5rem 5rem;
+}
+
+textarea {
+  height: 10rem !important;
+  max-height: 20rem;
+}
 </style>

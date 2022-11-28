@@ -53,7 +53,6 @@ import useUserStore from '@/stores/user';
 export default {
   name: 'Asp-Header',
   props: ['authIsValid'],
-  emits: ['authResetModal'],
   computed: {
     ...mapState(useUserStore, ['userLoggedIn']),
     ...mapWritableState(useUserStore, ['modalIsOpened'])
@@ -75,7 +74,7 @@ export default {
       }
     }
   },
-  mounted() {
+  updated() {
     if (!this.authIsValid) {
       this.$refs.authLink.click();
     }

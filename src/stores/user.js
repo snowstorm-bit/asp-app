@@ -19,7 +19,7 @@ export default defineStore('user', {
                     },
                     body: JSON.stringify(payload)
                 });
-            } catch (e) {
+            } catch {
                 return {
                     codes: { 'register': errors.routes.register },
                     status: status.error
@@ -35,7 +35,7 @@ export default defineStore('user', {
             localStorage.setItem('token', data.token);
             localStorage.setItem('user', JSON.stringify(data.result));
 
-            useAlertStore().setMessage({
+            useAlertStore().setMessage('globalMessage', {
                 code: data.code,
                 status: data.status
             });
@@ -43,7 +43,6 @@ export default defineStore('user', {
             return { status: status.success };
         },
         async authenticate(payload) {
-            console.log(payload);
             let response;
             try {
                 response = await fetch('http://localhost:8080/user/login', {
@@ -53,7 +52,7 @@ export default defineStore('user', {
                     },
                     body: JSON.stringify(payload)
                 });
-            } catch (e) {
+            } catch {
                 return {
                     codes: { 'login': errors.routes.login },
                     status: status.error
@@ -69,7 +68,7 @@ export default defineStore('user', {
             localStorage.setItem('token', data.token);
             localStorage.setItem('user', JSON.stringify(data.result));
 
-            useAlertStore().setMessage({
+            useAlertStore().setMessage('globalMessage', {
                 code: data.code,
                 status: data.status
             });
@@ -81,7 +80,7 @@ export default defineStore('user', {
             localStorage.removeItem('token');
             localStorage.removeItem('user');
 
-            useAlertStore().setMessage({
+            useAlertStore().setMessage('globalMessage', {
                 code: 'successes.routes.sign_out',
                 status: status.success
             });

@@ -20,25 +20,25 @@ const routes = [
         meta: { requiresAuth: true }
     },
     {
-        path: '/places/update/:title',
+        path: '/place/update/:placeTitle',
         name: 'PlaceUpdate',
         props: true,
         component: PlaceForm,
         meta: { requiresAuth: true }
     },
-    // {
-    //     path: '/climbs/create',
-    //     name: 'climbCreate',
-    //     component: HomeView,
-    //     meta: { requiresAuth: true }
-    // },
-    // {
-    //     path: '/climbs/update/:title',
-    //     name: 'climbsCreate',
-    //     props: true,
-    //     component: HomeView,
-    //     meta: { requiresAuth: true }
-    // },
+    {
+        path: '/climbs/create',
+        name: 'ClimbCreate',
+        component: HomeView,
+        meta: { requiresAuth: true }
+    },
+    {
+        path: '/climbs/update/:climbTitle',
+        name: 'ClimbsCreate',
+        props: true,
+        component: HomeView,
+        meta: { requiresAuth: true }
+    },
     {
         path: '/:notFound(.*)*',
         name: 'NotFound',

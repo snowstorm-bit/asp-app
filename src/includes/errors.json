@@ -44,7 +44,7 @@
 		},
 		"latitude": {
 			"is_null": "errors.fields.place.latitude.is_null",
-			"empty_or_white_spaces": "errors.fields.user.password.empty_or_white_spaces",
+			"empty_or_white_spaces": "errors.fields.place.latitude.empty_or_white_spaces",
 			"range": "errors.fields.place.latitude.range"
 		},
 		"longitude": {

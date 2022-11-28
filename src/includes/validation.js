@@ -47,24 +47,23 @@ function toString(value) {
     if (typeof value !== 'string')
         value = String(value);
 
-    value.trim();
+    return value.trim();
 }
 
 function validateEmptyOrWhiteSpace(value) {
-    toString(value);
+    value = toString(value);
     return value.length >= 1;
 }
 
 function validateMaxLength(value, max) {
-    toString(value);
+    value = toString(value);
     return value.length <= max;
 }
 
 function validateRange(value, min, max, validateLength = true) {
     let valueToEvaluate = value;
     if (validateLength) {
-        toString(value);
-        valueToEvaluate = value.length;
+        valueToEvaluate = toString(value).length;
     }
     return valueToEvaluate >= min && valueToEvaluate <= max;
 }
@@ -123,33 +122,29 @@ function validateAuth(requiresAuth, userLoggedIn) {
     return !authRequired || authRequired && userLoggedIn;
 }
 
-/**
- * Valide la réponse d'une requête pour une route requiérant une authentification
- * @param responseStatus
- * @param userLoggedIn
- * @returns {boolean}
- */
-function validateAuthFromResponse(responseStatus, userLoggedIn) {
-    let errorCode;
 
-    // TODO
-    if (responseStatus === 401) {
+function getHeaderAuthorization() {
+    return 'Bearer ' + localStorage.getItem('token');
+}
+
+async function validateAuthFromResponse(responseStatusCode, userLoggedIn) {
+    let errorCode = '';
+
+    if (responseStatusCode === 401) {
         errorCode = userLoggedIn
             ? errors.auth.session_expired
             : errors.auth.login_required;
-    } else if (responseStatus === 403) {
-        errorCode = errors.auth.unauthorized;
-    } else if (responseStatus === 404) {
-        // errorCode = errors.routes.
     }
-    /// First thing to validate !! Go back after
-    else if (responseStatus === 500) {
-        // localStorage.setItem('globalMessage', JSON.stringify({ code: errors.routes[][], status: status.error }));
+    if (responseStatusCode === 403) {
+        errorCode = errors.auth.unauthorized;
     }
 
-    if (errorCode > 0) {
-        this.userLoggedIn = false;
-        this.user = {};
+    if (errorCode.length > 0) {
+        if (localStorage.hasOwnProperty('user')) {
+            localStorage.removeItem('user');
+        } else if (localStorage.hasOwnProperty('token')) {
+            localStorage.removeItem('user');
+        }
         localStorage.setItem('authInvalid', JSON.stringify({ code: errorCode, status: status.error }));
         return false;
     }
@@ -173,5 +168,7 @@ export {
     validatePassword,
     validateForm,
     getFormData,
-    validateAuth
+    validateAuth,
+    getHeaderAuthorization,
+    validateAuthFromResponse
 };

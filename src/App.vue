@@ -2,7 +2,7 @@
   <asp-auth :authIsValid="authIsValid" />
   <asp-header :authIsValid="authIsValid" />
   <main>
-    <asp-alert v-if="hasMessage" :code="code" :status="status" />
+    <asp-alert v-if="hasGlobalMessage" :code="code" :status="status" />
     <router-view v-if="authIsValid"></router-view>
   </main>
 </template>
@@ -32,13 +32,13 @@ export default {
   },
   computed: {
     ...mapState(useUserStore, ['userLoggedIn']),
-    ...mapState(useAlertStore, ['hasMessage'])
+    ...mapState(useAlertStore, ['hasGlobalMessage'])
   },
   watch: {
     '$route'() {
-      this.authIsValid = validateAuth(this.$router.meta?.requiresAuth, this.userLoggedIn);
-      if (this.hasMessage) {
-        let globalMessage = useAlertStore().getMessage();
+      this.authIsValid = validateAuth(this.$route.meta.requiresAuth, this.userLoggedIn);
+      if (this.hasGlobalMessage) {
+        let globalMessage = useAlertStore().getGlobalMessage();
         this.code = globalMessage.code;
         this.status = globalMessage.status;
       }
