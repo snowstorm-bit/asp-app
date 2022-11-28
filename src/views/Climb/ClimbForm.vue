@@ -33,14 +33,11 @@
           <invalid-feedback :error="errors.description" />
         </div>
         <div class="mb-3 col-md-6">
-          <label class="form-label input-required-lbl" for="difficultyLevel">
-            {{ $t('fields.difficulty_level') }}
-          </label>
-          <div aria-label="Basic example" class="btn-group d-flex" role="group">
-            <button class="btn btn-primary" type="button" @click="decrement">-</button>
-            <div class="btn btn-light">{{ difficultyLevel }}</div>
-            <button class="btn btn-primary" type="button" @click="increment">+</button>
-          </div>
+          <label class="form-label input-required-lbl" for="difficultyLevel">{{ $t('fields.difficulty_level') }}</label>
+          <input v-model="difficultyLevel" :class="hiddenClass.difficultyLevel"
+                 :placeholder="$t('fields.difficulty_level')"
+                 class="form-control" name="difficultyLevel" required="required" type="text"
+                 @focusin="resetValidationOnField('difficultyLevel')" @focusout="validateDifficultyLevelField">
           <invalid-feedback :error="errors.difficultyLevel" />
         </div>
       </div>
@@ -176,47 +173,19 @@ export default {
 
       this.setValidationOnField('description', indicateIsValid);
     },
-    decrement() {
-      if (this.difficultyLevel === 5.1) {
-        this.difficultyLevel = 5.9;
-      } else {
-        if (!this.validateDifficultyLevelField(this.difficultyLevel - 0.1)) {
-          this.decrementHiddenAttibute = 'disabled';
-        } else {
-          this.decrementHiddenAttibute = '';
-        }
-        this.difficultyLevel--;
-      }
-    },
-    increment() {
-      if (this.difficultyLevel === 5.9) {
-        this.difficultyLevel = 5.1;
-      }else {
-        if (!this.validateDifficultyLevelField(this.difficultyLevel + 0.2)) {
-          this.incrementHiddenAttibute = 'disabled';
-        } else {
-          this.incrementHiddenAttibute = '';
-        }
-        this.difficultyLevel--;
-      }
-    },
-    validateDifficultyLevelField(valToTest = null) {
+    validateDifficultyLevelField() {
       let indicateIsValid = typeof this.errors.difficultyLevel !== 'number';
       this.errors.difficultyLevel = '';
-      let value = valToTest === null ? this.difficultyLevel : valToTest;
+      let value = this.difficultyLevel;
 
       if (!validateEmptyOrWhiteSpace(value)) {
         this.errors.difficultyLevel = errors.climb.difficulty_level.empty_or_white_spaces;
       }
 
-      let [integer, decimal] = String(value).split('.');
+      let [integer, decimal] = value.split('.');
       integer = Number(integer);
       decimal = Number(decimal);
       let expression = integer < 5 || integer > 5 || decimal < 6 || decimal > 15;
-
-      if (valToTest !== null) {
-        return expression;
-      }
 
       if (expression) {
         this.difficultyLevel = 5.9;
@@ -301,7 +270,7 @@ export default {
         'title': this.title,
         'description': this.description,
         'style': this.style,
-        'difficultyLevel': this.difficultyLevel,
+        'difficultyLevel': Number(this.difficultyLevel),
         'placeTitle': this.placeTitle
       };
 
@@ -347,7 +316,7 @@ export default {
         'title': this.title,
         'description': this.description,
         'style': this.style,
-        'difficultyLevel': this.difficultyLevel,
+        'difficultyLevel': Number(this.difficultyLevel),
         'placeTitle': this.placeTitle
       };
 
