@@ -1,26 +1,47 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import HomeView from '@/views/HomeView.vue';
-import NotFound from '@/views/Errors/Error.vue';
+import NotFound from '@/views/NotFound.vue';
+import PlaceForm from '@/views/Place/PlaceForm.vue';
 
 const routes = [
     {
         path: '/',
-        name: 'home',
+        name: 'Home',
         component: HomeView
     },
     {
         path: '/home',
-        redirect: { name: 'home' }
+        redirect: { name: 'Home' }
     },
+    {
+        path: '/place/create',
+        name: 'PlaceCreate',
+        component: PlaceForm,
+        meta: { requiresAuth: true }
+    },
+    {
+        path: '/places/update/:title',
+        name: 'PlaceUpdate',
+        props: true,
+        component: PlaceForm,
+        meta: { requiresAuth: true }
+    },
+    // {
+    //     path: '/climbs/create',
+    //     name: 'climbCreate',
+    //     component: HomeView,
+    //     meta: { requiresAuth: true }
+    // },
+    // {
+    //     path: '/climbs/update/:title',
+    //     name: 'climbsCreate',
+    //     props: true,
+    //     component: HomeView,
+    //     meta: { requiresAuth: true }
+    // },
     {
         path: '/:notFound(.*)*',
-        name: 'notFound',
-        component: NotFound
-    },
-    {
-        path: '/:catchAll(.*)*/:statusCode?/:code?',
-        props: true,
-        name: 'catchAll',
+        name: 'NotFound',
         component: NotFound
     }
 ];

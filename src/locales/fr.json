@@ -11,6 +11,14 @@
 		"login_tab": "Connexion",
 		"register_tab": "Créer un compte"
 	},
+	"create": {
+		"place": "Créer un lieu",
+		"climb": "Créer une grimpe"
+	},
+	"update": {
+		"place": "Modifier le lieu",
+		"climb": "Modifier la grimpe"
+	},
 	"buttons": {
 		"sign_in": "S'identifier",
 		"register": "S'inscrire",

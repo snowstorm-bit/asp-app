@@ -8,13 +8,13 @@
           <span class="navbar-toggler-icon"></span>
         </button>
         <div>
-          <router-link id="logo-link" :to="{ name: 'home' }" class="navbar-brand">
+          <router-link id="logo-link" :to="{ name: 'Home' }" class="navbar-brand">
             <img id="logo" alt="Logo" src="/logo.png" />
           </router-link>
         </div>
         <div id="asp-navbar-toggler" class="collapse navbar-collapse">
           <div class="navbar-nav me-auto mb-lg-0">
-            <router-link :to="{ name: 'home' }" aria-current="page" class="nav-item nav-link-header active">
+            <router-link :to="{ name: 'Home' }" aria-current="page" class="nav-item nav-link-header active">
               {{ $t('header.nav_items.home') }}
             </router-link>
           </div>

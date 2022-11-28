@@ -60,9 +60,13 @@ function validateMaxLength(value, max) {
     return value.length <= max;
 }
 
-function validateRange(value, min, max) {
-    toString(value);
-    return value.length >= min && value.length <= max;
+function validateRange(value, min, max, validateLength = true) {
+    let valueToEvaluate = value;
+    if (validateLength) {
+        toString(value);
+        valueToEvaluate = value.length;
+    }
+    return valueToEvaluate >= min && valueToEvaluate <= max;
 }
 
 function validateEmail(value) {
@@ -135,6 +139,8 @@ function validateAuthFromResponse(responseStatus, userLoggedIn) {
             : errors.auth.login_required;
     } else if (responseStatus === 403) {
         errorCode = errors.auth.unauthorized;
+    } else if (responseStatus === 404) {
+        // errorCode = errors.routes.
     }
     /// First thing to validate !! Go back after
     else if (responseStatus === 500) {

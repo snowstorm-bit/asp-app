@@ -5,17 +5,13 @@
   <div id="error-message" class="d-block justify-content-center">
     <h1 class="text-center">404</h1>
     <hr />
-    <h1 class="text-center">{{ $t(a) }}</h1>
+    <h1 class="text-center">{{ $t('errors.404') }}</h1>
   </div>
 </template>
 
 <script>
 export default {
-  name: 'Asp-Error',
-  props: ['statusCode', 'code'],
-  data() {
-    return { a: this.statusCode || 'errors.404' };
-  }
+  name: 'Asp-Error'
 };
 
 </script>

@@ -15,7 +15,7 @@ export default {
   name: 'Home-View',
   methods: {
     event() {
-      this.$router.push({ name: 'notFound', props: route => ({ statusCode: 405, code: 'ddfdfa' }) });
+      this.$router.push({ name: 'NotFound' });
     }
   }
 };

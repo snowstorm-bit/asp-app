@@ -1,6 +1,7 @@
 <template>
   <asp-alert v-if="requestStatus.length > 0" :code="requestMessage" :status="requestStatus" />
   <form class="px-4 py-3" @submit.prevent="validateForm">
+    <!-- Username -->
     <div class="mb-3">
       <label class="form-label input-required-lbl" for="username">{{ $t('fields.username') }}</label>
       <input v-model="username" :class="hiddenClass.username" :placeholder="$t('fields.username')"
@@ -8,6 +9,7 @@
              @focusin="resetValidationOnField('username')" @focusout="validateUsernameField">
       <invalid-feedback :error="errors.username" />
     </div>
+    <!-- Email -->
     <div class="mb-3">
       <label class="form-label input-required-lbl" for="email">{{ $t('fields.email') }}</label>
       <input v-model="email" :class="hiddenClass.email" :placeholder="$t('fields.email')" class="form-control"
@@ -15,6 +17,7 @@
              @focusout="validateEmailField">
       <invalid-feedback :error="errors.email" />
     </div>
+    <!-- Password -->
     <div class="mb-3">
       <label class="form-label input-required-lbl" for="password">{{ $t('fields.password') }}</label>
       <input v-model="password" :class="hiddenClass.password" :placeholder="$t('fields.password')"
@@ -22,6 +25,7 @@
              @focusin="resetValidationOnField('password')" @focusout="validatePasswordField">
       <invalid-feedback :error="errors.password" />
     </div>
+    <!-- Confirm password -->
     <div class="mb-3">
       <label class="form-label input-required-lbl" for="confirm_password">{{ $t('fields.confirm_password') }}</label>
       <input v-model="confirmPassword" :class="hiddenClass.confirmPassword"
