@@ -15,7 +15,9 @@
           <label class="form-label input-required-lbl" for="placeTitle">{{ $t('fields.place_title') }}</label>
           <select v-model="placeTitle" :class="hiddenClass.placeTitle" class="form-select" required="required"
                   @focusin="resetValidationOnField('placeTitle')" @focusout="validatePlaceTitleField">
-            <option v-for="onePlaceTitle in placeTitles" :key="onePlaceTitle.title" value="{{ onePlaceTitle.title }}">
+            <option :selected="placeTitle.length > 0" value="">{{ $t('fields.place_title') }}</option>
+            <option v-for="onePlaceTitle in placeTitles" :key="onePlaceTitle.title"
+                    :selected="placeTitle === onePlaceTitle.title" :value="onePlaceTitle.title">
               {{ onePlaceTitle.title }}
             </option>
           </select>
@@ -46,7 +48,8 @@
           <label class="form-label input-required-lbl" for="title">{{ $t('fields.style') }}</label>
           <select v-model="style" :class="hiddenClass.style" class="form-select" required="required"
                   @focusin="resetValidationOnField('style')" @focusout="validateStyleField">
-            <option v-for="oneStyle in styles" :key="oneStyle" value="{{ oneStyle }}">
+            <option :selected="style.length > 0" value="">{{ $t('fields.style') }}</option>
+            <option v-for="oneStyle in styles" :key="oneStyle" :selected="style === oneStyle" :value="oneStyle">
               {{ $t(`climb_style.${ oneStyle }`) }}
             </option>
           </select>
@@ -100,6 +103,7 @@ export default {
     data.difficultyLevel = 5.9;
     data.decrementHiddenAttibute = '';
     data.incrementHiddenAttibute = '';
+    data.style;
     return data;
   },
   computed: {
@@ -114,8 +118,13 @@ export default {
   },
   methods: {
     redirectTo404(error = null) {
-      // TODO use useAlertStore to create error message if necessary
-      useAlertStore().setMessage('globalMessage', error);
+      // useAlertStore to create error message if necessary
+      if (error !== null) {
+        useAlertStore().setMessage('globalMessage', {
+          code: error,
+          status: status.error
+        });
+      }
       this.$router.push({ name: 'NotFound' });
     },
     resetValidationOnField(field) {
@@ -137,7 +146,7 @@ export default {
     validateTitleField() {
       let indicateIsValid = typeof this.errors.title !== 'string';
       this.errors.title = '';
-      let value = this.title;
+      let value = `${ this.title }`;
 
       if (!validateEmptyOrWhiteSpace(value)) {
         this.errors.title = errors.climb.title.empty_or_white_spaces;
@@ -150,7 +159,7 @@ export default {
     validatePlaceTitleField() {
       let indicateIsValid = typeof this.errors.placeTitle !== 'string';
       this.errors.placeTitle = '';
-      let value = this.placeTitle;
+      let value = `${ this.placeTitle }`;
 
       if (!validateEmptyOrWhiteSpace(value)) {
         this.errors.placeTitle = errors.climb.place_title.empty_or_white_spaces;
@@ -256,7 +265,7 @@ export default {
       } else if ('refresh' in result.codes) {
         this.$router.go();
       } else if ('not_found' in result.codes) {
-        this.redirectTo404(result.codes);
+        this.redirectTo404(result.codes.not_found);
       } else if (mapInvalidFields) {
         // Map errors returned by the request
         for (const [key, value] of Object.entries(result.codes)) {
@@ -433,9 +442,11 @@ export default {
       let data = this.isUpdate ? await this.getUpdateData() : await this.getCreateData();
       if (data.status === status.error) {
         this.mapInvalidResponse(data, false);
+        return;
       }
 
-      for (const [key, value] of Object.entries(data.result)) {
+      let resultObjectEntries = Object.entries(data.result);
+      for (const [key, value] of resultObjectEntries) {
         this[key] = value;
       }
 

@@ -18,6 +18,11 @@ export default defineStore('alert', {
         },
         setMessage(key, data) {
             localStorage.setItem(key, JSON.stringify(data));
+            if (key === 'globalMessage') {
+                this.hasGlobalMessage = localStorage.hasOwnProperty('globalMessage');
+            } else if (key === 'authInvalid') {
+                this.hasAuthInvalidMessage = localStorage.hasOwnProperty('authInvalid');
+            }
         }
     }
 });

@@ -103,8 +103,13 @@ export default {
   },
   methods: {
     redirectTo404(error = null) {
-      // TODO use useAlertStore to create error message if necessary
-      useAlertStore().setMessage('globalMessage', error);
+      // useAlertStore to create error message if necessary
+      if (error !== null) {
+        useAlertStore().setMessage('globalMessage', {
+          code: error,
+          status: status.error
+        });
+      }
       this.$router.push({ name: 'NotFound' });
     },
     resetValidationOnField(field) {
@@ -239,7 +244,7 @@ export default {
       } else if ('refresh' in result.codes) {
         this.$router.go();
       } else if ('not_found' in result.codes) {
-        this.redirectTo404(result.codes);
+        this.redirectTo404(result.codes.not_found);
       } else if (mapForInvalidFields) {
         // Map errors returned by the request
         for (const [key, value] of Object.entries(result.codes)) {
@@ -382,6 +387,7 @@ export default {
         let updateData = await this.getData();
         if (updateData.status === status.error) {
           this.mapInvalidResponse(updateData, false);
+          return;
         }
 
         for (const [key, value] of Object.entries(updateData.result)) {

@@ -1,9 +1,6 @@
 <template>
-  <div id="auth-modal" :data-bs-backdrop="authIsValid ? 'false' : 'static'" :data-bs-keyboard="authIsValid"
-       aria-hidden="true"
-       aria-labelledby="Modal d'authentification"
-       class="modal fade"
-       tabindex="-1">
+  <div id="auth-modal" ref="authModal" aria-hidden="true" aria-labelledby="Modal d'authentification"
+       class="modal fade" tabindex="-1">
     <div class="modal-lg modal-dialog modal-dialog-centered">
       <div class="modal-content p-2">
         <!-- header -->
@@ -36,7 +33,7 @@
             </button>
           </div>
 
-          <asp-alert v-if="message.length > 0" :code="message" :status="status" />
+          <asp-alert v-if="code.length > 0" :code="code" :status="status" />
 
           <!-- Form -->
           <auth-login v-if="tab === 'login'" ref="login" />
@@ -48,12 +45,14 @@
 </template>
 
 <script>
-import { mapState, mapWritableState } from 'pinia';
+import { mapActions, mapState, mapWritableState } from 'pinia';
 import AuthLogin from '@/components/Authentification/Login.vue';
 import AuthRegister from '@/components/Authentification/Register.vue';
 import AspAlert from '@/components/Alert.vue';
 import useUserStore from '@/stores/user';
 import useAlertStore from '@/stores/alert';
+import { status } from '@/includes/enums';
+import errors from '@/includes/errors.json';
 
 export default {
   name: 'Asp-Auth',
@@ -66,7 +65,7 @@ export default {
   data() {
     return {
       tab: 'login',
-      message: '',
+      code: '',
       status: ''
     };
   },
@@ -75,12 +74,22 @@ export default {
     ...mapState(useAlertStore, ['hasAuthInvalidMessage']),
     ...mapWritableState(useUserStore, ['modalIsOpened'])
   },
+  methods: {
+    ...mapActions(useAlertStore, ['getAuthInvalid'])
+  },
   watch: {
     '$route'() {
+      console.log('auth watch route');
       if (this.hasAuthInvalidMessage) {
-        let authInvalid = useAlertStore().getAuthInvalid();
+        let authInvalid = this.getAuthInvalid();
         this.code = authInvalid.code;
         this.status = authInvalid.status;
+      }
+      if (!this.authIsValid) {
+        this.$refs.authModal.dataset.bsBackdrop = 'static';
+        this.$refs.authModal.dataset.bdKeyboard = this.authIsValid;
+        this.code = errors.auth.login_required;
+        this.status = status.error;
       }
     },
     'modalIsOpened'() {

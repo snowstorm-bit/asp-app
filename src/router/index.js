@@ -35,7 +35,7 @@ const routes = [
     },
     {
         path: '/climb/update/:climbTitle',
-        name: 'PlaceUpdate',
+        name: 'ClimbUpdate',
         props: true,
         component: ClimbForm,
         meta: { requiresAuth: true }

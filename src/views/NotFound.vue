@@ -11,7 +11,12 @@
 
 <script>
 export default {
-  name: 'Asp-Error'
+  name: 'Asp-Error',
+  watch: {
+    '$route'() {
+      console.log('not found watch route');
+    }
+  }
 };
 
 </script>

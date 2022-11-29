@@ -1,10 +1,10 @@
 <template>
   <div :class="getHiddenClass" class="alert fade show" role="alert">
-    <template v-if="hasGlobalMessage">
+    <template v-if="getHiddenClass === 'div-global-alert'">
       <span class="text-center">{{ $t(code) }}</span>
     </template>
     <template v-else>
-      {{ $t(code) }}
+      <span class="text-center">{{ $t(code) }}</span>
     </template>
 
     <button aria-label="Close" class="btn-close btn-sm btn" data-bs-dismiss="alert" type="button"></button>
@@ -20,12 +20,21 @@ export default {
   name: 'Asp-Alert',
   props: ['status', 'code'],
   computed: {
-    ...mapState(useAlertStore, ['hasGlobalMessage']),
+    ...mapState(useAlertStore, ['hasGlobalMessage', 'hasAuthInvalidMessage']),
     getHiddenClass() {
       let alertColorClass = this.status === 'success'
           ? 'alert-success'
           : 'alert-danger';
-      let alertClass = this.hasGlobalMessage ? 'div-global-alert' : 'div-alert';
+
+      let alertClass;
+
+      if (this.hasAuthInvalidMessage
+          || this.code.includes('errors.routes.register')
+          || this.code.includes('errors.routes.login'))
+        alertClass = 'div-alert';
+      else if (this.hasGlobalMessage)
+        alertClass = 'div-global-alert';
+
       return `${ alertColorClass } ${ alertClass }`;
     }
   }
@@ -36,7 +45,7 @@ export default {
 /*Alerte*/
 
 .div-alert {
-  padding: 0.3rem 0.5rem !important;
+  padding: 0.5rem 0.3rem 0.5rem 0rem !important;
   justify-content: space-between;
   align-items: center;
   display: flex;

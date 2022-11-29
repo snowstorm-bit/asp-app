@@ -2,6 +2,7 @@
 
 import errors from '@/includes/errors.json';
 import { status } from '@/includes/enums';
+import useAlertStore from '@/stores/alert';
 
 /**
  * Return the validation data for a form for the specified fields
@@ -145,19 +146,17 @@ async function validateAuthFromResponse(responseStatusCode, userLoggedIn) {
         } else if (localStorage.hasOwnProperty('token')) {
             localStorage.removeItem('user');
         }
-        localStorage.setItem('authInvalid', JSON.stringify({ code: errorCode, status: status.error }));
+
+        useAlertStore().setMessage('authInvalid', {
+            code: errorCode,
+            status: status.error
+        });
+
         return false;
     }
 
     return true;
 }
-
-let a = () => {
-    let validation = validateAuthFromResponse(401, true);
-    if ('code' in validation) {
-        return false;
-    }
-};
 
 export {
     toString,
