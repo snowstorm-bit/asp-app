@@ -41,12 +41,21 @@ export default {
     '$route'() {
       console.log('app watch route');
       this.authIsValid = validateAuth(this.$route.meta.requiresAuth, this.userLoggedIn);
+      console.log('authIsValid', this.authIsValid);
       if (this.hasGlobalMessage) {
         let globalMessage = this.getGlobalMessage();
         this.code = globalMessage.code;
         this.status = globalMessage.status;
       }
     }
+  },
+  beforeUpdate() {
+    this.code = '';
+    this.status = '';
+  },
+  beforeUnmount() {
+    this.code = '';
+    this.status = '';
   }
 };
 </script>

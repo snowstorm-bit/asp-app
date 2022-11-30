@@ -28,7 +28,7 @@
           <!--            </button>-->
           <!--          </form>-->
           <div v-if="userLoggedIn" id="user-menu" class="btn-group">
-            <button aria-expanded="false" class="btn btn-outline-primary dropdown-toggle"
+            <button :disabled="modalIsOpened" aria-expanded="false" class="btn btn-outline-primary dropdown-toggle"
                     data-bs-toggle="dropdown" type="button">
               <i class="bi bi-person-fill"></i>
             </button>

@@ -135,18 +135,17 @@ async function validateAuthFromResponse(responseStatusCode, userLoggedIn) {
         errorCode = userLoggedIn
             ? errors.auth.session_expired
             : errors.auth.login_required;
+        if (localStorage.hasOwnProperty('user')) {
+            localStorage.removeItem('user');
+        } else if (localStorage.hasOwnProperty('token')) {
+            localStorage.removeItem('token');
+        }
     }
     if (responseStatusCode === 403) {
         errorCode = errors.auth.unauthorized;
     }
 
     if (errorCode.length > 0) {
-        if (localStorage.hasOwnProperty('user')) {
-            localStorage.removeItem('user');
-        } else if (localStorage.hasOwnProperty('token')) {
-            localStorage.removeItem('user');
-        }
-
         useAlertStore().setMessage('authInvalid', {
             code: errorCode,
             status: status.error

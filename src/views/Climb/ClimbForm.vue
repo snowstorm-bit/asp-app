@@ -35,11 +35,16 @@
           <invalid-feedback :error="errors.description" />
         </div>
         <div class="mb-3 col-md-6">
-          <label class="form-label input-required-lbl" for="difficultyLevel">{{ $t('fields.difficulty_level') }}</label>
-          <input v-model="difficultyLevel" :class="hiddenClass.difficultyLevel"
-                 :placeholder="$t('fields.difficulty_level')"
-                 class="form-control" name="difficultyLevel" required="required" type="text"
-                 @focusin="resetValidationOnField('difficultyLevel')" @focusout="validateDifficultyLevelField">
+          <div>
+            <label class="form-label input-required-lbl" for="difficultyLevel">
+              {{ $t('fields.difficulty_level') }}
+            </label>
+          </div>
+          <div aria-label="Basic example" class="btn-group d-flex justify-content-evenly" role="group">
+            <button :class="decrementHiddenClass" class="btn btn-primary" type="button" @click="decrement">-</button>
+            <div class="btn">{{ difficultyLevel }}</div>
+            <button :class="incrementHiddenClass" class="btn btn-primary" type="button" @click="increment">+</button>
+          </div>
           <invalid-feedback :error="errors.difficultyLevel" />
         </div>
       </div>
@@ -100,10 +105,7 @@ export default {
     let data = getFormData(['title', 'description', 'difficultyLevel', 'style', 'placeTitle']);
     data.isUpdate = this.climbTitle !== undefined;
     data.climbTitleValid = false;
-    data.difficultyLevel = 5.9;
-    data.decrementHiddenAttibute = '';
-    data.incrementHiddenAttibute = '';
-    data.style;
+    data.difficultyLevelStep = 0.1;
     return data;
   },
   computed: {
@@ -117,6 +119,73 @@ export default {
     }
   },
   methods: {
+    round(num) {
+      return (Math.round(Number((Math.abs(num) * 100).toPrecision(15))) / 100) * Math.sign(num);
+    },
+    validateDifficultyLevel(value, getHiddenClass = false) {
+      let [integer, decimal] = String(value).split('.');
+      integer = Number(integer);
+      decimal = Number(decimal);
+
+      let minInvalid = decimal < 6;
+      let maxInvalid = decimal > 15;
+
+      console.log('minInvalid', minInvalid);
+      console.log('maxInvalid', maxInvalid);
+      if (getHiddenClass) {
+        console.log('value after', value);
+
+        if (minInvalid) {
+          this.decrementHiddenClass = 'disabled';
+        } else {
+          this.decrementHiddenClass = '';
+        }
+        if (maxInvalid) {
+          this.incrementHiddenClass = 'disabled';
+        } else {
+          this.incrementHiddenClass = '';
+        }
+      } else return integer < 5 || integer > 5 || minInvalid || maxInvalid;
+    },
+    getDifficultyLevel(value, decrement) {
+      console.log('value', value);
+      value = Number(value);
+
+      if (decrement) {
+        if (value === 5.10) {
+          this.difficultyLevelStep = 0.1;
+        }
+        value -= this.difficultyLevelStep;
+      } else {
+        value += this.difficultyLevelStep;
+      }
+
+      value = this.round(value);
+      if (value === 6 || value === 5.1) {
+        this.difficultyLevelStep = 0.01;
+        return '5.10';
+      } else if (value === 5) {
+        this.difficultyLevelStep = 0.1;
+        return 5.9;
+      }
+      return value;
+    },
+    increment() {
+      let difficultyLevel = this.getDifficultyLevel(this.difficultyLevel, false);
+      this.difficultyLevel = difficultyLevel;
+      let difficultyLevelStep = this.difficultyLevelStep;
+      let validateNext = this.getDifficultyLevel(difficultyLevel, false);
+      this.validateDifficultyLevel(validateNext, true);
+      this.difficultyLevelStep = difficultyLevelStep;
+    },
+    decrement() {
+      let difficultyLevel = this.getDifficultyLevel(this.difficultyLevel, true);
+      this.difficultyLevel = difficultyLevel;
+      let difficultyLevelStep = this.difficultyLevelStep;
+      let validateNext = this.getDifficultyLevel(difficultyLevel, true);
+      this.validateDifficultyLevel(validateNext, true);
+      this.difficultyLevelStep = difficultyLevelStep;
+    },
     redirectTo404(error = null) {
       // useAlertStore to create error message if necessary
       if (error !== null) {
@@ -189,15 +258,7 @@ export default {
 
       if (!validateEmptyOrWhiteSpace(value)) {
         this.errors.difficultyLevel = errors.climb.difficulty_level.empty_or_white_spaces;
-      }
-
-      let [integer, decimal] = value.split('.');
-      integer = Number(integer);
-      decimal = Number(decimal);
-      let expression = integer < 5 || integer > 5 || decimal < 6 || decimal > 15;
-
-      if (expression) {
-        this.difficultyLevel = 5.9;
+      } else if (this.validateDifficultyLevel(value)) {
         this.errors.difficultyLevel = errors.climb.difficulty_level.range;
       }
 
@@ -448,6 +509,12 @@ export default {
       let resultObjectEntries = Object.entries(data.result);
       for (const [key, value] of resultObjectEntries) {
         this[key] = value;
+      }
+
+      this.difficultyLevel = Number(this.difficultyLevel);
+      this.validateDifficultyLevel(this.getDifficultyLevel(this.difficultyLevel, true), true);
+      if (this.decrementHiddenClass === '') {
+        this.validateDifficultyLevel(this.getDifficultyLevel(this.difficultyLevel, false), true);
       }
 
       this.climbTitleValid = true;

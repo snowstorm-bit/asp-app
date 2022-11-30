@@ -113,7 +113,6 @@ export default {
     },
     validatePasswordField() {
       let indicateIsValid = 'wasValidated' in this.errors.password;
-      console.log(indicateIsValid);
       this.errors.password = [];
       let value = this.password;
 

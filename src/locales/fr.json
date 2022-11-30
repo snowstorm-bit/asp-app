@@ -65,7 +65,7 @@
 		"auth": {
 			"login_required": "Il faut d'abord vous connecter pour pouvoir accéder à cette page",
 			"session_expired": "Votre session est expirée. S'il vous plaît vous reconnecter",
-			"unauthorized": "Non autorisé | Vous n'avez pas les accès nécessaires pour accéder à cette page"
+			"unauthorized": "Non autorisé {'|'} Vous n'avez pas les accès nécessaires pour accéder à cette page"
 		},
 		"fields": {
 			"user": {

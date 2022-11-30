@@ -6,7 +6,7 @@
         <!-- header -->
         <div class="modal-header">
           <h5 class="modal-title">{{ $t('auth.title') }}</h5>
-          <button v-if="authIsValid" aria-label="Close" class="btn-close" data-bs-dismiss="modal"
+          <button v-if="code.length === 0" aria-label="Close" class="btn-close" data-bs-dismiss="modal"
                   type="button"></button>
         </div>
 
@@ -53,6 +53,7 @@ import useUserStore from '@/stores/user';
 import useAlertStore from '@/stores/alert';
 import { status } from '@/includes/enums';
 import errors from '@/includes/errors.json';
+import $ from 'jquery';
 
 export default {
   name: 'Asp-Auth',
@@ -79,13 +80,15 @@ export default {
   },
   watch: {
     '$route'() {
-      console.log('auth watch route');
       if (this.hasAuthInvalidMessage) {
+        this.$refs.authModal.dataset.bsBackdrop = 'static';
+        this.$refs.authModal.dataset.bdKeyboard = this.authIsValid;
+        (new bootstrap.Modal($('#auth-modal')[0])).toggle();
+        // $('#auth-modal').modal('toggle');
         let authInvalid = this.getAuthInvalid();
         this.code = authInvalid.code;
         this.status = authInvalid.status;
-      }
-      if (!this.authIsValid) {
+      } else if (!this.authIsValid) {
         this.$refs.authModal.dataset.bsBackdrop = 'static';
         this.$refs.authModal.dataset.bdKeyboard = this.authIsValid;
         this.code = errors.auth.login_required;

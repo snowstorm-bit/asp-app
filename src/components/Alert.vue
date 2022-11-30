@@ -29,6 +29,7 @@ export default {
       let alertClass;
 
       if (this.hasAuthInvalidMessage
+          || this.code.includes('errors.auth')
           || this.code.includes('errors.routes.register')
           || this.code.includes('errors.routes.login'))
         alertClass = 'div-alert';
@@ -45,7 +46,7 @@ export default {
 /*Alerte*/
 
 .div-alert {
-  padding: 0.5rem 0.3rem 0.5rem 0rem !important;
+  padding: 0.5rem 0.3rem 0.5rem 0.4rem !important;
   justify-content: space-between;
   align-items: center;
   display: flex;
