@@ -40,6 +40,9 @@
 		"difficulty_level": "Niveau de difficulté",
 		"place_title": "Choisir un lieu"
 	},
+	"rate": {
+		"votes": "votes"
+	},
 	"successes": {
 		"routes": {
 			"register": "Succès de la création du compte utilisateur!",

@@ -62,7 +62,8 @@
         </div>
         <div class="mb-3">
           <label class="form-label">Sélectionner un fichier</label>
-          <input ref="fileInput" accept=".jpg" class="form-control" multiple required="required" type="file">
+          <input ref="fileInput" accept=".jpg" class="form-control" multiple required="required" type="file"
+                 @change="onChangeInputFile">
         </div>
       </div>
       <div class="d-flex justify-content-end">
@@ -91,6 +92,7 @@ import AspAlert from '@/components/Alert.vue';
 import { mapState } from 'pinia';
 import useUserStore from '@/stores/user';
 import useAlertStore from '@/stores/alert';
+import { round } from '@/includes/utils';
 
 export default {
   name: 'Climb-Form',
@@ -115,9 +117,6 @@ export default {
     }
   },
   methods: {
-    round(num) {
-      return (Math.round(Number((Math.abs(num) * 100).toPrecision(15))) / 100) * Math.sign(num);
-    },
     validateDifficultyLevel(value, getHiddenClass = false) {
       let [integer, decimal] = String(value).split('.');
       integer = Number(integer);
@@ -152,7 +151,7 @@ export default {
         value += this.difficultyLevelStep;
       }
 
-      value = this.round(value);
+      value = round(value);
       if (value === 6 || value === 5.1) {
         this.difficultyLevelStep = 0.01;
         return '5.10';
@@ -169,7 +168,7 @@ export default {
       let validateNext = this.getDifficultyLevel(difficultyLevel, false);
       this.validateDifficultyLevel(validateNext, true);
       this.difficultyLevelStep = difficultyLevelStep;
-      this.getBase64(false);
+      this.getBase64s(false);
     },
     decrement() {
       let difficultyLevel = this.getDifficultyLevel(this.difficultyLevel, true);
@@ -178,6 +177,37 @@ export default {
       let validateNext = this.getDifficultyLevel(difficultyLevel, true);
       this.validateDifficultyLevel(validateNext, true);
       this.difficultyLevelStep = difficultyLevelStep;
+    },
+    onChangeInputFile() {
+      console.log(this.$refs.fileInput.files);
+    },
+    getBase64s(image, number) {
+      // let objectURL = URL.createObjectURL(this.$refs.fileInput.files[0]);
+      const reader = new FileReader();
+      reader.readAsDataURL(this.$refs.fileInput.files[0]);
+      reader.onload = () => {
+        this.base64 = reader.result;
+        console.log(reader.result);
+        this.base64s.push({
+          title: this.climbTitle,
+          number: number,
+          base64: this.base64
+        });
+        // await fetch(`http://localhost:8080/upload`, {
+        //   method: 'POST',
+        //   headers: {
+        //     'Content-Type': 'application/json',
+        //     'Authorization': getHeaderAuthorization()
+        //   },
+        //   body: JSON.stringify({
+        //     title: this.climbTitle,
+        //     number: number,
+        //     base64: this.base64
+        //   })
+        // });
+      };
+
+      console.log(a);
     },
     redirectTo404(error = null) {
       // useAlertStore to create error message if necessary
@@ -268,6 +298,23 @@ export default {
 
       this.setValidationOnField('style', indicateIsValid);
     },
+    mapInvalidResponse(result, mapInvalidFields = true) {
+      let globalErrorCode = this.isUpdate ? 'update_climb' : 'create_climb';
+      if (globalErrorCode in result.codes) {
+        this.requestStatus = result.status;
+        this.requestMessage = result.codes[globalErrorCode];
+      } else if ('refresh' in result.codes) {
+        this.$router.go();
+      } else if ('not_found' in result.codes) {
+        this.redirectTo404(result.codes.not_found);
+      } else if (mapInvalidFields) {
+        // Map errors returned by the request
+        for (const [key, value] of Object.entries(result.codes)) {
+          this.errors[key] = value;
+          this.hiddenClass[key] = validationHiddenClass.isInvalid;
+        }
+      }
+    },
     async validateForm(event) {
       // Désactiver le bouton afin d'éviter que l'utilisateur 
       // appuie pleins de fois de suite sur le bouton de soumission
@@ -312,52 +359,6 @@ export default {
         this.formInValidation = formIsValid;
       }
     },
-    mapInvalidResponse(result, mapInvalidFields = true) {
-      let globalErrorCode = this.isUpdate ? 'update_climb' : 'create_climb';
-      if (globalErrorCode in result.codes) {
-        this.requestStatus = result.status;
-        this.requestMessage = result.codes[globalErrorCode];
-      } else if ('refresh' in result.codes) {
-        this.$router.go();
-      } else if ('not_found' in result.codes) {
-        this.redirectTo404(result.codes.not_found);
-      } else if (mapInvalidFields) {
-        // Map errors returned by the request
-        for (const [key, value] of Object.entries(result.codes)) {
-          this.errors[key] = value;
-          this.hiddenClass[key] = validationHiddenClass.isInvalid;
-        }
-      }
-    },
-    getBase64(image, number) {
-      let objectURL = URL.createObjectURL(this.$refs.fileInput.files[0]);
-      let a = [];
-      const reader = new FileReader();
-      reader.readAsDataURL(this.$refs.fileInput.files[0]);
-      reader.onload = () => {
-        this.base64 = reader.result;
-        console.log(reader.result);
-        this.base64s.push({
-          title: this.climbTitle,
-          number: number,
-          base64: this.base64
-        });
-        // await fetch(`http://localhost:8080/upload`, {
-        //   method: 'POST',
-        //   headers: {
-        //     'Content-Type': 'application/json',
-        //     'Authorization': getHeaderAuthorization()
-        //   },
-        //   body: JSON.stringify({
-        //     title: this.climbTitle,
-        //     number: number,
-        //     base64: this.base64
-        //   })
-        // });
-      };
-
-      console.log(a);
-    },
     async create() {
       let payload = {
         'title': this.title,
@@ -369,7 +370,7 @@ export default {
 
       let response;
       try {
-        response = await fetch('http://localhost:8080/climb', {
+        response = await fetch('/api/climb', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -415,7 +416,7 @@ export default {
 
       let response;
       try {
-        response = await fetch(`http://localhost:8080/climb/${ this.climbTitle }`, {
+        response = await fetch(`/api/${ this.climbTitle }`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
@@ -453,7 +454,7 @@ export default {
     async getCreateData() {
       let response;
       try {
-        response = await fetch(`http://localhost:8080/climb`, {
+        response = await fetch(`/api/climb`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -488,7 +489,7 @@ export default {
     async getUpdateData() {
       let response;
       try {
-        response = await fetch(`http://localhost:8080/climb/${ this.climbTitle }`, {
+        response = await fetch(`/api/climb/${ this.climbTitle }`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',

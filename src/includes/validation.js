@@ -3,6 +3,7 @@
 import errors from '@/includes/errors.json';
 import { status } from '@/includes/enums';
 import useAlertStore from '@/stores/alert';
+import { toString } from '@/includes/utils';
 
 /**
  * Return the validation data for a form for the specified fields
@@ -42,13 +43,6 @@ function getFormData(fields) {
     });
 
     return data;
-}
-
-function toString(value) {
-    if (typeof value !== 'string')
-        value = String(value);
-
-    return value.trim();
 }
 
 function validateEmptyOrWhiteSpace(value) {

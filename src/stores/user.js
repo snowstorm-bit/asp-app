@@ -12,7 +12,7 @@ export default defineStore('user', {
         async register(payload) {
             let response;
             try {
-                response = await fetch('http://localhost:8080/user/register', {
+                response = await fetch('/api/user/register', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -45,7 +45,7 @@ export default defineStore('user', {
         async authenticate(payload) {
             let response;
             try {
-                response = await fetch('http://localhost:8080/user/login', {
+                response = await fetch('/api/user/login', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'

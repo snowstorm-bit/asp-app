@@ -264,7 +264,7 @@ export default {
 
       let response;
       try {
-        response = await fetch('http://localhost:8080/place', {
+        response = await fetch('/api/place', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -310,7 +310,7 @@ export default {
 
       let response;
       try {
-        response = await fetch(`http://localhost:8080/place/${ this.placeTitle }`, {
+        response = await fetch(`/api/place/${ this.placeTitle }`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
@@ -348,7 +348,7 @@ export default {
     async getData() {
       let response;
       try {
-        response = await fetch(`http://localhost:8080/place/${ this.placeTitle }`, {
+        response = await fetch(`/api/place/${ this.placeTitle }`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
