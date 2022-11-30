@@ -34,40 +34,35 @@
           </div>
           <invalid-feedback :error="errors.description" />
         </div>
-        <div class="mb-3 col-md-6">
+        <div class="mb-3 row col-md-6">
+          <div class="mb-3">
+            <div>
+              <label class="form-label input-required-lbl" for="difficultyLevel">
+                {{ $t('fields.difficulty_level') }}
+              </label>
+            </div>
+            <div aria-label="Basic example" class="btn-group d-flex justify-content-evenly" role="group">
+              <button :class="decrementHiddenClass" class="btn btn-primary" type="button" @click="decrement">-</button>
+              <div class="btn">{{ difficultyLevel }}</div>
+              <button :class="incrementHiddenClass" class="btn btn-primary" type="button" @click="increment">+</button>
+            </div>
+            <invalid-feedback :error="errors.difficultyLevel" />
+          </div>
           <div>
-            <label class="form-label input-required-lbl" for="difficultyLevel">
-              {{ $t('fields.difficulty_level') }}
-            </label>
+            <label class="form-label input-required-lbl" for="title">{{ $t('fields.style') }}</label>
+            <select v-model="style" :class="hiddenClass.style" class="form-select" required="required"
+                    @focusin="resetValidationOnField('style')" @focusout="validateStyleField">
+              <option :selected="style.length > 0" value="">{{ $t('fields.style') }}</option>
+              <option v-for="oneStyle in styles" :key="oneStyle" :selected="style === oneStyle" :value="oneStyle">
+                {{ $t(`climb_style.${ oneStyle }`) }}
+              </option>
+            </select>
+            <invalid-feedback :error="errors.style" />
           </div>
-          <div aria-label="Basic example" class="btn-group d-flex justify-content-evenly" role="group">
-            <button :class="decrementHiddenClass" class="btn btn-primary" type="button" @click="decrement">-</button>
-            <div class="btn">{{ difficultyLevel }}</div>
-            <button :class="incrementHiddenClass" class="btn btn-primary" type="button" @click="increment">+</button>
-          </div>
-          <invalid-feedback :error="errors.difficultyLevel" />
         </div>
-      </div>
-      <div class="row">
-        <div class="mb-3 col-sm-6">
-          <label class="form-label input-required-lbl" for="title">{{ $t('fields.style') }}</label>
-          <select v-model="style" :class="hiddenClass.style" class="form-select" required="required"
-                  @focusin="resetValidationOnField('style')" @focusout="validateStyleField">
-            <option :selected="style.length > 0" value="">{{ $t('fields.style') }}</option>
-            <option v-for="oneStyle in styles" :key="oneStyle" :selected="style === oneStyle" :value="oneStyle">
-              {{ $t(`climb_style.${ oneStyle }`) }}
-            </option>
-          </select>
-          <invalid-feedback :error="errors.style" />
-        </div>
-        <div class="mb-3 col-sm-6">
-          <!--          <label class="form-label input-required-lbl" for="longitude">-->
-          <!--            {{ $t('fields.longitude') }}-->
-          <!--          </label>-->
-          <!--          <input v-model="longitude" :class="hiddenClass.longitude" :placeholder="$t('fields.longitude')"-->
-          <!--                 class="form-control" name="longitude" required="required" type="number"-->
-          <!--                 @focusin="resetValidationOnField('longitude')" @focusout="validateLongitudeField">-->
-          <!--          <invalid-feedback :error="errors.longitude" />-->
+        <div class="mb-3">
+          <label class="form-label">Sélectionner un fichier</label>
+          <input ref="fileInput" accept=".jpg" class="form-control" multiple required="required" type="file">
         </div>
       </div>
       <div class="d-flex justify-content-end">
@@ -106,6 +101,7 @@ export default {
     data.isUpdate = this.climbTitle !== undefined;
     data.climbTitleValid = false;
     data.difficultyLevelStep = 0.1;
+    data.base64s = [];
     return data;
   },
   computed: {
@@ -130,10 +126,7 @@ export default {
       let minInvalid = decimal < 6;
       let maxInvalid = decimal > 15;
 
-      console.log('minInvalid', minInvalid);
-      console.log('maxInvalid', maxInvalid);
       if (getHiddenClass) {
-        console.log('value after', value);
 
         if (minInvalid) {
           this.decrementHiddenClass = 'disabled';
@@ -148,7 +141,6 @@ export default {
       } else return integer < 5 || integer > 5 || minInvalid || maxInvalid;
     },
     getDifficultyLevel(value, decrement) {
-      console.log('value', value);
       value = Number(value);
 
       if (decrement) {
@@ -177,6 +169,7 @@ export default {
       let validateNext = this.getDifficultyLevel(difficultyLevel, false);
       this.validateDifficultyLevel(validateNext, true);
       this.difficultyLevelStep = difficultyLevelStep;
+      this.getBase64(false);
     },
     decrement() {
       let difficultyLevel = this.getDifficultyLevel(this.difficultyLevel, true);
@@ -286,6 +279,7 @@ export default {
       this.validateDifficultyLevelField();
       this.validateStyleField();
 
+
       let formIsValid = validateForm(this.errors);
 
       if (formIsValid) {
@@ -334,6 +328,35 @@ export default {
           this.hiddenClass[key] = validationHiddenClass.isInvalid;
         }
       }
+    },
+    getBase64(image, number) {
+      let objectURL = URL.createObjectURL(this.$refs.fileInput.files[0]);
+      let a = [];
+      const reader = new FileReader();
+      reader.readAsDataURL(this.$refs.fileInput.files[0]);
+      reader.onload = () => {
+        this.base64 = reader.result;
+        console.log(reader.result);
+        this.base64s.push({
+          title: this.climbTitle,
+          number: number,
+          base64: this.base64
+        });
+        // await fetch(`http://localhost:8080/upload`, {
+        //   method: 'POST',
+        //   headers: {
+        //     'Content-Type': 'application/json',
+        //     'Authorization': getHeaderAuthorization()
+        //   },
+        //   body: JSON.stringify({
+        //     title: this.climbTitle,
+        //     number: number,
+        //     base64: this.base64
+        //   })
+        // });
+      };
+
+      console.log(a);
     },
     async create() {
       let payload = {
