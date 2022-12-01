@@ -85,8 +85,10 @@ export default {
         this.$refs.authModal.dataset.bdKeyboard = this.authIsValid;
         (new bootstrap.Modal($('#auth-modal')[0])).toggle();
         let authInvalid = this.getAuthInvalid();
-        this.code = authInvalid.code;
-        this.status = authInvalid.status;
+        if (authInvalid !== undefined) {
+          this.code = authInvalid.code;
+          this.status = authInvalid.status;
+        }
       } else if (!this.authIsValid) {
         this.$refs.authModal.dataset.bsBackdrop = 'static';
         this.$refs.authModal.dataset.bdKeyboard = this.authIsValid;

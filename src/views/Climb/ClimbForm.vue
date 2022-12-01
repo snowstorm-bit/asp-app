@@ -42,9 +42,9 @@
                 {{ $t('fields.difficulty_level') }}
               </label>
             </div>
-            <div aria-label="Basic example" class="btn-group d-flex justify-content-evenly" role="group">
+            <div aria-label="Basic example" class="btn-group d-flex justify-content-between" role="group">
               <button :class="decrementHiddenClass" class="btn btn-primary" type="button" @click="decrement">-</button>
-              <div class="btn">{{ difficultyLevel }}</div>
+              <div class="btn col-4">{{ difficultyLevel }}</div>
               <button :class="incrementHiddenClass" class="btn btn-primary" type="button" @click="increment">+</button>
             </div>
             <invalid-feedback :error="errors.difficultyLevel" />
@@ -396,14 +396,32 @@ export default {
             this.formInSubmission = !this.formInSubmission;
           } else if (result.status === status.success) {
             try {
-              await fetch(`/api/upload`, {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json',
-                  'Authorization': getHeaderAuthorization()
-                },
-                body: JSON.stringify({ files: this.files })
-              });
+              let headerAuthorization = getHeaderAuthorization();
+              for (let i = 0; i < this.files.length; i++) {
+                let response = await fetch(`/api/upload`, {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': headerAuthorization
+                  },
+                  body: JSON.stringify({ file: this.files[i] })
+                });
+
+                if (response.status === 500) {
+                  event.stopPropagation();
+                  let globalErrorCode = this.isUpdate ? 'update_climb' : 'create_climb';
+
+                  this.requestStatus = result.status;
+                  this.requestMessage = result.codes[globalErrorCode];
+                  // Map response to the component validation data
+                  this.formInSubmission = !this.formInSubmission;
+                } else {
+                  this.formInSubmission = !this.formInSubmission;
+
+                  this.$router.go();
+                  // this.$router.push({ name: 'Home' });
+                }
+              }
             } catch {
               event.stopPropagation();
               let globalErrorCode = this.isUpdate ? 'update_climb' : 'create_climb';
@@ -413,11 +431,6 @@ export default {
               // Map response to the component validation data
               this.formInSubmission = !this.formInSubmission;
             }
-
-            this.formInSubmission = !this.formInSubmission;
-
-            this.$router.go();
-            // this.$router.push({ name: 'Home' });
           }
         } catch {
           event.stopPropagation();
@@ -433,7 +446,7 @@ export default {
         'title': this.title,
         'description': this.description,
         'style': this.style,
-        'difficultyLevel': Number(this.difficultyLevel),
+        'difficultyLevel': String(this.difficultyLevel),
         'placeTitle': this.placeTitle,
         'images': this.selectedImages.map(value => value.filename)
       };
@@ -480,7 +493,7 @@ export default {
         'title': this.title,
         'description': this.description,
         'style': this.style,
-        'difficultyLevel': Number(this.difficultyLevel),
+        'difficultyLevel': String(this.difficultyLevel),
         'placeTitle': this.placeTitle,
         'images': this.selectedImages.map(value => value.filename)
       };

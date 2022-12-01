@@ -7,16 +7,22 @@ export default defineStore('alert', {
     }),
     actions: {
         getAuthInvalid() {
-            let message = JSON.parse(localStorage.getItem('authInvalid'));
-            localStorage.removeItem('authInvalid');
+            if (localStorage.hasOwnProperty('authInvalid')) {
+                let message = JSON.parse(localStorage.getItem('authInvalid'));
+                localStorage.removeItem('authInvalid');
+                return message;
+            }
             this.hasAuthInvalidMessage = localStorage.hasOwnProperty('authInvalid');
-            return message;
+            return undefined;
         },
         getGlobalMessage() {
-            let message = JSON.parse(localStorage.getItem('globalMessage'));
-            localStorage.removeItem('globalMessage');
+            if (localStorage.hasOwnProperty('globalMessage')) {
+                let message = JSON.parse(localStorage.getItem('globalMessage'));
+                localStorage.removeItem('globalMessage');
+                return message;
+            }
             this.hasGlobalMessage = localStorage.hasOwnProperty('globalMessage');
-            return message;
+            return undefined;
         },
         setMessage(key, data) {
             localStorage.setItem(key, JSON.stringify(data));
