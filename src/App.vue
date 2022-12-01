@@ -48,14 +48,6 @@ export default {
         this.status = globalMessage.status;
       }
     }
-  },
-  beforeUpdate() {
-    this.code = '';
-    this.status = '';
-  },
-  beforeUnmount() {
-    this.code = '';
-    this.status = '';
   }
 };
 </script>

@@ -1,5 +1,5 @@
 <template>
-  <div :class="getHiddenClass" class="alert fade show" role="alert">
+  <div :class="getHiddenClass" class="alert fade show opacity-75" role="alert">
     <template v-if="getHiddenClass === 'div-global-alert'">
       <span class="text-center">{{ $t(code) }}</span>
     </template>

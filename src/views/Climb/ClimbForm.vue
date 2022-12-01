@@ -21,6 +21,7 @@
               {{ onePlaceTitle.title }}
             </option>
           </select>
+          <invalid-feedback :error="errors.placeTitle" />
         </div>
       </div>
       <div class="row">
@@ -61,16 +62,37 @@
           </div>
         </div>
         <div class="mb-3">
-          <label class="form-label">Sélectionner un fichier</label>
-          <input ref="fileInput" accept=".jpg" class="form-control" multiple required="required" type="file"
-                 @change="onChangeInputFile">
+          <label class="form-label">{{ $t('fields.images') }}</label>
+          <input ref="fileInput" :class="hiddenClass.images" class="form-control" multiple
+                 type="file" @change="onChangeInputFile" @focusin="resetValidationOnField('images')">
+          <invalid-feedback :error="errors.images" />
         </div>
       </div>
-      <div class="d-flex justify-content-end">
-        <button :disabled="formInValidation||formInSubmission" class="btn btn-lg fs-6 btn-submit" type="submit">
-          <i v-show="formInValidation||formInSubmission" class="bi bi-hourglass-split"></i>
-          {{ $t(getFormButtonSubmitCode) }}
-        </button>
+      <div class="row">
+        <div class="row col-sm-10">
+          <div>
+            <!-- TODO DELETE IMAGES IF TIME -->
+            <div v-if="images.length > 0">
+              <hr />
+              <div class="fw-bold">Images enregistrées</div>
+              <img v-for="filename in images" :src="`/api/${filename}`" alt="filename" class="col-md-3 pb-2" />
+            </div>
+            <hr />
+            <div class="row">
+              <div class="fw-bold mb-2">Images sélectionnées</div>
+              <img v-for="image in selectedImages" :alt="image.objectURL" :src="image.objectURL"
+                   class="col-md-3 pb-2" />
+            </div>
+          </div>
+        </div>
+        <div class="col-sm-2 ">
+          <div class="d-flex justify-content-end">
+            <button :disabled="formInValidation||formInSubmission" class="btn btn-lg fs-6 btn-submit" type="submit">
+              <i v-show="formInValidation||formInSubmission" class="bi bi-hourglass-split"></i>
+              {{ $t(getFormButtonSubmitCode) }}
+            </button>
+          </div>
+        </div>
       </div>
     </form>
   </div>
@@ -99,11 +121,12 @@ export default {
   components: { InvalidFeedback, AspAlert },
   props: ['climbTitle'],
   data() {
-    let data = getFormData(['title', 'description', 'difficultyLevel', 'style', 'placeTitle']);
+    let data = getFormData(['title', 'description', 'difficultyLevel', 'style', 'placeTitle', 'images;array']);
     data.isUpdate = this.climbTitle !== undefined;
+    data.selectedImages = [];
     data.climbTitleValid = false;
     data.difficultyLevelStep = 0.1;
-    data.base64s = [];
+    data.files = [];
     return data;
   },
   computed: {
@@ -168,7 +191,6 @@ export default {
       let validateNext = this.getDifficultyLevel(difficultyLevel, false);
       this.validateDifficultyLevel(validateNext, true);
       this.difficultyLevelStep = difficultyLevelStep;
-      this.getBase64s(false);
     },
     decrement() {
       let difficultyLevel = this.getDifficultyLevel(this.difficultyLevel, true);
@@ -179,35 +201,53 @@ export default {
       this.difficultyLevelStep = difficultyLevelStep;
     },
     onChangeInputFile() {
-      console.log(this.$refs.fileInput.files);
-    },
-    getBase64s(image, number) {
-      // let objectURL = URL.createObjectURL(this.$refs.fileInput.files[0]);
-      const reader = new FileReader();
-      reader.readAsDataURL(this.$refs.fileInput.files[0]);
-      reader.onload = () => {
-        this.base64 = reader.result;
-        console.log(reader.result);
-        this.base64s.push({
-          title: this.climbTitle,
-          number: number,
-          base64: this.base64
-        });
-        // await fetch(`http://localhost:8080/upload`, {
-        //   method: 'POST',
-        //   headers: {
-        //     'Content-Type': 'application/json',
-        //     'Authorization': getHeaderAuthorization()
-        //   },
-        //   body: JSON.stringify({
-        //     title: this.climbTitle,
-        //     number: number,
-        //     base64: this.base64
-        //   })
-        // });
-      };
+      let indicateIsValid = 'wasValidated' in this.errors.images;
+      this.errors.images = [];
+      let invalidMessage = '';
+      let existsAlready = '';
 
-      console.log(a);
+      for (let i = 0; i < this.$refs.fileInput.files.length; i++) {
+        let file = this.$refs.fileInput.files[i];
+        let filenames = this.selectedImages.map(value => value.filename);
+        let fileInSelectedFiles = filenames.find(filename => filename === file.name) !== undefined;
+        let fileInImages = this.images.find(filename => filename === file.name) !== undefined;
+        if (fileInSelectedFiles || fileInImages) {
+          if (existsAlready.length === 0) {
+            existsAlready = errors.climb.images.exists_already;
+          }
+        } else if (!file.name.endsWith('jpg')) {
+          if (invalidMessage.length === 0) {
+            invalidMessage = errors.climb.images.invalid;
+          }
+        } else {
+          this.selectedImages.push({
+            filename: file.name,
+            objectURL: URL.createObjectURL(file)
+          });
+
+          const reader = new FileReader();
+          reader.readAsDataURL(file);
+          reader.onload = () => this.files.push({
+            filename: file.name,
+            base64: reader.result
+          });
+        }
+      }
+
+      if (invalidMessage.length > 0) {
+        this.errors.images = invalidMessage;
+      }
+      if (existsAlready.length > 0) {
+        if (this.errors.images.length > 0) {
+          this.errors.images = [this.errors.images, existsAlready];
+        } else {
+          this.errors.images = existsAlready;
+        }
+      }
+
+      this.setValidationOnField('images', indicateIsValid);
+
+      this.$refs.fileInput.value = '';
     },
     redirectTo404(error = null) {
       // useAlertStore to create error message if necessary
@@ -285,7 +325,7 @@ export default {
         this.errors.difficultyLevel = errors.climb.difficulty_level.range;
       }
 
-      this.setValidationOnField('difficultyLevel', indicateIsValid);
+      this.setValidationOnField('difficultyLevel', indicateIsValid, false);
     },
     validateStyleField() {
       let indicateIsValid = typeof this.errors.style !== 'string';
@@ -297,6 +337,16 @@ export default {
       }
 
       this.setValidationOnField('style', indicateIsValid);
+    },
+    validateImagesField() {
+      let indicateIsValid = 'wasValidated' in this.errors.images;
+      this.errors.images = [];
+
+      if (this.images.length === 0 && Object.entries(this.selectedImages).length === 0) {
+        this.errors.images = errors.climb.images.range;
+      }
+
+      this.setValidationOnField('images', indicateIsValid, false);
     },
     mapInvalidResponse(result, mapInvalidFields = true) {
       let globalErrorCode = this.isUpdate ? 'update_climb' : 'create_climb';
@@ -325,7 +375,7 @@ export default {
       this.validateDescriptionField();
       this.validateDifficultyLevelField();
       this.validateStyleField();
-
+      this.validateImagesField();
 
       let formIsValid = validateForm(this.errors);
 
@@ -345,10 +395,29 @@ export default {
             // Map response to the component validation data
             this.formInSubmission = !this.formInSubmission;
           } else if (result.status === status.success) {
+            try {
+              await fetch(`/api/upload`, {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': getHeaderAuthorization()
+                },
+                body: JSON.stringify({ files: this.files })
+              });
+            } catch {
+              event.stopPropagation();
+              let globalErrorCode = this.isUpdate ? 'update_climb' : 'create_climb';
+
+              this.requestStatus = result.status;
+              this.requestMessage = result.codes[globalErrorCode];
+              // Map response to the component validation data
+              this.formInSubmission = !this.formInSubmission;
+            }
+
             this.formInSubmission = !this.formInSubmission;
 
-            // TODO : Replace redirection to go to places view
             this.$router.go();
+            // this.$router.push({ name: 'Home' });
           }
         } catch {
           event.stopPropagation();
@@ -365,7 +434,8 @@ export default {
         'description': this.description,
         'style': this.style,
         'difficultyLevel': Number(this.difficultyLevel),
-        'placeTitle': this.placeTitle
+        'placeTitle': this.placeTitle,
+        'images': this.selectedImages.map(value => value.filename)
       };
 
       let response;
@@ -411,7 +481,8 @@ export default {
         'description': this.description,
         'style': this.style,
         'difficultyLevel': Number(this.difficultyLevel),
-        'placeTitle': this.placeTitle
+        'placeTitle': this.placeTitle,
+        'images': this.selectedImages.map(value => value.filename)
       };
 
       let response;
@@ -535,6 +606,12 @@ export default {
         this[key] = value;
       }
 
+      if (this.images === '') {
+        this.images = [];
+      }
+      if (this.difficultyLevel === '') {
+        this.difficultyLevel = '5.6';
+      }
       this.difficultyLevel = Number(this.difficultyLevel);
       this.validateDifficultyLevel(this.getDifficultyLevel(this.difficultyLevel, true), true);
       if (this.decrementHiddenClass === '') {
@@ -559,5 +636,9 @@ form {
 textarea {
   height: 10rem !important;
   max-height: 20rem;
+}
+
+img {
+  height: 100%;
 }
 </style>

@@ -9,11 +9,13 @@ export default defineStore('alert', {
         getAuthInvalid() {
             let message = JSON.parse(localStorage.getItem('authInvalid'));
             localStorage.removeItem('authInvalid');
+            this.hasAuthInvalidMessage = localStorage.hasOwnProperty('authInvalid');
             return message;
         },
         getGlobalMessage() {
             let message = JSON.parse(localStorage.getItem('globalMessage'));
             localStorage.removeItem('globalMessage');
+            this.hasGlobalMessage = localStorage.hasOwnProperty('globalMessage');
             return message;
         },
         setMessage(key, data) {
