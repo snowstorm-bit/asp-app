@@ -3,10 +3,6 @@ $primary: #0f7b75;
 $black: #002f3e;
 $blue: #169c93;
 
-@media (hover: hover) {
-
-}
-
 .fs-sm {
   font-size: small;
 }
@@ -21,6 +17,30 @@ a {
   &:hover {
     cursor: pointer;
   }
+}
+
+.asp-link {
+  @extend a;
+}
+
+.sticky-top {
+  @extend .pt-1;
+}
+
+.asp-sticky-label {
+  @extend .sticky-top;
+  background: white;
+  border-bottom: 1px solid black;
+  padding-bottom: 0.3rem;
+  margin-bottom: 0.4rem;
+  width: 100%;
+  display: flex;
+  @extend .justify-content-between;
+}
+
+.asp-sticky-container {
+  max-height: 20rem;
+  overflow: auto;
 }
 
 .btn-submit {

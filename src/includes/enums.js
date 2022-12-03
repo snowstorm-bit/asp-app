@@ -1,6 +1,13 @@
 const status = {
     success: 'success',
-    error: 'error'
+    error: 'error',
+    warning: 'warning'
+};
+
+const colorClass = {
+    success: 'success',
+    error: 'danger',
+    warning: 'warning'
 };
 
 const validationHiddenClass = {
@@ -9,4 +16,4 @@ const validationHiddenClass = {
     wasValidated: 'was-validated'
 };
 
-export { status, validationHiddenClass };
+export { status, colorClass, validationHiddenClass };

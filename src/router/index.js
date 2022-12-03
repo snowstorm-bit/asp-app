@@ -3,6 +3,7 @@ import HomeView from '@/views/HomeView.vue';
 import NotFound from '@/views/NotFound.vue';
 import PlaceForm from '@/views/Place/PlaceForm.vue';
 import ClimbForm from '@/views/Climb/ClimbForm.vue';
+import PlaceDetails from '@/views/Place/PlaceDetails.vue';
 
 const routes = [
     {
@@ -26,6 +27,12 @@ const routes = [
         props: true,
         component: PlaceForm,
         meta: { requiresAuth: true }
+    },
+    {
+        path: '/place/details/:placeTitle',
+        name: 'PlaceDetails',
+        props: true,
+        component: PlaceDetails
     },
     {
         path: '/climb/create',

@@ -9,8 +9,8 @@
   <asp-rate :isUserRate="false" :rate="3.5"></asp-rate>
   <!--  <climb-card :description="'description'" :image-url="'/api/2d9dc84.jpg'" :link="{name: 'ClimbDetails', params: {climbTitle: 'climb 3'}}"-->
   <!--              :title="'title'" :rate="3.7"></climb-card>-->
-  <climb-card :description="'description'" :image-url="'/api/2d9dc84.jpg'"
-              :rate="{rate: 3.7, votes: 10}" :title="'title'"></climb-card>
+  <climb-card :description="'description'" :image-url="'/api/2d9dc84.jpg'" :rate="{rate: 3.7, votes: 10}"
+              :title="'title'"></climb-card>
 </template>
 
 <script>
@@ -37,6 +37,11 @@ export default {
 <style lang="scss" scoped>
 main {
   margin: 0 !important;
+
+  .container {
+    margin: 0;
+    padding: 0;
+  }
 }
 
 div {

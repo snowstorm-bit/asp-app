@@ -103,7 +103,6 @@ export default {
   },
   methods: {
     redirectTo404(error = null) {
-      // useAlertStore to create error message if necessary
       if (error !== null) {
         useAlertStore().setMessage('globalMessage', {
           code: error,
@@ -193,6 +192,25 @@ export default {
 
       this.setValidationOnField('longitude', indicateIsValid);
     },
+    mapInvalidResponse(result, mapForInvalidFields = true) {
+      let globalErrorCode = this.isUpdate ? 'update_place' : 'create_place';
+      if (globalErrorCode in result.codes) {
+        this.requestStatus = result.status;
+        this.requestMessage = result.codes[globalErrorCode];
+        this.formInSubmission = false;
+      } else if ('refresh' in result.codes) { // authentification error
+        this.$router.go();
+      } else if ('not_found' in result.codes) {
+        this.redirectTo404(result.codes.not_found);
+      } else if (mapForInvalidFields) {
+        // Map errors returned by the request
+        for (const [key, value] of Object.entries(result.codes)) {
+          this.errors[key] = value;
+          this.hiddenClass[key] = validationHiddenClass.isInvalid;
+        }
+        this.formInSubmission = false;
+      }
+    },
     async validateForm(event) {
       // Désactiver le bouton afin d'éviter que l'utilisateur 
       // appuie pleins de fois de suite sur le bouton de soumission
@@ -207,50 +225,27 @@ export default {
       let formIsValid = validateForm(this.errors);
 
       if (formIsValid) {
-        this.formInValidation = !formIsValid;
-        this.formInSubmission = !this.formInValidation;
+        this.formInValidation = false;
+        this.formInSubmission = true;
 
-        // Manage creation here
         try {
           let result = this.isUpdate ? await this.update() : await this.create();
 
           if (result.status === status.error) {
             event.stopPropagation();
-
             this.mapInvalidResponse(result);
-
-            // Map response to the component validation data
-            this.formInSubmission = !this.formInSubmission;
           } else if (result.status === status.success) {
-            this.formInSubmission = !this.formInSubmission;
-
-            // TODO : Replace redirection to go to places view
+            // submission of form valid at this point
+            this.formInSubmission = false;
             this.$router.go();
           }
         } catch {
           event.stopPropagation();
-          this.formInSubmission = !this.formInSubmission;
+          this.mapInvalidResponse({ codes: this.isUpdate ? 'update_place' : 'create_place' });
         }
       } else {
         event.stopPropagation();
-        this.formInValidation = formIsValid;
-      }
-    },
-    mapInvalidResponse(result, mapForInvalidFields = true) {
-      let globalErrorCode = this.isUpdate ? 'update_place' : 'create_place';
-      if (globalErrorCode in result.codes) {
-        this.requestStatus = result.status;
-        this.requestMessage = result.codes[globalErrorCode];
-      } else if ('refresh' in result.codes) {
-        this.$router.go();
-      } else if ('not_found' in result.codes) {
-        this.redirectTo404(result.codes.not_found);
-      } else if (mapForInvalidFields) {
-        // Map errors returned by the request
-        for (const [key, value] of Object.entries(result.codes)) {
-          this.errors[key] = value;
-          this.hiddenClass[key] = validationHiddenClass.isInvalid;
-        }
+        this.formInValidation = false;
       }
     },
     async create() {
@@ -273,6 +268,13 @@ export default {
           body: JSON.stringify(payload)
         });
       } catch {
+        return {
+          codes: { 'create_place': errors.routes.create.place },
+          status: status.error
+        };
+      }
+
+      if (response.status === 500) {
         return {
           codes: { 'create_place': errors.routes.create.place },
           status: status.error
@@ -325,6 +327,13 @@ export default {
         };
       }
 
+      if (response.status === 500) {
+        return {
+          codes: { 'update_place': errors.routes.update.place },
+          status: status.error
+        };
+      }
+
       if (!await validateAuthFromResponse(response.status, this.userLoggedIn)) {
         return {
           codes: { refresh: true },
@@ -356,6 +365,13 @@ export default {
           }
         });
       } catch {
+        return {
+          codes: { 'update_place': errors.routes.get.update.place },
+          status: status.error
+        };
+      }
+
+      if (response.status === 500) {
         return {
           codes: { 'update_place': errors.routes.get.update.place },
           status: status.error

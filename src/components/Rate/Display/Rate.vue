@@ -2,7 +2,7 @@
   <div class="d-flex align-items-center flex-wrap">
     <div :class="starRateClass" class="star-ratings me-2">
       <div :style="{width: getFilledRatingsWith + '%'}" class="filled-ratings">
-        <span class="d-flex flex-nowrap">
+        <span class="d-flex flex-nowrap fs-5">
           <stars-star v-for="i in numberOfStars" :key="i" :starHiddenClass="getStarHiddenClass(i)"></stars-star>
         </span>
       </div>
@@ -12,8 +12,8 @@
         </span>
       </div>
     </div>
-    <p :class="textRateClass" class="mb-0 me-2">{{ rate.rate }} / {{ numberOfStars }}</p>
-    <p :class="textRateClass" class="mb-0">({{ rate.votes }} {{ $t('rate.votes') }})</p>
+    <p :class="textRateClass" class="mb-0 me-2">{{ this.rate }} / {{ numberOfStars }}</p>
+    <p :class="textRateClass" class="mb-0">({{ votes }} {{ $t('display_text.rate.votes') }})</p>
   </div>
 </template>
 
@@ -24,7 +24,7 @@ import { round } from '@/includes/utils';
 export default {
   name: 'Asp-Rate',
   components: { StarsStar },
-  props: ['rate', 'isUserRate', 'textRateClass', 'starRateClass'],
+  props: ['rate', 'votes', 'isUserRate', 'textRateClass', 'starRateClass'],
   data() {
     let data = {};
     data.numberOfStars = 5;
@@ -34,12 +34,12 @@ export default {
   computed: {
     getStarHiddenClass() {
       return index => {
-        let selectedStarValid = this.rate.rate > 0 && index <= this.rate.rate || this.rate.rate > index - 1;
+        let selectedStarValid = this.rate > 0 && index <= this.rate || this.rate > index - 1;
         return selectedStarValid ? 'bi-star-fill' : 'bi-star';
       };
     },
     getFilledRatingsWith() {
-      return round((this.rate.rate / 5) * 100);
+      return round((this.rate / 5) * 100);
     }
   }
 };

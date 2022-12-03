@@ -9,7 +9,8 @@
 	"auth": {
 		"title": "Authentification",
 		"login_tab": "Connexion",
-		"register_tab": "Créer un compte"
+		"register_tab": "Créer un compte",
+		"sign_out": "Déconnexion"
 	},
 	"create": {
 		"place": "Créer un lieu",
@@ -19,12 +20,31 @@
 		"place": "Modifier le lieu",
 		"climb": "Modifier la grimpe"
 	},
+	"details": {
+		"place": {
+			"details": "Détails du lieu",
+			"climbs": "Grimpe(s) du lieu",
+			"climbs_list": "Liste des grimpes"
+		},
+		"climb": "Détails de la grimpe"
+	},
 	"buttons": {
 		"sign_in": "S'identifier",
 		"register": "S'inscrire",
 		"create": "Créer",
 		"save_changes": "Enregistrer les modifications",
 		"delete": "Supprimer"
+	},
+	"links": {
+		"see_more": {
+			"climb": {
+				"popular": "Voir plus de grimples populaires",
+				"all": "Voir toutes les grimpes"
+			},
+			"details": "Voir les détails"
+		},
+		"create": "Créer",
+		"modify": "Modifier"
 	},
 	"fields": {
 		"username": "Nom d'utilisateur",
@@ -41,8 +61,14 @@
 		"place_title": "Choisir un lieu",
 		"images": "Sélectionner une image"
 	},
-	"rate": {
-		"votes": "votes"
+	"empty_result": {
+		"place": {
+			"climb": {
+				"style": "Il n'y a pas de grimpe pour ce style",
+				"difficulty_level": "Il n'y a pas de grimpe pour ce niveau de difficulté",
+				"none": "Il n'y a pas de grimpe pour ce lieu"
+			}
+		}
 	},
 	"successes": {
 		"routes": {
@@ -59,6 +85,11 @@
 			},
 			"delete": {
 			}
+		}
+	},
+	"warnings": {
+		"auth": {
+			"login_again": "Votre session a expiré. Vous avez été déconnecté du site"
 		}
 	},
 	"errors": {
@@ -159,7 +190,9 @@
 					"empty_or_white_spaces": "L'image pour la grimpe ne peut être vide ou composée uniquement d'espaces blancs",
 					"range": "Il vous faut sélectionner au moins une image pour la grimpe",
 					"invalid": "Le format de l'image sélectionné est invalide. Le format accepté est : .jpg",
-					"exists_already": "L'image sélectionnée est déjà une image sélectionnée pour la grimpe"
+					"exists_already": "L'image sélectionnée est déjà une image sélectionnée pour la grimpe",
+					"size": "La taille de l'image sélectionnée est trop grande. Veuillez choisir un fichier avant moins de 30ko",
+					"which_one": "L'images ou les images sélectionnées en erreur est ou sont :"
 				}
 			}
 		},
@@ -190,5 +223,12 @@
 		"traditional": "Traditionnelle",
 		"sport": "Sportive",
 		"top_roping": "Moulinette"
+	},
+	"display_text": {
+		"rate": {
+			"votes": "votes"
+		},
+		"style": "Style",
+		"difficulty_level": "Niveau de difficulté"
 	}
 }

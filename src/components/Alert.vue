@@ -15,6 +15,7 @@
 
 import { mapState } from 'pinia';
 import useAlertStore from '@/stores/alert';
+import { colorClass } from '@/includes/enums';
 
 export default {
   name: 'Asp-Alert',
@@ -22,9 +23,7 @@ export default {
   computed: {
     ...mapState(useAlertStore, ['hasGlobalMessage', 'hasAuthInvalidMessage']),
     getHiddenClass() {
-      let alertColorClass = this.status === 'success'
-          ? 'alert-success'
-          : 'alert-danger';
+      let alertColorClass = `alert-${ colorClass[this.status] }`;
 
       let alertClass;
 
@@ -35,6 +34,8 @@ export default {
         alertClass = 'div-alert';
       else if (this.hasGlobalMessage) {
         alertClass = 'div-global-alert';
+      } else {
+        alertClass = 'div-alert';
       }
 
       return `${ alertColorClass } ${ alertClass }`;

@@ -3,7 +3,7 @@
   <asp-header :authIsValid="authIsValid" />
   <main>
     <asp-alert v-if="hasGlobalMessage || code.length > 0" :code="code" :status="status" />
-    <router-view v-if="authIsValid"></router-view>
+    <router-view v-if="authIsValid" class="container-fluid container"></router-view>
   </main>
 </template>
 
@@ -53,3 +53,10 @@ export default {
   }
 };
 </script>
+
+<style>
+.container {
+  margin-top: 4rem;
+  margin-bottom: 4rem;
+}
+</style>

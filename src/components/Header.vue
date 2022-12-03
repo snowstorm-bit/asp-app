@@ -33,7 +33,7 @@
               <i class="bi bi-person-fill"></i>
             </button>
             <div class="dropdown-menu dropdown-menu-end">
-              <a class="ps-2" @click.prevent="signOut">Déconnexion</a>
+              <a class="ps-2" @click.prevent="signOut">{{ $t('auth.sign_out') }}</a>
             </div>
           </div>
           <a v-else ref="authLink" class="ps-2 nav-link-header" data-bs-target="#auth-modal" data-bs-toggle="modal"

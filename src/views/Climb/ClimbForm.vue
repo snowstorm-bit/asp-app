@@ -4,7 +4,7 @@
     <asp-alert v-if="requestStatus.length > 0" :code="requestMessage" :status="requestStatus" />
     <form class="px-4 py-3" @submit.prevent="validateForm">
       <div class="mb-3 row">
-        <div class="col-md-6">
+        <div class="col-md-6 mb-3">
           <label class="form-label input-required-lbl" for="title">{{ $t('fields.title') }}</label>
           <input v-model="title" :class="hiddenClass.title" :placeholder="$t('fields.title')"
                  class="form-control" name="title" required="required" type="text"
@@ -205,6 +205,8 @@ export default {
       this.errors.images = [];
       let invalidMessage = '';
       let existsAlready = '';
+      let sizeError = '';
+      let filenamesInError = '';
 
       for (let i = 0; i < this.$refs.fileInput.files.length; i++) {
         let file = this.$refs.fileInput.files[i];
@@ -215,10 +217,17 @@ export default {
           if (existsAlready.length === 0) {
             existsAlready = errors.climb.images.exists_already;
           }
+          filenamesInError.push(file.name);
         } else if (!file.name.endsWith('jpg')) {
           if (invalidMessage.length === 0) {
             invalidMessage = errors.climb.images.invalid;
           }
+          filenamesInError.push(file.name);
+        } else if (file.size > 28000) {
+          if (sizeError.length === 0) {
+            sizeError = errors.climb.images.size;
+          }
+          filenamesInError.push(file.name);
         } else {
           this.selectedImages.push({
             filename: file.name,
@@ -235,22 +244,21 @@ export default {
       }
 
       if (invalidMessage.length > 0) {
-        this.errors.images = invalidMessage;
+        this.errors.images.push(invalidMessage);
       }
       if (existsAlready.length > 0) {
-        if (this.errors.images.length > 0) {
-          this.errors.images = [this.errors.images, existsAlready];
-        } else {
-          this.errors.images = existsAlready;
-        }
+        this.errors.images.push(existsAlready);
+      }
+      if (this.errors.images.length > 0) {
+        this.errors.images.push(errors.climb.images.which_one, ...filenamesInError);
       }
 
       this.setValidationOnField('images', indicateIsValid);
 
+      // Reset field so it doesn't get already added images
       this.$refs.fileInput.value = '';
     },
     redirectTo404(error = null) {
-      // useAlertStore to create error message if necessary
       if (error !== null) {
         useAlertStore().setMessage('globalMessage', {
           code: error,
@@ -353,7 +361,8 @@ export default {
       if (globalErrorCode in result.codes) {
         this.requestStatus = result.status;
         this.requestMessage = result.codes[globalErrorCode];
-      } else if ('refresh' in result.codes) {
+        this.formInSubmission = false;
+      } else if ('refresh' in result.codes) { // authentification error
         this.$router.go();
       } else if ('not_found' in result.codes) {
         this.redirectTo404(result.codes.not_found);
@@ -363,6 +372,7 @@ export default {
           this.errors[key] = value;
           this.hiddenClass[key] = validationHiddenClass.isInvalid;
         }
+        this.formInSubmission = false;
       }
     },
     async validateForm(event) {
@@ -380,22 +390,18 @@ export default {
       let formIsValid = validateForm(this.errors);
 
       if (formIsValid) {
-        this.formInValidation = !formIsValid;
-        this.formInSubmission = !this.formInValidation;
+        this.formInValidation = false;
+        this.formInSubmission = true;
 
-        // Manage creation here
         try {
           let result = this.isUpdate ? await this.update() : await this.create();
 
           if (result.status === status.error) {
             event.stopPropagation();
-
             this.mapInvalidResponse(result);
-
-            // Map response to the component validation data
-            this.formInSubmission = !this.formInSubmission;
           } else if (result.status === status.success) {
             try {
+              // Managing climb images
               let headerAuthorization = getHeaderAuthorization();
               for (let i = 0; i < this.files.length; i++) {
                 let response = await fetch(`/api/upload`, {
@@ -409,36 +415,25 @@ export default {
 
                 if (response.status === 500) {
                   event.stopPropagation();
-                  let globalErrorCode = this.isUpdate ? 'update_climb' : 'create_climb';
-
-                  this.requestStatus = result.status;
-                  this.requestMessage = result.codes[globalErrorCode];
-                  // Map response to the component validation data
-                  this.formInSubmission = !this.formInSubmission;
+                  this.mapInvalidResponse({ codes: this.isUpdate ? 'update_climb' : 'create_climb' });
                 } else {
-                  this.formInSubmission = !this.formInSubmission;
-
+                  // submission of form valid at this point
+                  this.formInSubmission = false;
                   this.$router.go();
-                  // this.$router.push({ name: 'Home' });
                 }
               }
             } catch {
               event.stopPropagation();
-              let globalErrorCode = this.isUpdate ? 'update_climb' : 'create_climb';
-
-              this.requestStatus = result.status;
-              this.requestMessage = result.codes[globalErrorCode];
-              // Map response to the component validation data
-              this.formInSubmission = !this.formInSubmission;
+              this.mapInvalidResponse({ codes: this.isUpdate ? 'update_climb' : 'create_climb' });
             }
           }
         } catch {
           event.stopPropagation();
-          this.formInSubmission = !this.formInSubmission;
+          this.mapInvalidResponse({ codes: this.isUpdate ? 'update_climb' : 'create_climb' });
         }
       } else {
         event.stopPropagation();
-        this.formInValidation = formIsValid;
+        this.formInValidation = false;
       }
     },
     async create() {
@@ -462,6 +457,13 @@ export default {
           body: JSON.stringify(payload)
         });
       } catch {
+        return {
+          codes: { 'create_climb': errors.routes.create.climb },
+          status: status.error
+        };
+      }
+
+      if (response.status === 500) {
         return {
           codes: { 'create_climb': errors.routes.create.climb },
           status: status.error
@@ -515,6 +517,13 @@ export default {
         };
       }
 
+      if (response.status === 500) {
+        return {
+          codes: { 'update_climb': errors.routes.update.climb },
+          status: status.error
+        };
+      }
+
       if (!await validateAuthFromResponse(response.status, this.userLoggedIn)) {
         return {
           codes: { refresh: true },
@@ -552,9 +561,9 @@ export default {
         };
       }
 
-      if (!await validateAuthFromResponse(response.status, this.userLoggedIn)) {
+      if (response.status === 500) {
         return {
-          codes: { refresh: true },
+          codes: { 'create_climb': errors.routes.get.create.climb },
           status: status.error
         };
       }
@@ -564,6 +573,13 @@ export default {
       if (response.status === 404) {
         return {
           codes: { not_found: errors.climb.not_found },
+          status: status.error
+        };
+      }
+
+      if (!await validateAuthFromResponse(response.status, this.userLoggedIn)) {
+        return {
+          codes: { refresh: true },
           status: status.error
         };
       }
@@ -587,9 +603,9 @@ export default {
         };
       }
 
-      if (!await validateAuthFromResponse(response.status, this.userLoggedIn)) {
+      if (response.status === 500) {
         return {
-          codes: { refresh: true },
+          codes: { 'update_climb': errors.routes.get.update.climb },
           status: status.error
         };
       }
@@ -599,6 +615,13 @@ export default {
       if (response.status === 404) {
         return {
           codes: { not_found: errors.climb.not_found },
+          status: status.error
+        };
+      }
+
+      if (!await validateAuthFromResponse(response.status, this.userLoggedIn)) {
+        return {
+          codes: { refresh: true },
           status: status.error
         };
       }
@@ -614,8 +637,7 @@ export default {
         return;
       }
 
-      let resultObjectEntries = Object.entries(data.result);
-      for (const [key, value] of resultObjectEntries) {
+      for (const [key, value] of Object.entries(data.result)) {
         this[key] = value;
       }
 
@@ -638,10 +660,6 @@ export default {
 </script>
 
 <style scoped>
-h2 {
-  margin-top: 4rem;
-}
-
 form {
   margin: 0 5rem 5rem;
 }

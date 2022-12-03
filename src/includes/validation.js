@@ -122,13 +122,15 @@ function getHeaderAuthorization() {
     return 'Bearer ' + localStorage.getItem('token');
 }
 
-async function validateAuthFromResponse(responseStatusCode, userLoggedIn) {
+async function validateAuthFromResponse(responseStatusCode, userLoggedIn, alertStoreSetMessage = true) {
     let errorCode = '';
 
     if (responseStatusCode === 401) {
-        errorCode = userLoggedIn
-            ? errors.auth.session_expired
-            : errors.auth.login_required;
+        if (userLoggedIn) {
+            return errors.auth.session_expired;
+        } else {
+            errorCode = errors.auth.login_required;
+        }
         if (localStorage.hasOwnProperty('user')) {
             localStorage.removeItem('user');
         } else if (localStorage.hasOwnProperty('token')) {
@@ -140,12 +142,14 @@ async function validateAuthFromResponse(responseStatusCode, userLoggedIn) {
     }
 
     if (errorCode.length > 0) {
-        useAlertStore().setMessage('authInvalid', {
-            code: errorCode,
-            status: status.error
-        });
+        if (alertStoreSetMessage) {
+            useAlertStore().setMessage('authInvalid', {
+                code: errorCode,
+                status: status.error
+            });
 
-        return false;
+            return false;
+        }
     }
 
     return true;

@@ -88,7 +88,9 @@
 			"empty_or_white_spaces": "errors.fields.climb.images.empty_or_white_spaces",
 			"range": "errors.fields.climb.images.range",
 			"invalid": "errors.fields.climb.images.invalid",
-			"exists_already": "errors.fields.climb.images.exists_already"
+			"exists_already": "errors.fields.climb.images.exists_already",
+			"size": "errors.fields.climb.images.size",
+			"which_one": "errors.fields.climb.images.which_one"
 		}
 	},
 	"user_rates": {
@@ -109,6 +111,10 @@
 			"update": {
 				"place": "errors.routes.get.update.place",
 				"climb": "errors.routes.get.update.climb"
+			},
+			"details": {
+				"place": "errors.routes.get.details.place",
+				"climb": "errors.routes.get.details.climb"
 			}
 		},
 		"create": {
