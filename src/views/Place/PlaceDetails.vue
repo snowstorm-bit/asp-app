@@ -28,14 +28,11 @@
         <h3>{{ title }}</h3>
         <div class="asp-sticky-container">
           <div aria-controls="place-description" aria-expanded="true" class="asp-sticky-label fw-bold"
-               data-bs-target="#place-description" data-bs-toggle="collapse" role="button">
+               data-bs-toggle="collapse" href="#place-description" role="button">
             {{ $t('fields.description') }}
             <i :class="`bi bi-arrow-down-short pe-1`"></i>
           </div>
-          <div id="place-description"
-               class="mb-4 collapse show">
-            {{ description }}
-          </div>
+          <div id="place-description" class="mb-4 collapse show">{{ description }}</div>
           <div aria-controls="place-steps" aria-expanded="true" class="asp-sticky-label fw-bold"
                data-bs-target="#place-steps" data-bs-toggle="collapse" role="button">
             {{ $t('fields.steps') }}
@@ -61,10 +58,10 @@
           <template v-for="[style, climbs] of Object.entries(styles)" :key="style">
             <div :aria-controls="`style-${style}`" :data-bs-target="`#style-${style}`" aria-expanded="true"
                  class="asp-sticky-label fw-bold" data-bs-toggle="collapse" role="button">
-              {{ $t('display_text.style') }}&nbsp;-&nbsp;{{ $t(`climb_style.${ style }`) }}
+              {{ $t('display_text.style') }}&nbsp;-&nbsp;{{ $t(`climb_style.${ style }`) }}&nbsp;({{ climbs.length }})
               <i :class="`bi bi-arrow-down-short pe-1`"></i>
             </div>
-            <div :id="`style-${style}`" class="mb-3 collapse show">
+            <div :id="`style-${style}`" :class="{show: climbs.length > 0}" class="mb-3 collapse">
               <a v-for="(climb, i) in climbs" v-if="climbs.length > 0" :key="climb.title"
                  :class="{'mb-3': i === climbs.length - 1}"
                  :href="`#climb-${climb.title}`" class="asp-link">
@@ -78,13 +75,15 @@
         <div class="col-md-6 asp-sticky-container">
           <h5>{{ $t('fields.difficulty_level') }}</h5>
           <template v-for="[difficultyLevel, climbs] of Object.entries(difficultyLevels)" :key="difficultyLevel">
-            <div :aria-controls="`difficulty-level-${difficultyLevel}`"
-                 :data-bs-target="`#difficulty-level-${difficultyLevel}`" aria-expanded="true"
-                 class="asp-sticky-label fw-bold" data-bs-toggle="collapse" role="button">
-              {{ $t('display_text.difficulty_level') }}&nbsp;-&nbsp;{{ `${ difficultyLevel }` }}
+            <div :aria-controls="`difficulty-level-${ difficultyLevel.replace('.', '-') }`"
+                 :data-bs-target="`#difficulty-level-${ difficultyLevel.replace('.', '-') }`"
+                 aria-expanded="true" class="asp-sticky-label fw-bold" data-bs-toggle="collapse" role="button">
+              {{ $t('display_text.difficulty_level') }}&nbsp;-&nbsp;{{ `${ difficultyLevel }` }}&nbsp;
+              ({{ climbs.length }})
               <i :class="`bi bi-arrow-down-short pe-1`"></i>
             </div>
-            <div :id="`difficulty-level-${difficultyLevel}`" class="mb-3 collapse show">
+            <div :id="`difficulty-level-${ difficultyLevel.replace('.', '-') }`"
+                 :class="{show: climbs.length > 0}" class="mb-3 collapse">
               <a v-for="(climb, i) in climbs" v-if="climbs.length > 0" :key="climb.title"
                  :class="{'mb-3': i === climbs.length - 1}"
                  :href="`#climb-${climb.title}`" class="asp-link">
@@ -99,8 +98,12 @@
       <div class="col-lg-4">
         <div class="asp-sticky-container">
           <h5>{{ $t('details.place.climbs_list') }}</h5>
-          <div v-for="(climb, i) in climbs" :key="i" class="mb-3 d-flex align-items-center">
-            <div class="me-3 text-nowrap">{{ climb.title }}</div>
+          <div v-for="(climb, i) in climbs" :id="`climb-${climb.title}`" :key="i"
+               class="mb-3 d-flex align-items-center asp__climb">
+            <router-link :to="{name: 'NotFound'}" aria-disabled="true" class="me-3 text-nowrap asp-link__climb-details"
+                         role="link">
+              {{ climb.title }}
+            </router-link>
             <asp-rate :isUserRate="false" :rate="climb.rate" :star-rate-class="'fs-5'" :text-rate-class="'fs-6'"
                       :votes="climb.votes"></asp-rate>
           </div>
@@ -269,9 +272,44 @@ export default {
 <style lang="scss" scoped>
 .asp-link {
   text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+
+  &__climb-details {
+    text-decoration: none;
+    opacity: 50%;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
 }
 
 #place-details {
   min-height: 200px;
 }
+
+.asp__climb:target {
+  animation: target-highlight 0.8s alternate ease-in-out;
+
+  &:before {
+    content: ">";
+    width: -100%;
+    position: absolute;
+    transform: translate(-120%, 0);
+    color: #169c93;
+    margin-right: 0.25em;
+  }
+}
+
+@keyframes target-highlight {
+  from {
+    color: inherit;
+  }
+
+  to {
+    color: #169c93;
+  }
+}
+
 </style>

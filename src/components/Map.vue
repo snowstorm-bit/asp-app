@@ -36,7 +36,6 @@ export default {
   methods: {
     updateMarkerPosition() {
       console.log(this.marker.position);
-
     }
   }
 };

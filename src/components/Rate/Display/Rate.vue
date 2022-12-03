@@ -71,6 +71,7 @@ export default {
 
   .empty-ratings {
     color: #EF767A;
+    filter: brightness(70%);
     padding: 0;
     display: block;
     z-index: 0;
