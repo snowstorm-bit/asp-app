@@ -127,7 +127,7 @@ async function validateAuthFromResponse(responseStatusCode, userLoggedIn, alertS
 
     if (responseStatusCode === 401) {
         if (userLoggedIn) {
-            return errors.auth.session_expired;
+            errorCode = errors.auth.session_expired;
         } else {
             errorCode = errors.auth.login_required;
         }
