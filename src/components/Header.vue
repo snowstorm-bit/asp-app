@@ -17,7 +17,7 @@
             <router-link :to="{ name: 'Home' }" aria-current="page" class="nav-item nav-link-header active">
               {{ $t('header.nav_items.home') }}
             </router-link>
-            <router-link :to="{name: 'Climbs'}" class="nav-item nav-link-header">
+            <router-link :to="{name: 'Climbs'}" class="nav-item nav-link-header" v-if="true === false">
               {{ $t('header.nav_items.climbs') }}
             </router-link>
           </div>

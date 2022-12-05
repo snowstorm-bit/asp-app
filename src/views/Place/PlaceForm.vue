@@ -237,7 +237,7 @@ export default {
           } else if (result.status === status.success) {
             // submission of form valid at this point
             this.formInSubmission = false;
-            this.$router.go();
+            this.$router.push({ name: 'PlaceDetails', params: { placeTitle: this.title } });
           }
         } catch {
           event.stopPropagation();

@@ -69,7 +69,7 @@
         </div>
       </div>
       <div class="row">
-        <div class="row col-sm-10">
+        <div class="row col-sm-9">
           <div>
             <!-- TODO DELETE IMAGES IF TIME -->
             <div v-if="images.length > 0">
@@ -85,9 +85,10 @@
             </div>
           </div>
         </div>
-        <div class="col-sm-2 ">
+        <div class="col-sm-3  p-0">
           <div class="d-flex justify-content-end">
-            <button :disabled="formInValidation||formInSubmission" class="btn btn-lg fs-6 btn-submit" type="submit">
+            <button :disabled="formInValidation||formInSubmission" class="btn btn-lg fs-6 btn-submit text-nowrap"
+                    type="submit">
               <i v-show="formInValidation||formInSubmission" class="bi bi-hourglass-split"></i>
               {{ $t(getFormButtonSubmitCode) }}
             </button>
@@ -206,7 +207,7 @@ export default {
       let invalidMessage = '';
       let existsAlready = '';
       let sizeError = '';
-      let filenamesInError = '';
+      let filenamesInError = [];
 
       for (let i = 0; i < this.$refs.fileInput.files.length; i++) {
         let file = this.$refs.fileInput.files[i];
@@ -307,7 +308,7 @@ export default {
         this.errors.placeTitle = errors.climb.place_title.length;
       }
 
-      this.setValidationOnField('placeTitle', indicateIsValid);
+      this.setValidationOnField('placeTitle', indicateIsValid, false);
     },
     validateDescriptionField() {
       let indicateIsValid = typeof this.errors.description !== 'string';
@@ -344,7 +345,7 @@ export default {
         this.errors.style = errors.climb.style.empty_or_white_spaces;
       }
 
-      this.setValidationOnField('style', indicateIsValid);
+      this.setValidationOnField('style', indicateIsValid, false);
     },
     validateImagesField() {
       let indicateIsValid = 'wasValidated' in this.errors.images;
@@ -419,7 +420,7 @@ export default {
                 } else {
                   // submission of form valid at this point
                   this.formInSubmission = false;
-                  this.$router.go();
+                  this.$router.push({ name: 'Home' });
                 }
               }
             } catch {
@@ -502,7 +503,7 @@ export default {
 
       let response;
       try {
-        response = await fetch(`/api/${ this.climbTitle }`, {
+        response = await fetch(`/api/climb/${ this.climbTitle }`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
@@ -647,10 +648,9 @@ export default {
       if (this.difficultyLevel === '') {
         this.difficultyLevel = '5.6';
       }
-      this.difficultyLevel = Number(this.difficultyLevel);
-      this.validateDifficultyLevel(this.getDifficultyLevel(this.difficultyLevel, true), true);
+      this.validateDifficultyLevel(this.getDifficultyLevel(Number(this.difficultyLevel), true), true);
       if (this.decrementHiddenClass === '') {
-        this.validateDifficultyLevel(this.getDifficultyLevel(this.difficultyLevel, false), true);
+        this.validateDifficultyLevel(this.getDifficultyLevel(Number(this.difficultyLevel), false), true);
       }
 
       this.climbTitleValid = true;
