@@ -2,7 +2,7 @@
   <div v-if="climbTitleValid">
     <h2 class="text-center">{{ getFormTitle }}</h2>
     <asp-alert v-if="requestStatus.length > 0" :code="requestMessage" :status="requestStatus" />
-    <form class="px-4 py-3" @submit.prevent="validateForm">
+    <form class="px-4 py-3" @submit.prevent="validateForm" novalidate>
       <div class="mb-3 row">
         <div class="col-md-6 mb-3">
           <label class="form-label input-required-lbl" for="title">{{ $t('fields.title') }}</label>

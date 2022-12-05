@@ -1,6 +1,6 @@
 <template>
   <asp-alert v-if="requestStatus.length > 0" :code="requestMessage" :status="requestStatus" />
-  <form class="px-4 py-3" @submit.prevent="validateForm">
+  <form class="px-4 py-3" @submit.prevent="validateForm" novalidate>
     <!-- Username -->
     <div class="mb-3">
       <label class="form-label input-required-lbl" for="username">{{ $t('fields.username') }}</label>
