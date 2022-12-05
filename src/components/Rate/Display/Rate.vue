@@ -2,13 +2,14 @@
   <div class="d-flex align-items-center flex-wrap">
     <div :class="starRateClass" class="star-ratings me-2">
       <div :style="{width: getFilledRatingsWith + '%'}" class="filled-ratings">
-        <span class="d-flex flex-nowrap fs-5">
+        <span class="d-flex flex-nowrap">
           <stars-star v-for="i in numberOfStars" :key="i" :starHiddenClass="getStarHiddenClass(i)"></stars-star>
         </span>
       </div>
       <div v-if="!isUserRate" class="empty-ratings">
         <span>
-          <stars-star v-for="i in numberOfStars" :key="i" :starHiddenClass="'bi-star'"></stars-star>
+          <stars-star v-for="i in numberOfStars" :key="i"
+                      :starHiddenClass="{'bi-star-fill':fillEmptyStars, 'bi-star': !fillEmptyStars}"></stars-star>
         </span>
       </div>
     </div>
@@ -24,7 +25,7 @@ import { round } from '@/includes/utils';
 export default {
   name: 'Asp-Rate',
   components: { StarsStar },
-  props: ['rate', 'votes', 'isUserRate', 'textRateClass', 'starRateClass'],
+  props: ['rate', 'votes', 'isUserRate', 'textRateClass', 'starRateClass', 'fillEmptyStars'],
   data() {
     let data = {};
     data.numberOfStars = 5;
@@ -75,6 +76,11 @@ export default {
     padding: 0;
     display: block;
     z-index: 0;
+
+    .bi-star-fill {
+      color: inherit;
+      filter: brightness(0.75);
+    }
   }
 }
 </style>

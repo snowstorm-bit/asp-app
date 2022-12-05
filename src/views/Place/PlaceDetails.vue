@@ -1,22 +1,18 @@
 <template>
   <div v-if="dataLoaded">
     <asp-alert v-if="requestStatus.length > 0" :code="requestMessage" :status="requestStatus" />
-    <div :class="{'d-flex justify-content-between': userLoggedIn}">
+    <div :class="{'d-flex justify-content-between align-items-center': userLoggedIn}">
       <h2 :class="{'flex-fill':userLoggedIn}">{{ $t('details.place.details') }}</h2>
-      <div v-if="userLoggedIn" class="d-flex">
-        [
-        <div>
-          <router-link :to="{name: 'PlaceCreate'}" class="asp-link">
-            {{ $t('links.create') }}
-          </router-link>
-        </div>
-        <div v-if="isCreator">
-          &nbsp;|&nbsp;
-          <router-link :to="{name: 'PlaceUpdate', params: { placeTitle: title}}" class="asp-link">
-            {{ $t('links.modify') }}
-          </router-link>
-        </div>
-        ]
+      <div v-if="userLoggedIn" class="d-flex">[&nbsp;<div>
+        <router-link :to="{name: 'PlaceCreate'}" class="asp-link">
+          {{ $t('links.create') }}
+        </router-link>
+      </div>
+        <div v-if="isCreator">&nbsp;|&nbsp;<router-link :to="{name: 'PlaceUpdate', params: { placeTitle: title}}"
+                                                        class="asp-link">
+          {{ $t('links.modify') }}
+        </router-link>
+        </div>&nbsp;]
       </div>
 
       <!-- TODO : ONGET : Validate is user how has created the place -->
@@ -118,7 +114,6 @@ import AspMap from '@/components/Map.vue';
 import { status, validationHiddenClass } from '@/includes/enums';
 import { getHeaderAuthorization } from '@/includes/validation';
 import errors from '@/includes/errors.json';
-import warnings from '@/includes/warnings.json';
 import { mapWritableState } from 'pinia';
 import useUserStore from '@/stores/user';
 import useAlertStore from '@/stores/alert';
@@ -166,10 +161,19 @@ export default {
         this.arrowDirectionClass[key] = this.arrowDirectionClass[key] === 'down' ? 'up' : 'down';
       }
     },
+    redirectTo404(error = null) {
+      if (error !== null) {
+        useAlertStore().setMessage('globalMessage', {
+          code: error,
+          status: status.error
+        });
+      }
+      this.$router.push({ name: 'NotFound' });
+    },
     mapInvalidResponse(result, mapForInvalidFields = true) {
-      if ('place_details' in result.codes) {
+      if ('home' in result.codes) {
         this.requestStatus = result.status;
-        this.requestMessage = result.codes['place_details'];
+        this.requestMessage = result.codes['home'];
       } else if ('refresh' in result.codes) { // authentification error
         this.$router.go();
       } else if ('not_found' in result.codes) {
@@ -194,44 +198,19 @@ export default {
         });
       } catch {
         return {
-          codes: { 'place_details': errors.routes.get.details.place },
+          codes: { 'home': errors.routes.home },
           status: status.error
         };
       }
 
       if (response.status === 500) {
         return {
-          codes: { 'place_details': errors.routes.get.details.place },
+          codes: { 'home': errors.routes.home },
           status: status.error
         };
       }
 
-      let data = await response.json();
-
-      if (response.status === 404) {
-        return {
-          codes: { not_found: errors.place.not_found },
-          status: status.error
-        };
-      }
-
-      if (data.result.isCreator === 401 && this.userLoggedIn) {
-        if (localStorage.hasOwnProperty('user')) {
-          localStorage.removeItem('user');
-        } else if (localStorage.hasOwnProperty('token')) {
-          localStorage.removeItem('token');
-        }
-
-        this.userLoggedIn = localStorage.hasOwnProperty('token') && localStorage.hasOwnProperty('user');
-
-        return {
-          codes: { 'place_details': warnings.auth.login_again },
-          status: status.warning,
-          result: data.result
-        };
-      }
-
-      return data;
+      return await response.json();
     }
   },
   async mounted() {
@@ -272,6 +251,7 @@ export default {
 <style lang="scss" scoped>
 .asp-link {
   text-decoration: none;
+  cursor: pointer;
 
   &:hover {
     text-decoration: underline;

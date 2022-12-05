@@ -2,7 +2,8 @@
 	"app_name": "Trouve ta voie",
 	"header": {
 		"nav_items": {
-			"home": "Accueil"
+			"home": "Accueil",
+			"climbs": "Grimpes"
 		},
 		"search_placeholder": "Recherche"
 	},
@@ -19,6 +20,9 @@
 	"update": {
 		"place": "Modifier le lieu",
 		"climb": "Modifier la grimpe"
+	},
+	"home": {
+		"most_popular_climbs": "GRIMPES LES PLUS POPULAIRES"
 	},
 	"details": {
 		"place": {
@@ -38,8 +42,8 @@
 	"links": {
 		"see_more": {
 			"climb": {
-				"popular": "Voir plus de grimples populaires",
-				"all": "Voir toutes les grimpes"
+				"popular": "Voir plus de grimples populaires >",
+				"all": "Voir toutes les grimpes >"
 			},
 			"details": "Voir les détails"
 		},
@@ -199,6 +203,7 @@
 		"routes": {
 			"register": "Une erreur s'est produite à la création de votre compte utilisateur. Veuillez réessayer plus tard",
 			"login": "Une erreur s'est produite lors de la connexion à votre compte utilisateur",
+			"home": "Une erreur s'est produite au chargement de la page. Veuillez réessayer plus tard",
 			"get": {
 				"create": {
 					"place": "Une erreur s'est produite lors de l'obtention du formulaire pour créer un lieu. Veuillez réessayer plus tard",
@@ -207,6 +212,9 @@
 				"update": {
 					"place": "Une erreur s'est produite lors de l'obtention du formulaire pour modifier un lieu. Veuillez réessayer plus tard",
 					"climb": "Une erreur s'est produite lors de l'obtention du formulaire pour modifier une grimpe. Veuillez réessayer plus tard"
+				},
+				"all": {
+					"climbs": "Une erreur s'est produite à l'obtentions des grimpes"
 				}
 			},
 			"create": {

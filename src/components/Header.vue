@@ -17,16 +17,10 @@
             <router-link :to="{ name: 'Home' }" aria-current="page" class="nav-item nav-link-header active">
               {{ $t('header.nav_items.home') }}
             </router-link>
+            <router-link :to="{name: 'Climbs'}" class="nav-item nav-link-header">
+              {{ $t('header.nav_items.climbs') }}
+            </router-link>
           </div>
-          <!-- barre de recherche -->
-          <!--          <form class="d-flex me-2" role="search">-->
-          <!--            <input :placeholder="$t('header.search_placeholder')" aria-label="Search" class="form-control me-2"-->
-          <!--                   disabled="disabled"-->
-          <!--                   type="search">-->
-          <!--            <button class="btn btn-outline-primary" disabled="disabled" type="submit">-->
-          <!--              <i class="bi bi-search"></i>-->
-          <!--            </button>-->
-          <!--          </form>-->
           <div v-if="userLoggedIn" id="user-menu" class="btn-group">
             <button :disabled="modalIsOpened" aria-expanded="false" class="btn btn-outline-primary dropdown-toggle"
                     data-bs-toggle="dropdown" type="button">

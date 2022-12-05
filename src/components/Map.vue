@@ -1,5 +1,5 @@
 <template>
-  <GoogleMap id="div-map" :center="center" :zoom="5" :zoom-control="true"
+  <GoogleMap id="div-map" :center="center" :zoom="15" :zoom-control="true"
              api-key="AIzaSyB--fzpW892yY2jxJ7Nb4o5QG6GAMdGwWc"
              style="width: 100%;min-height:18rem">
     <Marker :data-bs-title="markerTitle" :options="marker"

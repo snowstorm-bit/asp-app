@@ -103,6 +103,7 @@
 	"routes": {
 		"register": "errors.routes.register",
 		"login": "errors.routes.login",
+		"home": "errors.routes.home",
 		"get": {
 			"create": {
 				"place": "errors.routes.get.create.place",
@@ -115,6 +116,9 @@
 			"details": {
 				"place": "errors.routes.get.details.place",
 				"climb": "errors.routes.get.details.climb"
+			},
+			"all": {
+				"climbs": "errors.routes.get.all.climbs"
 			}
 		},
 		"create": {

@@ -4,6 +4,7 @@ import NotFound from '@/views/NotFound.vue';
 import PlaceForm from '@/views/Place/PlaceForm.vue';
 import ClimbForm from '@/views/Climb/ClimbForm.vue';
 import PlaceDetails from '@/views/Place/PlaceDetails.vue';
+import ClimbsView from '@/views/Climb/ClimbsView.vue';
 
 const routes = [
     {
@@ -33,6 +34,11 @@ const routes = [
         name: 'PlaceDetails',
         props: true,
         component: PlaceDetails
+    },
+    {
+        path: '/climbs',
+        name: 'Climbs',
+        component: ClimbsView
     },
     {
         path: '/climb/create',
