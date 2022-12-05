@@ -354,6 +354,32 @@ export default {
 
       return { status: status.success };
     },
+    async getForCreate() {
+      let response;
+      try {
+        response = await fetch(`/api/user/auth`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': getHeaderAuthorization()
+          }
+        });
+      } catch {
+        return {
+          codes: { 'create_place': errors.routes.get.create.place },
+          status: status.error
+        };
+      }
+
+      if (!await validateAuthFromResponse(response.status, this.userLoggedIn)) {
+        return {
+          codes: { refresh: true },
+          status: status.error
+        };
+      }
+
+      return await response.json();
+    },
     async getData() {
       let response;
       try {
@@ -399,14 +425,14 @@ export default {
   },
   async mounted() {
     if (!useAlertStore().hasAuthInvalidMessage) {
-      if (this.isUpdate) {
-        let updateData = await this.getData();
-        if (updateData.status === status.error) {
-          this.mapInvalidResponse(updateData, false);
-          return;
-        }
+      let data = this.isUpdate ? await this.getData() : await this.getForCreate();
 
-        for (const [key, value] of Object.entries(updateData.result)) {
+      if (data.status === status.error) {
+        this.mapInvalidResponse(data, false);
+        return;
+      }
+      if (this.isUpdate) {
+        for (const [key, value] of Object.entries(data.result)) {
           this[key] = value;
         }
       }
