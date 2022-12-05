@@ -74,7 +74,9 @@
 		"difficulty_level": {
 			"not_decimal": "errors.fields.climb.difficulty_level.not_decimal",
 			"empty_or_white_spaces": "errors.fields.climb.difficulty_level.empty_or_white_spaces",
-			"range": "errors.fields.climb.difficulty_level.range"
+			"range": "errors.fields.climb.difficulty_level.range",
+			"min": "errors.fields.climb.difficulty_level.min",
+			"max": "errors.fields.climb.difficulty_level.max"
 		},
 		"place_title": {
 			"is_null": "errors.fields.climb.place_title.is_null",
@@ -91,12 +93,16 @@
 			"exists_already": "errors.fields.climb.images.exists_already",
 			"size": "errors.fields.climb.images.size",
 			"which_one": "errors.fields.climb.images.which_one"
+		},
+		"rate": {
+			"empty_or_white_spaces": "errors.fields.climb.rate.empty_or_white_spaces",
+			"range": "errors.fields.climb.rate.range",
+			"not_integer": "errors.fields.climb.rate.not_integer"
 		}
 	},
 	"user_rates": {
 		"rate": {
 			"not_int": "errors.fields.user_rates.rate.not_int",
-			"empty_or_white_spaces": "errors.fields.user_rates.rate.empty_or_white_spaces",
 			"range": "errors.fields.user_rates.rate.range"
 		}
 	},

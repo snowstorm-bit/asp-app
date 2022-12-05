@@ -37,7 +37,9 @@
 		"register": "S'inscrire",
 		"create": "Créer",
 		"save_changes": "Enregistrer les modifications",
-		"delete": "Supprimer"
+		"delete": "Supprimer",
+		"filter": "Appliquer le filtre",
+		"load_more": "Charger plus de résultats"
 	},
 	"links": {
 		"see_more": {
@@ -183,7 +185,9 @@
 				"difficulty_level": {
 					"not_decimal": "Le niveau de difficulté doit être une valeur numérique",
 					"empty_or_white_spaces": "Le niveau de difficulté de la grimpe ne peut être vide ou composé uniquement d'espaces blancs",
-					"range": "Le niveau de difficulté doit être entre 5.6 et 5.15"
+					"range": "Le niveau de difficulté doit être entre 5.6 et 5.15",
+					"min": "Le niveau de difficulté minimum à filtrer doit être inférieur au niveau maximum",
+					"max": "Le niveau de difficulté maximum à filtrer doit être supérieur au niveau minimum"
 				},
 				"place_title": {
 					"is_null": "La place associée  longitude ne peut être vide",
@@ -197,6 +201,10 @@
 					"exists_already": "L'image sélectionnée est déjà une image sélectionnée pour la grimpe",
 					"size": "La taille de l'image sélectionnée est trop grande. Veuillez choisir un fichier avant moins de 30ko",
 					"which_one": "L'images ou les images sélectionnées en erreur est ou sont :"
+				},
+				"rate": {
+					"range": "La note des grimpes à filter doit être entre 1 et 5",
+					"not_integer": "La notoe des grimpes à filtrer doit être un chiffre"
 				}
 			}
 		},
@@ -234,9 +242,13 @@
 	},
 	"display_text": {
 		"rate": {
+			"rate": "Note",
 			"votes": "votes"
 		},
+		"min": "Min.",
+		"max": "Max.",
 		"style": "Style",
-		"difficulty_level": "Niveau de difficulté"
+		"difficulty_level": "Niveau de difficulté",
+		"place_title": "Lieu"
 	}
 }

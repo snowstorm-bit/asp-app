@@ -1,38 +1,42 @@
 <template>
-  <div>
+  <div class="asp-container">
     <img alt="Home img" class="opacity-75" src="/home-img.jpg" />
     <div class="centered">
-      <h1>{{ $t('app_name').toUpperCase() }}</h1>
+      <h1 v-if="dataLoaded">{{ $t('app_name').toUpperCase() }}</h1>
     </div>
   </div>
   <div v-if="dataLoaded" class="m-5 ps-5 pe-5">
     <hr />
     <div class="d-flex justify-content-between align-self-baseline">
       <h2 class="fw-bold text-start mb-4 fs-4">{{ $t('home.most_popular_climbs') }}</h2>
-      <router-link :to="{name: 'Climbs'}" class="asp-link">
+      <router-link v-if="true === false" :to="{name: 'Climbs'}" class="asp-link">
         {{ $t('links.see_more.climb.popular') }}
       </router-link>
     </div>
     <asp-search-climbs :col-class="'col col-md-6 col-lg-4 col-xl-3'" :items="items" />
-    <div class="d-flex justify-content-end">
+    <div v-if="true === false" class="d-flex justify-content-end">
       <router-link :to="{name: 'Climbs'}" class="asp-link">{{ $t('links.see_more.climb.all') }}</router-link>
+    </div>
+    <div v-if="true === true" class="mt-5">
+      <hr />
+      <climbs-view></climbs-view>
     </div>
   </div>
 </template>
 
 <script>
-// import useUserStore from "@/stores/user";
 import AspRateForm from '@/components/Rate/RateForm.vue';
 import AspRate from '@/components/Rate/Display/Rate.vue';
 import ClimbCard from '@/components/Climb/Card.vue';
 import AspSearchClimbs from '@/components/Climb/Search.vue';
-import useAlertStore from '@/stores/alert';
 import { status } from '@/includes/enums';
 import errors from '@/includes/errors.json';
+import ClimbsView from '@/views/Climb/ClimbsView.vue';
 
 export default {
   name: 'Home-View',
   components: {
+    ClimbsView,
     AspRateForm,
     AspRate,
     ClimbCard,
@@ -75,19 +79,12 @@ export default {
     }
   },
   async mounted() {
-    if (!useAlertStore().hasAuthInvalidMessage) {
-      let placeDetails = await this.getData();
-      if (placeDetails.status !== status.success) {
-        this.mapInvalidResponse(placeDetails, false);
-        if (placeDetails.status === status.error) {
-          return;
-        }
-      }
+    let data = await this.getData();
 
-      for (const [key, value] of Object.entries(placeDetails.result)) {
-        this[key] = value;
-      }
+    for (const [key, value] of Object.entries(data.result)) {
+      this[key] = value;
     }
+
     this.dataLoaded = true;
   }
 };
@@ -103,9 +100,8 @@ main {
   }
 }
 
-div {
+.asp-container {
   position: relative;
-  text-align: center;
 
   img {
     filter: blur(0.15mm);
@@ -113,6 +109,7 @@ div {
   }
 
   .centered {
+    text-align: center;
     position: absolute;
     top: 50%;
     left: 50%;

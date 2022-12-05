@@ -27,15 +27,21 @@ a {
   @extend .pt-1;
 }
 
-.asp-sticky-label {
-  @extend .sticky-top;
-  background: white;
+.asp-title {
+  @extend .pt-1;
   border-bottom: 1px solid black;
   padding-bottom: 0.3rem;
   margin-bottom: 0.4rem;
   width: 100%;
   display: flex;
   @extend .justify-content-between;
+  @extend .fw-bold;
+}
+
+.asp-sticky-title {
+  @extend .sticky-top;
+  @extend .asp-title;
+  background: white;
 }
 
 .asp-sticky-container {

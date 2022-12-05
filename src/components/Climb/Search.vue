@@ -15,9 +15,6 @@ export default {
   props: ['items', 'colClass'],
   components: {
     ClimbCard
-  },
-  mounted() {
-    console.log(this);
   }
 };
 </script>
