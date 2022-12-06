@@ -14,12 +14,9 @@
       </router-link>
     </div>
     <asp-search-climbs :col-class="'col col-md-6 col-lg-4 col-xl-3'" :items="items" />
-    <div v-if="true === false" class="d-flex justify-content-end">
-      <router-link :to="{name: 'Climbs'}" class="asp-link">{{ $t('links.see_more.climb.all') }}</router-link>
-    </div>
-    <div v-if="true === true" class="mt-5">
+    <div class="mt-5 mb-5">
       <hr />
-      <climbs-view></climbs-view>
+      <asp-climbs-view></asp-climbs-view>
     </div>
   </div>
 </template>
@@ -31,12 +28,12 @@ import ClimbCard from '@/components/Climb/Card.vue';
 import AspSearchClimbs from '@/components/Climb/Search.vue';
 import { status } from '@/includes/enums';
 import errors from '@/includes/errors.json';
-import ClimbsView from '@/views/Climb/ClimbsView.vue';
+import AspClimbsView from '@/views/Climb/ClimbsView.vue';
 
 export default {
   name: 'Home-View',
   components: {
-    ClimbsView,
+    AspClimbsView,
     AspRateForm,
     AspRate,
     ClimbCard,

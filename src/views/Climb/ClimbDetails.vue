@@ -4,7 +4,18 @@
 
 <script>
 export default {
-  name: 'Asp-Place-Details'
+  name: 'Asp-Climb-Details',
+  data() {
+    return {
+      dataLoaded: false,
+      arrowDirectionClass: {
+        description: 'down',
+        steps: 'down',
+        styles: {},
+        difficultyLevels: {}
+      }
+    };
+  }
 };
 </script>
 

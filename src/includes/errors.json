@@ -96,7 +96,10 @@
 		},
 		"rate": {
 			"empty_or_white_spaces": "errors.fields.climb.rate.empty_or_white_spaces",
-			"range": "errors.fields.climb.rate.range",
+			"range": {
+				"min": "errors.fields.climb.rate.range.min",
+				"max": "errors.fields.climb.rate.range.max"
+			},
 			"not_integer": "errors.fields.climb.rate.not_integer"
 		}
 	},

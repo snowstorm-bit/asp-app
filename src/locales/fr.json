@@ -74,6 +74,9 @@
 				"difficulty_level": "Il n'y a pas de grimpe pour ce niveau de difficulté",
 				"none": "Il n'y a pas de grimpe pour ce lieu"
 			}
+		},
+		"climb": {
+			"none": "Il n'y a pas de grimpe à afficher"
 		}
 	},
 	"successes": {
@@ -203,8 +206,11 @@
 					"which_one": "L'images ou les images sélectionnées en erreur est ou sont :"
 				},
 				"rate": {
-					"range": "La note des grimpes à filter doit être entre 1 et 5",
-					"not_integer": "La notoe des grimpes à filtrer doit être un chiffre"
+					"range": {
+						"min": "La note minimum doit être inférieure à la note maximum",
+						"max": "La note maximum doit être supérieure à la note minimum"
+					},
+					"not_integer": "La note des grimpes à filtrer doit être un chiffre"
 				}
 			}
 		},

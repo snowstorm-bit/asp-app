@@ -1,5 +1,5 @@
 <template>
-  <div class="star-ratings fs-3">
+  <div :class="starsSize" class="star-ratings">
     <div class="d-flex">
       <stars-star v-for="i in numberOfStars" :key="i" :starHiddenClass="getStarHiddenClass(i)" @click="selectStar(i)"
                   @mouseenter="hoverStar(i)" @mouseleave="hoveredStar = -1"></stars-star>
@@ -12,6 +12,8 @@ import StarsStar from '@/components/Rate/Star.vue';
 
 export default {
   name: 'Asp-Rate-Form',
+  props: ['starsSize'],
+  emits: ['rate_selected'],
   components: { StarsStar },
   data() {
     let data = {};
@@ -37,7 +39,7 @@ export default {
     selectStar(index) {
       this.selectedStar = this.selectedStar === index ? 0 : index;
       this.hoveredStar = this.selectedStar;
-      console.log(this.hoveredStar);
+      this.$emit('rate_selected', this.selectedStar);
     }
   }
 };

@@ -1,6 +1,7 @@
 <template>
   <div v-if="dataLoaded">
     <asp-alert v-if="requestStatus.length > 0" :code="requestMessage" :status="requestStatus" />
+    <!-- TODO : ONGET : Validate is user how has created the place -->
     <div :class="{'d-flex justify-content-between align-items-center': userLoggedIn}">
       <h2 :class="{'flex-fill':userLoggedIn}">{{ $t('details.place.details') }}</h2>
       <div v-if="userLoggedIn" class="d-flex">[&nbsp;<div>
@@ -14,8 +15,6 @@
         </router-link>
         </div>&nbsp;]
       </div>
-
-      <!-- TODO : ONGET : Validate is user how has created the place -->
     </div>
     <hr />
     <!-- Place details -->
@@ -114,6 +113,7 @@ import AspMap from '@/components/Map.vue';
 import { status, validationHiddenClass } from '@/includes/enums';
 import { getHeaderAuthorization } from '@/includes/validation';
 import errors from '@/includes/errors.json';
+import warnings from '@/includes/warnings.json';
 import { mapWritableState } from 'pinia';
 import useUserStore from '@/stores/user';
 import useAlertStore from '@/stores/alert';
@@ -207,6 +207,20 @@ export default {
         return {
           codes: { 'home': errors.routes.home },
           status: status.error
+        };
+      }
+
+      if (data.result.isCreator === 401 && this.userLoggedIn) {
+        if (localStorage.hasOwnProperty('user')) {
+          localStorage.removeItem('user');
+        } else if (localStorage.hasOwnProperty('token')) {
+          localStorage.removeItem('token');
+        }
+        this.userLoggedIn = localStorage.hasOwnProperty('token') && localStorage.hasOwnProperty('user');
+        return {
+          codes: { 'place_details': warnings.auth.login_again },
+          status: status.warning,
+          result: data.result
         };
       }
 

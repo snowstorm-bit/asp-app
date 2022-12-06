@@ -10,9 +10,20 @@
             <i :class="`bi bi-arrow-${arrowDirectionClass.rate}-short pe-1`"></i>
           </div>
           <div :class="{'collapse': arrowDirectionClass.rate === 'up'}" class="mt-3">
-            <input v-model="rate" :class="hiddenClass.rate" class="form-control" required="required" type="number"
-                   @focusin="resetValidationOnField('rate')" @input="validateRateField" />
-            <invalid-feedback :error="errors.rate" />
+            <div class="mb-2">
+              <div class="d-flex align-items-baseline">
+                <label class="form-label mb-0 me-2">{{ $t('display_text.min') }} :</label>
+                <asp-rate-form stars-size="fs-4" @rate_selected="validateMinRateField"></asp-rate-form>
+              </div>
+              <invalid-feedback :error="errors.minRate" />
+            </div>
+            <div>
+              <div class="d-flex align-items-baseline">
+                <label class="form-label mb-0 me-2">{{ $t('display_text.max') }} :</label>
+                <asp-rate-form stars-size="fs-4" @rate_selected="validateMaxRateField"></asp-rate-form>
+              </div>
+              <invalid-feedback :error="errors.maxRate" />
+            </div>
           </div>
         </div>
         <!-- Place -->
@@ -105,7 +116,7 @@ import { getFormData, validateForm, validateRange } from '@/includes/validation'
 
 const limit = 9;
 export default {
-  name: 'Climbs-View',
+  name: 'Asp-Climbs-View',
   components: {
     AspRateForm,
     AspRate,
@@ -114,8 +125,10 @@ export default {
     AspSearchClimbs
   },
   data() {
-    let data = getFormData(['rate', 'difficultyLevelMin', 'difficultyLevelMax']);
+    let data = getFormData(['minRate', 'maxRate', 'difficultyLevelMin', 'difficultyLevelMax']);
     data.difficultyLevelsArray = ['5.6', '5.7', '5.8', '5.9', '5.10', '5.11', '5.12', '5.13', '5.14', '5.15'];
+    data.minRate = 0;
+    data.maxRate = 0;
     data.ckbPlaceTitles = [];
     data.placeTitles = [];
     data.ckbStyles = [];
@@ -154,20 +167,37 @@ export default {
         }
       }
     },
-    validateRateField() {
-      let indicateIsValid = typeof this.errors.rate !== 'string';
-      this.errors.rate = '';
-      let value = `${ this.rate }`.trim();
+    validateMinRateField(value) {
+      let indicateIsValid = typeof this.errors.minRate !== 'string';
+      this.errors.minRate = '';
 
-      if (value !== '') {
-        if (typeof this.rate !== 'number') {
-          this.errors.rate = errors.climb.rate.not_integer;
-        } else if (!validateRange(this.rate, 1, 5, false)) {
-          this.errors.rate = errors.climb.rate.range;
+      if (typeof value !== 'number') {
+        this.errors.minRate = errors.climb.rate.not_integer;
+      } else if (value > 0) {
+        if (!validateRange(value, 0, this.maxRate, false)) {
+          this.errors.minRate = errors.climb.rate.range.min;
         }
       }
 
-      this.setValidationOnField('rate', indicateIsValid);
+      this.minRate = value;
+      console.log('min rate value', this.minRate, value);
+      this.setValidationOnField('minRate', indicateIsValid);
+    },
+    validateMaxRateField(value) {
+      let indicateIsValid = typeof this.errors.maxRate !== 'string';
+      this.errors.maxRate = '';
+
+      if (typeof value !== 'number') {
+        this.errors.maxRate = errors.climb.rate.not_integer;
+      } else if (value > 0) {
+        if (!validateRange(value, this.minRate, 5, false)) {
+          this.errors.maxRate = errors.climb.rate.range.max;
+        }
+      }
+
+      this.maxRate = value;
+      console.log('max rate value', this.maxRate, value);
+      this.setValidationOnField('maxRate', indicateIsValid);
     },
     validateDifficultyLevel(value) {
       return this.difficultyLevelsArray.find(d => d === String(value)) !== undefined;
@@ -180,9 +210,11 @@ export default {
 
       if (value !== '' && !this.validateDifficultyLevel(value)) {
         this.errors.difficultyLevelMin = errors.climb.difficulty_level.range;
-      } else if (this.difficultyLevelMax !== '' &&
-          this.difficultyLevelsArray.indexOf(value) > this.difficultyLevelsArray.indexOf(this.difficultyLevelMax)) {
-        this.errors.difficultyLevelMin = errors.climb.difficulty_level.min;
+      } else if (this.difficultyLevelMax !== '') {
+        let difficultyLevelMaxIndex = this.difficultyLevelsArray.indexOf(this.difficultyLevelMax);
+        if (difficultyLevelMaxIndex > -1 && this.difficultyLevelsArray.indexOf(value) > difficultyLevelMaxIndex) {
+          this.errors.difficultyLevelMin = errors.climb.difficulty_level.min;
+        }
       }
 
       this.setValidationOnField('difficultyLevelMin', indicateIsValid, false);
@@ -195,11 +227,12 @@ export default {
 
       if (value !== '' && !this.validateDifficultyLevel(value)) {
         this.errors.difficultyLevelMin = errors.climb.difficulty_level.range;
-      } else if (this.difficultyLevelMax !== '' &&
-          this.difficultyLevelsArray.indexOf(value) < this.difficultyLevelsArray.indexOf(this.difficultyLevelMin)) {
-        this.errors.difficultyLevelMax = errors.climb.difficulty_level.max;
+      } else if (this.difficultyLevelMax !== '') {
+        let difficultyLevelMinIndex = this.difficultyLevelsArray.indexOf(this.difficultyLevelMin);
+        if (difficultyLevelMinIndex > -1 && this.difficultyLevelsArray.indexOf(value) < difficultyLevelMinIndex) {
+          this.errors.difficultyLevelMax = errors.climb.difficulty_level.max;
+        }
       }
-
       this.setValidationOnField('difficultyLevelMax', indicateIsValid, false);
     },
     getURLSearchParams(loadMore) {
@@ -210,9 +243,8 @@ export default {
         }
         params.push(['offset', this.offset]);
       } else {
-        console.log(this.ckbPlaceTitles.length);
-        if (this.rate !== '') {
-          params.push(['rate', this.rate]);
+        if (this.maxRate > 0) {
+          params.push(['rate', this.minRate], ['rate', this.maxRate]);
         }
         if (this.ckbPlaceTitles.length > 0) {
           this.ckbPlaceTitles.forEach((p, i) => params.push(['place', p]));
@@ -257,33 +289,31 @@ export default {
       return await response.json();
     },
     async getSearch(loadMore) {
-      if (loadMore || this.rate !== ''
+      if (loadMore
+          || this.minRate > -1
+          || this.maxRate > -1
           || this.ckbPlaceTitles.length > 0
           || this.ckbStyles.length > 0
           || this.difficultyLevelMin !== ''
           && this.difficultyLevelMax !== '') {
-        this.validateRateField();
+        this.validateMinRateField(this.minRate);
+        this.validateMaxRateField(this.maxRate);
         this.validateDifficultyLevelMinField();
         this.validateDifficultyLevelMaxField();
 
         if (validateForm(this.errors)) {
           let data = await this.getData(loadMore);
           if (loadMore) {
-            let nbrItemAdded = 0;
-            for (let item in data.result.items) {
+            data.result.items.forEach(item => {
               if (this.items.find(i => i.title === item.title) === undefined) {
                 this.items.push(item);
-                nbrItemAdded++;
               }
-            }
-            this.showLoadMore = nbrItemAdded === 0;
+            });
           } else {
-            console.log('dlfkja;');
-            console.log(data.result.items);
             this.items = data.result.items;
-            this.showLoadMore = this.items.length === limit;
           }
           this.offset = data.result.offset;
+          this.showLoadMore = data.hasMoreResult;
         }
       }
     }
