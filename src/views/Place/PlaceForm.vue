@@ -198,7 +198,7 @@ export default {
         this.requestStatus = result.status;
         this.requestMessage = result.codes[globalErrorCode];
         this.formInSubmission = false;
-      } else if ('refresh' in result.codes) { // authentification error
+      } else if ('refresh' in result.codes) { // authentication error
         this.$router.go();
       } else if ('not_found' in result.codes) {
         this.redirectTo404(result.codes.not_found);
@@ -357,8 +357,8 @@ export default {
     async getForCreate() {
       let response;
       try {
-        response = await fetch(`/api/user/auth`, {
-          method: 'POST',
+        response = await fetch(`/api/place`, {
+          method: 'GET',
           headers: {
             'Content-Type': 'application/json',
             'Authorization': getHeaderAuthorization()

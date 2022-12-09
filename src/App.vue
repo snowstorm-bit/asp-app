@@ -10,7 +10,7 @@
 <script>
 import AspHeader from '@/components/Header.vue';
 import AspAlert from '@/components/Alert.vue';
-import AspAuth from '@/components/Authentification/Auth.vue';
+import AspAuth from '@/components/Authentication/Auth.vue';
 import useUserStore from '@/stores/user';
 import useAlertStore from '@/stores/alert';
 import { mapActions, mapState, mapWritableState } from 'pinia';

@@ -180,7 +180,6 @@ export default {
       }
 
       this.minRate = value;
-      console.log('min rate value', this.minRate, value);
       this.setValidationOnField('minRate', indicateIsValid);
     },
     validateMaxRateField(value) {
@@ -196,7 +195,6 @@ export default {
       }
 
       this.maxRate = value;
-      console.log('max rate value', this.maxRate, value);
       this.setValidationOnField('maxRate', indicateIsValid);
     },
     validateDifficultyLevel(value) {

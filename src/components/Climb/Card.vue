@@ -47,7 +47,7 @@ import AspRate from '@/components/Rate/Display/Rate.vue';
 export default {
   name: 'Climb-Card',
   components: { AspRate },
-  props: ['title', 'placeTitle', 'description', 'imageUrl', 'link', 'rate', 'votes']
+  props: ['title', 'placeTitle', 'description', 'imageUrl', 'rate', 'votes']
 };
 </script>
 

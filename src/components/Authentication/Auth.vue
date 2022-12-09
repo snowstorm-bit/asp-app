@@ -1,6 +1,5 @@
 <template>
-  <div id="auth-modal" ref="authModal" aria-hidden="true" aria-labelledby="Modal d'authentification"
-       class="modal fade" tabindex="-1">
+  <div id="auth-modal" ref="authModal" aria-hidden="true" class="modal fade" tabindex="-1">
     <div class="modal-lg modal-dialog modal-dialog-centered">
       <div class="modal-content p-2">
         <!-- header -->
@@ -46,8 +45,8 @@
 
 <script>
 import { mapActions, mapState, mapWritableState } from 'pinia';
-import AuthLogin from '@/components/Authentification/Login.vue';
-import AuthRegister from '@/components/Authentification/Register.vue';
+import AuthLogin from '@/components/Authentication/Login.vue';
+import AuthRegister from '@/components/Authentication/Register.vue';
 import AspAlert from '@/components/Alert.vue';
 import useUserStore from '@/stores/user';
 import useAlertStore from '@/stores/alert';

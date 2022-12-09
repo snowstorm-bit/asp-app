@@ -2,7 +2,7 @@
   <div v-if="climbTitleValid">
     <h2 class="text-center">{{ getFormTitle }}</h2>
     <asp-alert v-if="requestStatus.length > 0" :code="requestMessage" :status="requestStatus" />
-    <form class="px-4 py-3" @submit.prevent="validateForm" novalidate>
+    <form class="px-4 py-3" novalidate @submit.prevent="validateForm">
       <div class="mb-3 row">
         <div class="col-md-6 mb-3">
           <label class="form-label input-required-lbl" for="title">{{ $t('fields.title') }}</label>
@@ -363,7 +363,7 @@ export default {
         this.requestStatus = result.status;
         this.requestMessage = result.codes[globalErrorCode];
         this.formInSubmission = false;
-      } else if ('refresh' in result.codes) { // authentification error
+      } else if ('refresh' in result.codes) { // authentication error
         this.$router.go();
       } else if ('not_found' in result.codes) {
         this.redirectTo404(result.codes.not_found);

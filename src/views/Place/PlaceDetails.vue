@@ -174,7 +174,7 @@ export default {
       if ('home' in result.codes) {
         this.requestStatus = result.status;
         this.requestMessage = result.codes['home'];
-      } else if ('refresh' in result.codes) { // authentification error
+      } else if ('refresh' in result.codes) { // authentication error
         this.$router.go();
       } else if ('not_found' in result.codes) {
         this.redirectTo404(result.codes.not_found);

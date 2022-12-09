@@ -76,9 +76,9 @@ export default defineStore('user', {
             return { status: status.success };
         },
         signOut() {
-            this.userLoggedIn = false;
             localStorage.removeItem('token');
             localStorage.removeItem('user');
+            this.userLoggedIn = localStorage.hasOwnProperty('token') && localStorage.hasOwnProperty('user');
 
             useAlertStore().setMessage('globalMessage', {
                 code: 'successes.routes.sign_out',
