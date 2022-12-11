@@ -1,7 +1,20 @@
 <template>
   <div v-if="dataLoaded">
-    <asp-alert v-if="requestStatus.length > 0" :code="requestMessage" :status="requestStatus" />
-    <!-- TODO : ADD LINK DELETE PLACE -->
+    <!-- delete climb modal -->
+    <asp-modal :modal-id="'delete-place'" @[deletePlaceModalConfirmEvent]="deletePlace">
+      <template v-slot:modal-title>
+        <h1 class="modal-title fs-5">{{ $t('delete.place.title') }}</h1>
+      </template>
+      <template v-slot:modal-body>
+        <i18n-t keypath="delete.place.confirm_message" tag="div">
+          <template v-slot:placeTitle>
+            <span class="mt-3 fw-bold">{{ placeTitle }}</span>
+          </template>
+        </i18n-t>
+      </template>
+    </asp-modal>
+    <asp-alert v-if="requestStatus.length > 0" :code="requestMessage" :status="requestStatus"
+               @[alertClosed]="requestStatus = ''; requestMessage = '';" />
     <div :class="{'d-flex justify-content-between align-items-center': userLoggedIn}">
       <h2 :class="{'flex-fill':userLoggedIn}">{{ $t('details.place.details') }}</h2>
       <div v-if="userLoggedIn" class="d-flex">
@@ -12,13 +25,12 @@
           </router-link>
         </div>
         <div v-if="isCreator && !isAdmin">&nbsp;|&nbsp;<router-link
-            :to="{name: 'PlaceUpdate', params: { placeTitle: placeTitle }}"
+            :to="{name: 'PlaceUpdate', params: { placeTitle: placeTitle}}"
             class="asp-link">
           {{ $t('links.modify') }}
         </router-link>
         </div>
-        <div v-if="isAdmin"><a
-            :data-bs-target="`#${placeTitle}`" class="asp-link text-danger" data-bs-toggle="modal">
+        <div v-if="isAdmin"><a :data-bs-target="`#delete-place`" class="asp-link text-danger" data-bs-toggle="modal">
           {{ $t('links.delete') }}
         </a>
         </div>
@@ -120,14 +132,15 @@
 <script>
 import AspMap from '@/components/Map.vue';
 import { status } from '@/includes/enums';
-import { getHeaderAuthorization } from '@/includes/validation';
+import { getHeaderAuthorization, validateIsAuth, validateNeedsAuth } from '@/includes/validation';
 import errors from '@/includes/errors.json';
-import warnings from '@/includes/warnings.json';
-import { mapActions, mapState, mapWritableState } from 'pinia';
+import { mapActions, mapWritableState } from 'pinia';
 import useUserStore from '@/stores/user';
 import useAlertStore from '@/stores/alert';
 import AspAlert from '@/components/Alert.vue';
 import AspRate from '@/components/Rate/Display/Rate.vue';
+import AspModal from '@/components/Modal.vue';
+import { ALERT_CLOSED, MODAL_CONFIRMED } from '@/includes/events';
 
 export default {
   name: 'Asp-Place-Details',
@@ -135,7 +148,8 @@ export default {
   components: {
     AspMap,
     AspAlert,
-    AspRate
+    AspRate,
+    AspModal
   },
   data() {
     return {
@@ -156,7 +170,9 @@ export default {
       longitude: 0,
       styles: '',
       difficultyLevels: [5.6, 5.7, 5.8, 5.9, '5.10', 5.11, 5.12, 5.13, 5.14, 5.15],
-      climbs: []
+      climbs: [],
+      deletePlaceModalConfirmEvent: MODAL_CONFIRMED,
+      alertClosed: ALERT_CLOSED
     };
   },
   computed: {
@@ -181,13 +197,70 @@ export default {
       this.$router.push({ name: 'NotFound' });
     },
     mapInvalidResponse(result) {
-      if ('place_details' in result.codes) {
+      let errorCode = 'authentication' in result.codes
+          ? 'authentication'
+          : 'place_details' in result.codes
+              ? 'place_details'
+              : 'delete_place' in result.codes
+                  ? 'delete_place' : '';
+      if (errorCode.length > 0) {
         this.requestStatus = result.status;
-        this.requestMessage = result.codes['place_details'];
+        this.requestMessage = result.codes[errorCode];
       } else if ('refresh' in result.codes) { // authentication error
         this.$router.go();
       } else if ('not_found' in result.codes) {
         this.redirectTo404(result.codes.not_found);
+      }
+    },
+    async manageDeletePlaceRequest() {
+      let response;
+      try {
+        response = await fetch(`/api/place/${ this.placeTitle }`, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': getHeaderAuthorization()
+          }
+        });
+      } catch {
+        return {
+          codes: { 'delete_place': errors.routes.delete.place },
+          status: status.error
+        };
+      }
+
+      let data = await response.json();
+
+      if (response.status === 500) {
+        return data;
+      }
+
+      let isAuth = await validateNeedsAuth(response.status, data.codes?.authentication, false);
+
+      if (typeof isAuth !== 'boolean') {
+        isAuth.result['isCreator'] = false;
+        return isAuth;
+      }
+
+      if (data.status === status.error) {
+        return data;
+      }
+
+      useAlertStore().setMessage('globalMessage', {
+        code: data.code,
+        status: data.status
+      });
+
+      return { status: status.success };
+    },
+    async deletePlace() {
+      let result = await this.manageDeletePlaceRequest();
+
+      if (result.status === status.error) {
+        event.stopPropagation();
+        this.mapInvalidResponse(result);
+      } else if (result.status === status.success) {
+        this.$router.push({ name: 'Home' });
       }
     },
     async getData() {
@@ -214,19 +287,23 @@ export default {
         };
       }
 
+      if (response.status === 404) {
+        return {
+          codes: { not_found: errors.place.not_found },
+          status: status.error
+        };
+      }
+
       let data = await response.json();
 
-      if (data.result.isCreator.status && data.result.isCreator.status === 401) {
-        if (data.result.isCreator.code === errors.auth.session_expired) {
-          this.userStoreSignOut(false);
+      let isAuth = await validateIsAuth(data.result.isCreator, 'place_details');
 
-          return {
-            codes: { 'climb_details': warnings.auth.login_again },
-            status: status.warning,
-            result: data.result
-          };
-        }
+      if (typeof isAuth !== 'boolean') {
         data.result.isCreator = false;
+        isAuth.result = data.result;
+        return isAuth;
+      } else {
+        data.result.isCreator = isAuth;
       }
 
       return data;

@@ -148,40 +148,51 @@ async function validateAuthFromResponse(responseStatusCode, userLoggedIn, alertS
                 code: errorCode,
                 status: status.error
             });
-
-            return false;
         }
+        return false;
     }
 
     return true;
 }
 
-async function validateNeedsAuth(responseStatusCode, responseErrorCode) {
+async function validateNeedsAuth(responseStatusCode, responseErrorCode, needsAppRefresh = true) {
     if (responseStatusCode === 401) {
         useUserStore().signOut(false);
     }
 
     if (responseErrorCode && responseErrorCode.length > 0) {
-        useUserStore().setAuthInvalid(responseErrorCode);
-        return false;
+        if (needsAppRefresh) {
+            useUserStore().setAuthInvalid(responseErrorCode);
+            return false;
+        } else {
+            return {
+                codes: { authentication: responseErrorCode },
+                status: status.error
+            };
+        }
     }
 
     return true;
 }
 
 async function validateIsAuth(isCreator, errorCodeKey) {
-    if (isCreator.status && isCreator.status === 401) {
-        if (isCreator.code === errors.auth.session_expired) {
-            useUserStore().signOut(false);
 
-            return {
-                codes: { [errorCodeKey]: warnings.auth.login_again },
-                status: status.warning
-            };
+    console.log('isCreator', isCreator);
+    if (isCreator) {
+        if (isCreator.status && isCreator.status === 401) {
+            if (isCreator.code === errors.auth.session_expired) {
+                useUserStore().signOut(false);
+
+                return {
+                    codes: { [errorCodeKey]: warnings.auth.login_again },
+                    status: status.warning
+                };
+            }
+            return false;
         }
-        return false;
+        return true;
     }
-    return true;
+    return false;
 }
 
 export {

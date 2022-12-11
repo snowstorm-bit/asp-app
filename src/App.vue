@@ -2,7 +2,7 @@
   <asp-auth :authIsValid="authIsValid" />
   <asp-header :authIsValid="authIsValid" />
   <main>
-    <asp-alert v-if="hasGlobalMessage || code.length > 0" :code="code" :status="status" />
+    <asp-alert v-if="showAlert && (hasGlobalMessage || code.length > 0)" :code="code" :status="status" />
     <router-view v-if="authIsValid" class="container-fluid container"></router-view>
   </main>
 </template>
@@ -25,6 +25,7 @@ export default {
   },
   data() {
     return {
+      showAlert: false,
       authIsValid: true,
       code: '',
       status: ''
@@ -48,6 +49,7 @@ export default {
           this.code = globalMessage.code;
           this.status = globalMessage.status;
         }
+        this.showAlert = true;
       }
     }
   }

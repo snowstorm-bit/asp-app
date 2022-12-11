@@ -16,7 +16,7 @@ const validationHiddenClass = {
     wasValidated: 'was-validated'
 };
 
-const routeNames = {
+const routeName = {
     home: 'home',
     place: {
         create: 'place-create',
@@ -31,4 +31,45 @@ const routeNames = {
     notFound: 'not-found'
 };
 
-export { status, colorClass, validationHiddenClass, routeNames };
+const APIGlobalRouteCode = {
+    auth: 'authentication',
+    home: 'home'
+};
+
+const APIUserRouteCode = {
+    register: 'register',
+    login: 'login',
+    account: {
+        profile: 'profile',
+        createdPlaces: 'created_places',
+        createdClimbs: 'created_climbs',
+        ratedClimbs: 'rated_climbs'
+    }
+};
+
+const APIPlaceRouteCode = {
+    details: 'place_details',
+    create: 'create_place',
+    update: 'update_place',
+    delete: 'delete_place'
+};
+
+const APIClimbRouteCode = {
+    all: 'climb_all',
+    details: 'climb_details',
+    create: 'create_climb',
+    update: 'update_climb',
+    delete: 'delete_climb',
+    rate: 'rate_climb'
+};
+
+export {
+    status,
+    colorClass,
+    validationHiddenClass,
+    routeName,
+    APIGlobalRouteCode,
+    APIUserRouteCode,
+    APIPlaceRouteCode,
+    APIClimbRouteCode
+};

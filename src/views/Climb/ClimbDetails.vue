@@ -1,5 +1,6 @@
 <template>
   <div v-if="dataLoaded">
+    <!-- delete climb modal -->
     <asp-modal :modal-id="'delete-climb'" @[deleteClimbModalConfirmEvent]="deleteClimb">
       <template v-slot:modal-title>
         <h1 class="modal-title fs-5">{{ $t('delete.climb.title') }}</h1>
@@ -12,8 +13,9 @@
         </i18n-t>
       </template>
     </asp-modal>
-    <asp-alert v-if="requestStatus.length > 0" :code="requestMessage" :status="requestStatus" />
-    <!-- TODO : ADD LINK DELETE PLACE -->
+    <!-- displayed content -->
+    <asp-alert v-if="requestStatus.length > 0" :code="requestMessage" :status="requestStatus"
+               @[alertClosed]="requestStatus = ''; requestMessage = '';" />
     <div :class="{'d-flex justify-content-between align-items-center': userLoggedIn}">
       <h2 :class="{'flex-fill':userLoggedIn}">{{ $t('details.climb.details') }}</h2>
       <div v-if="userLoggedIn" class="d-flex">
@@ -24,7 +26,7 @@
           </router-link>
         </div>
         <div v-if="isCreator && !isAdmin">&nbsp;|&nbsp;<router-link
-            :to="{name: 'ClimbUpdate', params: { placeTitle: title}}"
+            :to="{name: 'ClimbUpdate', params: { climbTitle: climbTitle}}"
             class="asp-link">
           {{ $t('links.modify') }}
         </router-link>
@@ -105,27 +107,23 @@ import { mapActions, mapState, mapWritableState } from 'pinia';
 import useUserStore from '@/stores/user';
 import useAlertStore from '@/stores/alert';
 import { status } from '@/includes/enums';
-import { MODAL_CONFIRMED, RATE_SELECTED } from '@/includes/events';
+import { MODAL_CONFIRMED, RATE_SELECTED, ALERT_CLOSED } from '@/includes/events';
 import {
   getHeaderAuthorization,
-  validateAuthFromResponse,
   validateIsAuth,
   validateNeedsAuth
 } from '@/includes/validation';
 import errors from '@/includes/errors.json';
-import warnings from '@/includes/warnings.json';
 import AspAlert from '@/components/Alert.vue';
 import AspRate from '@/components/Rate/Display/Rate.vue';
 import AspCarousel from '@/components/Carousel.vue';
 import AspRateForm from '@/components/Rate/RateForm.vue';
 import AspModal from '@/components/Modal.vue';
-import i18n from '@/includes/I18n';
-import { is } from '@vee-validate/rules';
 
 export default {
   name: 'Asp-Climb-Details',
   props: ['climbTitle'],
-  components: { AspModal, AspAlert, AspRateForm, AspCarousel, AspRate, i18n },
+  components: { AspModal, AspAlert, AspRateForm, AspCarousel, AspRate },
   data() {
     return {
       dataLoaded: false,
@@ -142,10 +140,12 @@ export default {
       rate: 0,
       votes: 0,
       rateSelectedEvent: RATE_SELECTED,
-      deleteClimbModalConfirmEvent: MODAL_CONFIRMED
+      deleteClimbModalConfirmEvent: MODAL_CONFIRMED,
+      alertClosed: ALERT_CLOSED
     };
   },
   computed: {
+    ...mapState(useAlertStore, ['hasGlobalMessage']),
     ...mapWritableState(useUserStore, ['userLoggedIn', 'isAdmin'])
   },
   methods: {
@@ -159,7 +159,16 @@ export default {
       }
       this.$router.push({ name: 'NotFound' });
     },
-    mapInvalidResponse(result, errorCode = '') {
+    mapInvalidResponse(result) {
+      let errorCode = 'authentication' in result.codes
+          ? 'authentication'
+          : 'climb_details' in result.codes
+              ? 'climb_details'
+              : 'rate_climb' in result.codes
+                  ? 'rate_climb'
+                  : 'delete_climb' in result.codes
+                      ? 'delete_climb' : '';
+
       if (errorCode.length > 0) {
         this.requestStatus = result.status;
         this.requestMessage = result.codes[errorCode];
@@ -193,11 +202,11 @@ export default {
         return data;
       }
 
-      if (!await validateNeedsAuth(response.status, data.codes?.authentication)) {
-        return {
-          codes: { refresh: true },
-          status: status.error
-        };
+      let isAuth = await validateNeedsAuth(response.status, data.codes?.authentication, false);
+
+      if (typeof isAuth !== 'boolean') {
+        isAuth.result['isCreator'] = false;
+        return isAuth;
       }
 
       if (response.status === 404) {
@@ -232,18 +241,18 @@ export default {
         return data;
       }
 
-      if (!await validateNeedsAuth(response.status, data.codes?.authentication)) {
-        return {
-          codes: { refresh: true },
-          status: status.error
-        };
-      }
-
       if (response.status === 404) {
         return {
           codes: { 'rate_climb': errors.routes.rate.climb },
           status: status.error
         };
+      }
+
+      let isAuth = await validateNeedsAuth(response.status, data.codes?.authentication, false);
+
+      if (typeof isAuth !== 'boolean') {
+        isAuth.result['isCreator'] = false;
+        return isAuth;
       }
 
       return data;
@@ -254,7 +263,7 @@ export default {
       this.userRate = selectedRate;
       // manage error, if so, from response
       if (data.status !== status.success) {
-        this.mapInvalidResponse(data, 'rate_climb');
+        this.mapInvalidResponse(data);
 
         // reset to previous value
         this.userRate = userRate;
@@ -295,11 +304,11 @@ export default {
         return data;
       }
 
-      if (!await validateNeedsAuth(response.status, data.codes?.authentication)) {
-        return {
-          codes: { refresh: true },
-          status: status.error
-        };
+      let isAuth = await validateNeedsAuth(response.status, data.codes?.authentication, false);
+
+      if (typeof isAuth !== 'boolean') {
+        isAuth.result['isCreator'] = false;
+        return isAuth;
       }
 
       if (data.status === status.error) {
@@ -318,7 +327,7 @@ export default {
 
       if (result.status === status.error) {
         event.stopPropagation();
-        this.mapInvalidResponse(result, 'delete_climb');
+        this.mapInvalidResponse(result);
       } else if (result.status === status.success) {
         this.$router.push({ name: 'Home' });
       }
@@ -356,7 +365,6 @@ export default {
 
       let data = await response.json();
 
-      // validating auth
       let isAuth = await validateIsAuth(data.result.isCreator, 'climb_details');
 
       if (typeof isAuth !== 'boolean') {
@@ -376,7 +384,7 @@ export default {
 
     // manage error, if so, from response
     if (climbDetails.status !== status.success) {
-      this.mapInvalidResponse(climbDetails, 'climb_details');
+      this.mapInvalidResponse(climbDetails);
       if (climbDetails.status === status.error) {
         return;
       }

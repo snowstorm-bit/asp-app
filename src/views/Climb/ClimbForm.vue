@@ -105,7 +105,7 @@ import {
   getHeaderAuthorization,
   validateAuthFromResponse,
   validateEmptyOrWhiteSpace,
-  validateForm, validateNeedsAuth,
+  validateForm,
   validateRange
 } from '@/includes/validation';
 import { status, validationHiddenClass } from '@/includes/enums';

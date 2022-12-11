@@ -7,7 +7,8 @@
       <span class="text-center">{{ $t(code) }}</span>
     </template>
 
-    <button aria-label="Close" class="btn-close btn-sm btn" data-bs-dismiss="alert" type="button"></button>
+    <button aria-label="Close" class="btn-close btn-sm btn" data-bs-dismiss="alert" type="button"
+            @click="close"></button>
   </div>
 </template>
 
@@ -16,29 +17,36 @@
 import { mapState } from 'pinia';
 import useAlertStore from '@/stores/alert';
 import { colorClass } from '@/includes/enums';
+import { ALERT_CLOSED } from '@/includes/events';
 
 export default {
   name: 'Asp-Alert',
-  props: ['status', 'code'],
+  props: {
+    status: String,
+    code: String
+  },
+  emits: [ALERT_CLOSED],
   computed: {
     ...mapState(useAlertStore, ['hasGlobalMessage', 'hasAuthInvalidMessage']),
     getHiddenClass() {
       let alertColorClass = `alert-${ colorClass[this.status] }`;
 
-      let alertClass;
-
       if (this.hasAuthInvalidMessage
           || this.code.includes('errors.auth')
           || this.code.includes('errors.routes.register')
-          || this.code.includes('errors.routes.login'))
-        alertClass = 'div-alert';
-      else if (this.hasGlobalMessage) {
-        alertClass = 'div-global-alert';
-      } else {
-        alertClass = 'div-alert';
+          || this.code.includes('errors.routes.login')) {
+        return `${ alertColorClass } div-alert`;
+      }
+      if (this.hasGlobalMessage || this.code?.length > 0) {
+        return `${ alertColorClass } div-global-alert`;
       }
 
-      return `${ alertColorClass } ${ alertClass }`;
+      return `${ alertColorClass } div-alert`;
+    }
+  },
+  methods: {
+    close() {
+      this.$emit(ALERT_CLOSED);
     }
   }
 };

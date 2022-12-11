@@ -17,7 +17,7 @@
               </button>
             </slot>
             <slot name="modal-footer-confirm">
-              <button class="btn btn-submit text-nowrap" type="button">
+              <button class="btn btn-submit text-nowrap" data-bs-dismiss="modal" type="button" @click="confirm">
                 {{ $t('buttons.confirm') }}
               </button>
             </slot>
@@ -29,9 +29,17 @@
 </template>
 
 <script>
+import { MODAL_CONFIRMED } from '@/includes/events';
+
 export default {
   name: 'Asp-Modal',
-  props: ['modalId']
+  props: ['modalId'],
+  emits: [MODAL_CONFIRMED],
+  methods: {
+    confirm() {
+      this.$emit(MODAL_CONFIRMED);
+    }
+  }
 };
 </script>
 
