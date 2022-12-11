@@ -13,14 +13,16 @@
             <div class="mb-2">
               <div class="d-flex align-items-baseline">
                 <label class="form-label mb-0 me-2">{{ $t('display_text.min') }} :</label>
-                <asp-rate-form stars-size="fs-4" @rate_selected="validateMinRateField"></asp-rate-form>
+                <asp-rate-form :selected-star="minRate" stars-size="fs-4"
+                               @[rateSelectedEvent]="validateMinRateField"></asp-rate-form>
               </div>
               <invalid-feedback :error="errors.minRate" />
             </div>
             <div>
               <div class="d-flex align-items-baseline">
                 <label class="form-label mb-0 me-2">{{ $t('display_text.max') }} :</label>
-                <asp-rate-form stars-size="fs-4" @rate_selected="validateMaxRateField"></asp-rate-form>
+                <asp-rate-form :selected-star="maxRate" stars-size="fs-4"
+                               @[rateSelectedEvent]="validateMaxRateField"></asp-rate-form>
               </div>
               <invalid-feedback :error="errors.maxRate" />
             </div>
@@ -113,6 +115,7 @@ import errors from '@/includes/errors.json';
 import { status, validationHiddenClass } from '@/includes/enums';
 import InvalidFeedback from '@/components/InvalidFeedback.vue';
 import { getFormData, validateForm, validateRange } from '@/includes/validation';
+import { RATE_SELECTED } from '@/includes/events';
 
 const limit = 9;
 export default {
@@ -144,6 +147,7 @@ export default {
       style: 'down',
       difficultyLevel: 'down'
     };
+    data.rateSelectedEvent = RATE_SELECTED;
     data.showLoadMore = true;
     return data;
   },
@@ -168,6 +172,7 @@ export default {
       }
     },
     validateMinRateField(value) {
+      console.log('validateMin');
       let indicateIsValid = typeof this.errors.minRate !== 'string';
       this.errors.minRate = '';
 
@@ -183,6 +188,7 @@ export default {
       this.setValidationOnField('minRate', indicateIsValid);
     },
     validateMaxRateField(value) {
+      console.log('validateMax');
       let indicateIsValid = typeof this.errors.maxRate !== 'string';
       this.errors.maxRate = '';
 

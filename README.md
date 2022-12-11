@@ -1,31 +1,31 @@
-# frontend
+# ASP - Trouve ta voie
 
-This template should help get you started developing with Vue 3 in Vite.
+## Configuration du projet
 
-## Recommended IDE Setup
-
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and
-disable Vetur)
-+ [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
-
-## Customize configuration
-
-See [Vite Configuration Reference](https://vitejs.dev/config/).
-
-## Project Setup
+```cd {directory}```
 
 ```sh
 npm install
 ```
 
-### Compile and Hot-Reload for Development
+### Commande pour faire rouler le projet en local
 
 ```sh
 npm run dev
 ```
 
-### Compile and Minify for Production
+### Notes :
 
-```sh
-npm run build
-```
+#### Gestion des erreurs :
+
+Si vous ne trouvez pas la gestion d'une erreur tout juste à la suite de l'appel d'une requête,
+telle qu'une erreur 404, c'est la méthode `mapInvalidResponse` qui se chargera de le faire.
+
+Ainsi, pour chaque route de l'API du projet, la requête retourne toujours un code précis lié à la route.
+
+De ce fait, lorsque le status de la réponse d'une requête est `error`, `mapInvalidResponse` utilise le code
+lié à la route de la requête et affiche le message associé à ce code.
+
+Finalement, si l'erreur n'est pas gérée dans la méthode appelant la requête, c'est parce qu'il n'y a rien en particulier
+à faire avec cette erreur et que nous souhaitons tout simplement faire afficher l'alerte à l'utilisateur
+contenant le message d'erreur retourné par la requête.

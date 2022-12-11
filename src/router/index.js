@@ -4,7 +4,7 @@ import NotFound from '@/views/NotFound.vue';
 import PlaceForm from '@/views/Place/PlaceForm.vue';
 import ClimbForm from '@/views/Climb/ClimbForm.vue';
 import PlaceDetails from '@/views/Place/PlaceDetails.vue';
-import ClimbsView from '@/views/Climb/ClimbsView.vue';
+import ClimbDetails from '@/views/Climb/ClimbDetails.vue';
 
 const routes = [
     {
@@ -36,11 +36,6 @@ const routes = [
         component: PlaceDetails
     },
     {
-        path: '/climbs',
-        name: 'Climbs',
-        component: ClimbsView
-    },
-    {
         path: '/climb/create',
         name: 'ClimbCreate',
         component: ClimbForm,
@@ -52,6 +47,12 @@ const routes = [
         props: true,
         component: ClimbForm,
         meta: { requiresAuth: true }
+    },
+    {
+        path: '/climb/details/:climbTitle',
+        name: 'ClimbDetails',
+        props: true,
+        component: ClimbDetails
     },
     {
         path: '/:notFound(.*)*',

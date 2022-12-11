@@ -8,10 +8,7 @@
   <div v-if="dataLoaded" class="m-5 ps-5 pe-5">
     <hr />
     <div class="d-flex justify-content-between align-self-baseline">
-      <h2 class="fw-bold text-start mb-4 fs-4">{{ $t('home.most_popular_climbs') }}</h2>
-      <router-link v-if="true === false" :to="{name: 'Climbs'}" class="asp-link">
-        {{ $t('links.see_more.climb.popular') }}
-      </router-link>
+      <h2 class="fw-bold text-start mb-4 fs-4">{{ $t('home.most_popular_climbs').toUpperCase() }}</h2>
     </div>
     <asp-search-climbs :col-class="'col col-md-6 col-lg-4 col-xl-3'" :items="items" />
     <div class="mt-5 mb-5">

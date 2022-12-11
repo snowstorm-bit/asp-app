@@ -1,6 +1,6 @@
 <template>
   <asp-alert v-if="requestStatus.length > 0" :code="requestMessage" :status="requestStatus" />
-  <form class="px-4 py-3" @submit.prevent="validateForm" novalidate>
+  <form v-if="formIsReady" class="px-4 py-3" novalidate @submit.prevent="validateForm">
     <div class="mb-3">
       <label class="form-label input-required-lbl" for="email">{{ $t('fields.email') }}</label>
       <input v-model="email" :class="hiddenClass.email" :placeholder="$t('fields.email')" class="form-control"
@@ -36,7 +36,9 @@ export default {
   name: 'Auth-Login',
   components: { InvalidFeedback, AspAlert },
   data() {
-    return getFormData(['email', 'password;array']);
+    let data = getFormData(['email', 'password;array']);
+    data.formIsReady = false;
+    return data;
   },
   methods: {
     ...mapActions(useUserStore, ['authenticate']),
@@ -129,6 +131,9 @@ export default {
         this.formInValidation = formIsValid;
       }
     }
+  },
+  mounted() {
+    this.formIsReady = true;
   }
 };
 </script>

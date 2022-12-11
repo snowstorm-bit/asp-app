@@ -75,7 +75,7 @@ export default {
 
 <style lang="scss" scoped>
 #user-menu {
-  z-index: 99999999999;
+  z-index: 99999999998;
 }
 
 nav {

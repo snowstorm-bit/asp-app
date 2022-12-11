@@ -21,8 +21,18 @@
 		"place": "Modifier le lieu",
 		"climb": "Modifier la grimpe"
 	},
+	"delete": {
+		"place": {
+			"title": "Supprimer le lieu",
+			"confirm_message": "Voulez-vous vraiment supprimer le lieu suivant : '{placeTitle}'"
+		},
+		"climb": {
+			"title": "Supprimer la grimpe",
+			"confirm_message": "Voulez-vous vraiment supprimer la grimpe suivante : '{climbTitle}' ?"
+		}
+	},
 	"home": {
-		"most_popular_climbs": "GRIMPES LES PLUS POPULAIRES"
+		"most_popular_climbs": "Grimpes les plus populaires"
 	},
 	"details": {
 		"place": {
@@ -30,7 +40,10 @@
 			"climbs": "Grimpe(s) du lieu",
 			"climbs_list": "Liste des grimpes"
 		},
-		"climb": "Détails de la grimpe"
+		"climb": {
+			"details": "Détails de la grimpe",
+			"rate": "Noter la grimpe"
+		}
 	},
 	"buttons": {
 		"sign_in": "S'identifier",
@@ -39,7 +52,9 @@
 		"save_changes": "Enregistrer les modifications",
 		"delete": "Supprimer",
 		"filter": "Appliquer le filtre",
-		"load_more": "Charger plus de résultats"
+		"load_more": "Charger plus de résultats",
+		"cancel": "Annuler",
+		"confirm": "Confirmer"
 	},
 	"links": {
 		"see_more": {
@@ -50,7 +65,8 @@
 			"details": "Voir les détails"
 		},
 		"create": "Créer",
-		"modify": "Modifier"
+		"modify": "Modifier",
+		"delete": "Supprimer"
 	},
 	"fields": {
 		"username": "Nom d'utilisateur",
@@ -86,13 +102,25 @@
 			"sign_out": "Succès de la déconnexion! Au revoir",
 			"create": {
 				"place": "Le lieu a été créé avec succès!",
-				"climb": "La grimpe a été créé avec succès!"
+				"climb": "La grimpe a été créé avec succès!",
+				"rate": {
+					"climb": "La note a été ajouté à la grimpe!"
+				}
 			},
 			"update": {
-				"place": "Les modifications ont été enregistrées avec succès!",
-				"climb": "Les modifications ont été enregistrées avec succès!"
+				"account_profile": "Les modifications effectuées au profil utilisateur ont été enregistrées avec succès!",
+				"place": "Les modifications du lieu ont été enregistrées avec succès!",
+				"climb": "Les modifications de la grimpe ont été enregistrées avec succès!",
+				"rate": {
+					"climb": "La note de la grimpe a été modifiée!"
+				}
 			},
 			"delete": {
+				"place": "La place a été supprimé avec succès!",
+				"climb": "La grimpe a été supprimé avec succès!",
+				"rate": {
+					"climb": "La note a été retirée de la grimpe!"
+				}
 			}
 		}
 	},
@@ -103,9 +131,6 @@
 	},
 	"errors": {
 		"404": "OUPS ! La page à laquelle vous avez essayé d'accéder est introuvable!",
-		"401": "",
-		"403": "",
-		"500": "",
 		"auth": {
 			"login_required": "Il faut d'abord vous connecter pour pouvoir accéder à cette page",
 			"session_expired": "Votre session est expirée. S'il vous plaît vous reconnecter",
@@ -228,7 +253,7 @@
 					"climb": "Une erreur s'est produite lors de l'obtention du formulaire pour modifier une grimpe. Veuillez réessayer plus tard"
 				},
 				"all": {
-					"climbs": "Une erreur s'est produite à l'obtentions des grimpes"
+					"climbs": "Une erreur s'est produite à l'obtention des grimpes"
 				}
 			},
 			"create": {
@@ -237,7 +262,15 @@
 			},
 			"update": {
 				"place": "Une erreur s'est produite. Il n'a pas été possible d'enregistrer les modifications pour le présent lieu",
-				"climb": "Une erreur s'est produite. Il n'a pas été possible d'enregistrer les modifications pour la présente grimpe"
+				"climb": "Une erreur s'est produite. Il n'a pas été possible d'enregistrer les modifications pour la présente grimpe",
+				"account_profile": "Une erreur s'est produite. Il n'a pas été possible d'enregistrer les modifications à votre profil utilisateur"
+			},
+			"delete": {
+				"place": "Une erreur s'est produite. Il n'a pas été possible de supprimer le lieu",
+				"climb": "Une erreur s'est produite. Il n'a pas été possible de supprimer la grimpe"
+			},
+			"rate": {
+				"climb": "Une erreur s'est produite en lien avec votre note. Veuillez réessayer plus tard"
 			}
 		}
 	},
@@ -255,6 +288,7 @@
 		"max": "Max.",
 		"style": "Style",
 		"difficulty_level": "Niveau de difficulté",
-		"place_title": "Lieu"
+		"place_title": "Lieu",
+		"climb_title": "Grimpe"
 	}
 }

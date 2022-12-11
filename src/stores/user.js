@@ -9,6 +9,13 @@ export default defineStore('user', {
         userLoggedIn: localStorage.hasOwnProperty('token') && localStorage.hasOwnProperty('user')
     }),
     actions: {
+        validateUserIsAdmin() {
+            if (this.userLoggedIn) {
+                let user = JSON.parse(localStorage.getItem('user'));
+                return user.isAdmin === undefined ? false : user.isAdmin;
+            }
+            return false;
+        },
         async register(payload) {
             let response;
             try {
@@ -33,7 +40,7 @@ export default defineStore('user', {
             }
 
             localStorage.setItem('token', data.token);
-            localStorage.setItem('user', JSON.stringify(data.result));
+            localStorage.setItem('user', JSON.stringify({ username: data.result.username }));
 
             useAlertStore().setMessage('globalMessage', {
                 code: data.code,
@@ -66,7 +73,10 @@ export default defineStore('user', {
             }
 
             localStorage.setItem('token', data.token);
-            localStorage.setItem('user', JSON.stringify(data.result));
+            localStorage.setItem('user', JSON.stringify({
+                username: data.result.username,
+                isAdmin: data.result.accessLevel === 2
+            }));
 
             useAlertStore().setMessage('globalMessage', {
                 code: data.code,
@@ -75,16 +85,29 @@ export default defineStore('user', {
 
             return { status: status.success };
         },
-        signOut() {
-            localStorage.removeItem('token');
-            localStorage.removeItem('user');
+        signOut(setGlobalMessage = true) {
+            if (localStorage.hasOwnProperty('user')) {
+                localStorage.removeItem('user');
+            } else if (localStorage.hasOwnProperty('token')) {
+                localStorage.removeItem('token');
+            }
+
             this.userLoggedIn = localStorage.hasOwnProperty('token') && localStorage.hasOwnProperty('user');
 
-            useAlertStore().setMessage('globalMessage', {
-                code: 'successes.routes.sign_out',
-                status: status.success
-            });
+            if (setGlobalMessage) {
+                useAlertStore().setMessage('globalMessage', {
+                    code: 'successes.routes.sign_out',
+                    status: status.success
+                });
+            }
 
+            return true;
+        },
+        setAuthInvalid(errorCode) {
+            useAlertStore().setMessage('authInvalid', {
+                code: errorCode,
+                status: status.error
+            });
             return true;
         }
     }

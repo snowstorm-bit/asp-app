@@ -105,7 +105,7 @@ import {
   getHeaderAuthorization,
   validateAuthFromResponse,
   validateEmptyOrWhiteSpace,
-  validateForm,
+  validateForm, validateNeedsAuth,
   validateRange
 } from '@/includes/validation';
 import { status, validationHiddenClass } from '@/includes/enums';
@@ -518,21 +518,18 @@ export default {
         };
       }
 
+      let data = await response.json();
+      
       if (response.status === 500) {
-        return {
-          codes: { 'update_climb': errors.routes.update.climb },
-          status: status.error
-        };
+        return data;
       }
 
-      if (!await validateAuthFromResponse(response.status, this.userLoggedIn)) {
+      if (!await validateNeedsAuth(response.status, data.codes?.authentication)) {
         return {
           codes: { refresh: true },
           status: status.error
         };
       }
-
-      let data = await response.json();
 
       if (data.status === status.error) {
         return data;

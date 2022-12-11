@@ -1,9 +1,10 @@
 'use strict';
 
 import errors from '@/includes/errors.json';
-import { status } from '@/includes/enums';
-import useAlertStore from '@/stores/alert';
+import useUserStore from '@/stores/user';
 import { toString } from '@/includes/utils';
+import warnings from '@/includes/warnings.json';
+import { status } from '@/includes/enums';
 
 /**
  * Return the validation data for a form for the specified fields
@@ -122,36 +123,31 @@ function getHeaderAuthorization() {
     return 'Bearer ' + localStorage.getItem('token');
 }
 
-async function validateAuthFromResponse(responseStatusCode, userLoggedIn, alertStoreSetMessage = true) {
-    let errorCode = '';
-
+async function validateNeedsAuth(responseStatusCode, responseErrorCode) {
     if (responseStatusCode === 401) {
-        if (userLoggedIn) {
-            errorCode = errors.auth.session_expired;
-        } else {
-            errorCode = errors.auth.login_required;
-        }
-        if (localStorage.hasOwnProperty('user')) {
-            localStorage.removeItem('user');
-        } else if (localStorage.hasOwnProperty('token')) {
-            localStorage.removeItem('token');
-        }
-    }
-    if (responseStatusCode === 403) {
-        errorCode = errors.auth.unauthorized;
+        useUserStore().signOut(false);
     }
 
-    if (errorCode.length > 0) {
-        if (alertStoreSetMessage) {
-            useAlertStore().setMessage('authInvalid', {
-                code: errorCode,
-                status: status.error
-            });
-
-            return false;
-        }
+    if (responseErrorCode && responseErrorCode.length > 0) {
+        useUserStore().setAuthInvalid(responseErrorCode);
+        return false;
     }
 
+    return true;
+}
+
+async function validateIsAuth(isCreator, errorCodeKey) {
+    if (isCreator.status && isCreator.status === 401) {
+        if (isCreator.code === errors.auth.session_expired) {
+            useUserStore().signOut(false);
+
+            return {
+                codes: { [errorCodeKey]: warnings.auth.login_again },
+                status: status.warning
+            };
+        }
+        return false;
+    }
     return true;
 }
 
@@ -166,5 +162,6 @@ export {
     getFormData,
     validateAuth,
     getHeaderAuthorization,
-    validateAuthFromResponse
+    validateNeedsAuth,
+    validateIsAuth
 };

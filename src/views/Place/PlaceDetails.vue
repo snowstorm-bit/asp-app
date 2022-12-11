@@ -1,19 +1,28 @@
 <template>
   <div v-if="dataLoaded">
     <asp-alert v-if="requestStatus.length > 0" :code="requestMessage" :status="requestStatus" />
-    <!-- TODO : ONGET : Validate is user how has created the place -->
+    <!-- TODO : ADD LINK DELETE PLACE -->
     <div :class="{'d-flex justify-content-between align-items-center': userLoggedIn}">
       <h2 :class="{'flex-fill':userLoggedIn}">{{ $t('details.place.details') }}</h2>
-      <div v-if="userLoggedIn" class="d-flex">[&nbsp;<div>
-        <router-link :to="{name: 'PlaceCreate'}" class="asp-link">
-          {{ $t('links.create') }}
-        </router-link>
-      </div>
-        <div v-if="isCreator">&nbsp;|&nbsp;<router-link :to="{name: 'PlaceUpdate', params: { placeTitle: title}}"
-                                                        class="asp-link">
+      <div v-if="userLoggedIn" class="d-flex">
+        [&nbsp;
+        <div v-if="!isAdmin">
+          <router-link :to="{name: 'PlaceCreate'}" class="asp-link">
+            {{ $t('links.create') }}
+          </router-link>
+        </div>
+        <div v-if="isCreator && !isAdmin">&nbsp;|&nbsp;<router-link
+            :to="{name: 'PlaceUpdate', params: { placeTitle: placeTitle }}"
+            class="asp-link">
           {{ $t('links.modify') }}
         </router-link>
-        </div>&nbsp;]
+        </div>
+        <div v-if="isAdmin"><a
+            :data-bs-target="`#${placeTitle}`" class="asp-link text-danger" data-bs-toggle="modal">
+          {{ $t('links.delete') }}
+        </a>
+        </div>
+        &nbsp;]
       </div>
     </div>
     <hr />
@@ -99,8 +108,8 @@
                          role="link">
               {{ climb.title }}
             </router-link>
-            <asp-rate :isUserRate="false" :rate="climb.rate" :star-rate-class="'fs-5'" :text-rate-class="'fs-6'"
-                      :votes="climb.votes"></asp-rate>
+            <asp-rate :fill-empty-stars="true" :isUserRate="false" :rate="climb.rate" :star-rate-class="'fs-5'"
+                      :text-rate-class="'fs-6'" :votes="climb.votes"></asp-rate>
           </div>
         </div>
       </div>
@@ -110,11 +119,11 @@
 
 <script>
 import AspMap from '@/components/Map.vue';
-import { status, validationHiddenClass } from '@/includes/enums';
+import { status } from '@/includes/enums';
 import { getHeaderAuthorization } from '@/includes/validation';
 import errors from '@/includes/errors.json';
 import warnings from '@/includes/warnings.json';
-import { mapWritableState } from 'pinia';
+import { mapActions, mapState, mapWritableState } from 'pinia';
 import useUserStore from '@/stores/user';
 import useAlertStore from '@/stores/alert';
 import AspAlert from '@/components/Alert.vue';
@@ -131,6 +140,9 @@ export default {
   data() {
     return {
       dataLoaded: false,
+      isCreator: false,
+      requestStatus: '',
+      requestMessage: '',
       arrowDirectionClass: {
         description: 'down',
         steps: 'down',
@@ -144,16 +156,14 @@ export default {
       longitude: 0,
       styles: '',
       difficultyLevels: [5.6, 5.7, 5.8, 5.9, '5.10', 5.11, 5.12, 5.13, 5.14, 5.15],
-      climbs: [],
-      isCreator: false,
-      requestStatus: '',
-      requestMessage: ''
+      climbs: []
     };
   },
   computed: {
-    ...mapWritableState(useUserStore, ['userLoggedIn'])
+    ...mapWritableState(useUserStore, ['userLoggedIn', 'isAdmin'])
   },
   methods: {
+    ...mapActions(useUserStore, { userStoreSignOut: 'signOut', validateIsAdmin: 'validateUserIsAdmin' }),
     setArrowDirectionClass(key, subKey = null) {
       if (subKey !== null) {
         this.arrowDirectionClass[key][subKey] = this.arrowDirectionClass[key][subKey] === 'down' ? 'up' : 'down';
@@ -170,20 +180,14 @@ export default {
       }
       this.$router.push({ name: 'NotFound' });
     },
-    mapInvalidResponse(result, mapForInvalidFields = true) {
-      if ('home' in result.codes) {
+    mapInvalidResponse(result) {
+      if ('place_details' in result.codes) {
         this.requestStatus = result.status;
-        this.requestMessage = result.codes['home'];
+        this.requestMessage = result.codes['place_details'];
       } else if ('refresh' in result.codes) { // authentication error
         this.$router.go();
       } else if ('not_found' in result.codes) {
         this.redirectTo404(result.codes.not_found);
-      } else if (mapForInvalidFields) {
-        // Map errors returned by the request
-        for (const [key, value] of Object.entries(result.codes)) {
-          this.errors[key] = value;
-          this.hiddenClass[key] = validationHiddenClass.isInvalid;
-        }
       }
     },
     async getData() {
@@ -198,65 +202,72 @@ export default {
         });
       } catch {
         return {
-          codes: { 'home': errors.routes.home },
+          codes: { 'place_details': errors.routes.get.details.place },
           status: status.error
         };
       }
 
       if (response.status === 500) {
         return {
-          codes: { 'home': errors.routes.home },
+          codes: { 'place_details': errors.routes.get.details.place },
           status: status.error
         };
       }
 
-      if (data.result.isCreator === 401 && this.userLoggedIn) {
-        if (localStorage.hasOwnProperty('user')) {
-          localStorage.removeItem('user');
-        } else if (localStorage.hasOwnProperty('token')) {
-          localStorage.removeItem('token');
+      let data = await response.json();
+
+      if (data.result.isCreator.status && data.result.isCreator.status === 401) {
+        if (data.result.isCreator.code === errors.auth.session_expired) {
+          this.userStoreSignOut(false);
+
+          return {
+            codes: { 'climb_details': warnings.auth.login_again },
+            status: status.warning,
+            result: data.result
+          };
         }
-        this.userLoggedIn = localStorage.hasOwnProperty('token') && localStorage.hasOwnProperty('user');
-        return {
-          codes: { 'place_details': warnings.auth.login_again },
-          status: status.warning,
-          result: data.result
-        };
+        data.result.isCreator = false;
       }
 
-      return await response.json();
+      return data;
     }
   },
   async mounted() {
-    if (!useAlertStore().hasAuthInvalidMessage) {
-      let placeDetails = await this.getData();
-      if (placeDetails.status !== status.success) {
-        this.mapInvalidResponse(placeDetails, false);
-        if (placeDetails.status === status.error) {
-          return;
-        }
-      }
+    // get data for place details
+    let placeDetails = await this.getData();
 
-      for (const [key, value] of Object.entries(placeDetails.result)) {
-        this[key] = value;
+    // manage error, if so, from response
+    if (placeDetails.status !== status.success) {
+      this.mapInvalidResponse(placeDetails);
+      if (placeDetails.status === status.error) {
+        return;
       }
-
-      let styles = {};
-      for (const [_, value] of Object.entries(this.styles)) {
-        let climbs = this.climbs.filter(climb => climb.style === value);
-        styles[value] = climbs === undefined ? [] : climbs;
-        this.arrowDirectionClass.styles[value] = 'down';
-      }
-      this.styles = styles;
-
-      let difficultyLevels = {};
-      this.difficultyLevels.forEach(difficultyLevel => {
-        let climbs = this.climbs.filter(climb => Number(climb.difficultyLevel) === Number(difficultyLevel));
-        difficultyLevels[`${ difficultyLevel }`] = climbs === undefined ? [] : climbs;
-        this.arrowDirectionClass.difficultyLevels[`${ difficultyLevel }`] = 'down';
-      });
-      this.difficultyLevels = difficultyLevels;
     }
+
+    // map data from response to component data
+    for (const [key, value] of Object.entries(placeDetails.result)) {
+      this[key] = value;
+    }
+
+    let styles = {};
+    for (const [_, value] of Object.entries(this.styles)) {
+      let climbs = this.climbs.filter(climb => climb.style === value);
+      styles[value] = climbs === undefined ? [] : climbs;
+      this.arrowDirectionClass.styles[value] = 'down';
+    }
+    this.styles = styles;
+
+    let difficultyLevels = {};
+    this.difficultyLevels.forEach(difficultyLevel => {
+      let climbs = this.climbs.filter(climb => Number(climb.difficultyLevel) === Number(difficultyLevel));
+      difficultyLevels[`${ difficultyLevel }`] = climbs === undefined ? [] : climbs;
+      this.arrowDirectionClass.difficultyLevels[`${ difficultyLevel }`] = 'down';
+    });
+    this.difficultyLevels = difficultyLevels;
+
+    this.isAdmin = this.validateIsAdmin();
+
+    // True to display data once it has been loaded
     this.dataLoaded = true;
   }
 };

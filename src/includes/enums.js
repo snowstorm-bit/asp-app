@@ -16,4 +16,19 @@ const validationHiddenClass = {
     wasValidated: 'was-validated'
 };
 
-export { status, colorClass, validationHiddenClass };
+const routeNames = {
+    home: 'home',
+    place: {
+        create: 'place-create',
+        update: 'place-update',
+        details: 'place-details'
+    },
+    climb: {
+        create: 'climb-create',
+        update: 'climb-update',
+        details: 'climb-details'
+    },
+    notFound: 'not-found'
+};
+
+export { status, colorClass, validationHiddenClass, routeNames };
