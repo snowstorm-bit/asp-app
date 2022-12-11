@@ -255,10 +255,10 @@ export default {
       // manage error, if so, from response
       if (data.status !== status.success) {
         this.mapInvalidResponse(data, 'rate_climb');
-        
+
         // reset to previous value
         this.userRate = userRate;
-        
+
         if (data.status === status.error) {
           return;
         }
@@ -290,11 +290,11 @@ export default {
       }
 
       let data = await response.json();
-      
+
       if (response.status === 500) {
         return data;
       }
-      
+
       if (!await validateNeedsAuth(response.status, data.codes?.authentication)) {
         return {
           codes: { refresh: true },
@@ -314,14 +314,13 @@ export default {
       return { status: status.success };
     },
     async deleteClimb() {
-      let data = await this.manageDeleteClimbRequest();
-      let userRate = this.userRate;
-      this.userRate = selectedRate;
+      let result = await this.manageDeleteClimbRequest();
 
-      return { status: status.success };
-      // map data from response to component data
-      for (const [key, value] of Object.entries(data.result)) {
-        this[key] = value;
+      if (result.status === status.error) {
+        event.stopPropagation();
+        this.mapInvalidResponse(result, 'delete_climb');
+      } else if (result.status === status.success) {
+        this.$router.push({ name: 'Home' });
       }
     },
     async getData() {
@@ -341,15 +340,25 @@ export default {
         };
       }
 
-      let data = await response.json();
-      
       if (response.status === 500) {
-        return data;
+        return {
+          codes: { 'climb_details': errors.routes.get.details.climb },
+          status: status.error
+        };
       }
-      
+
+      if (response.status === 404) {
+        return {
+          codes: { not_found: errors.climb.not_found },
+          status: status.error
+        };
+      }
+
+      let data = await response.json();
+
       // validating auth
       let isAuth = await validateIsAuth(data.result.isCreator, 'climb_details');
-      
+
       if (typeof isAuth !== 'boolean') {
         data.result.isCreator = false;
         isAuth.result = data.result;
@@ -357,7 +366,7 @@ export default {
       } else {
         data.result.isCreator = isAuth;
       }
-      
+
       return data;
     }
   },

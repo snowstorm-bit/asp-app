@@ -118,9 +118,42 @@ function validateAuth(requiresAuth, userLoggedIn) {
     return !authRequired || authRequired && userLoggedIn;
 }
 
-
 function getHeaderAuthorization() {
     return 'Bearer ' + localStorage.getItem('token');
+}
+
+/** Deprecated */
+async function validateAuthFromResponse(responseStatusCode, userLoggedIn, alertStoreSetMessage = true) {
+    let errorCode = '';
+
+    if (responseStatusCode === 401) {
+        if (userLoggedIn) {
+            errorCode = errors.auth.session_expired;
+        } else {
+            errorCode = errors.auth.login_required;
+        }
+        if (localStorage.hasOwnProperty('user')) {
+            localStorage.removeItem('user');
+        } else if (localStorage.hasOwnProperty('token')) {
+            localStorage.removeItem('token');
+        }
+    }
+    if (responseStatusCode === 403) {
+        errorCode = errors.auth.unauthorized;
+    }
+
+    if (errorCode.length > 0) {
+        if (alertStoreSetMessage) {
+            useAlertStore().setMessage('authInvalid', {
+                code: errorCode,
+                status: status.error
+            });
+
+            return false;
+        }
+    }
+
+    return true;
 }
 
 async function validateNeedsAuth(responseStatusCode, responseErrorCode) {
@@ -162,6 +195,7 @@ export {
     getFormData,
     validateAuth,
     getHeaderAuthorization,
+    validateAuthFromResponse,
     validateNeedsAuth,
     validateIsAuth
 };

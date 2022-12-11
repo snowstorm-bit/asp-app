@@ -518,19 +518,21 @@ export default {
         };
       }
 
-      let data = await response.json();
-      
       if (response.status === 500) {
-        return data;
+        return {
+          codes: { 'update_climb': errors.routes.update.climb },
+          status: status.error
+        };
       }
 
-      if (!await validateNeedsAuth(response.status, data.codes?.authentication)) {
+      if (!await validateAuthFromResponse(response.status, this.userLoggedIn)) {
         return {
           codes: { refresh: true },
           status: status.error
         };
       }
 
+      let data = await response.json();
       if (data.status === status.error) {
         return data;
       }
@@ -539,7 +541,6 @@ export default {
         code: data.code,
         status: data.status
       });
-
       return { status: status.success };
     },
     async getCreateData() {
@@ -566,14 +567,14 @@ export default {
         };
       }
 
-      let data = await response.json();
-
       if (response.status === 404) {
         return {
           codes: { not_found: errors.climb.not_found },
           status: status.error
         };
       }
+
+      let data = await response.json();
 
       if (!await validateAuthFromResponse(response.status, this.userLoggedIn)) {
         return {
@@ -608,14 +609,14 @@ export default {
         };
       }
 
-      let data = await response.json();
-
       if (response.status === 404) {
         return {
           codes: { not_found: errors.climb.not_found },
           status: status.error
         };
       }
+
+      let data = await response.json();
 
       if (!await validateAuthFromResponse(response.status, this.userLoggedIn)) {
         return {

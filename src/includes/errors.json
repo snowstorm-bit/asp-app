@@ -139,8 +139,8 @@
 			}
 		},
 		"update": {
-			"place": "errors.routes.create.place",
-			"climb": "errors.routes.create.climb"
+			"place": "errors.routes.update.place",
+			"climb": "errors.routes.update.climb"
 		},
 		"delete": {
 			"rate": {
