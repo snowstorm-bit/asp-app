@@ -176,8 +176,6 @@ async function validateNeedsAuth(responseStatusCode, responseErrorCode, needsApp
 }
 
 async function validateIsAuth(isCreator, errorCodeKey) {
-
-    console.log('isCreator', isCreator);
     if (isCreator) {
         if (isCreator.status && isCreator.status === 401) {
             if (isCreator.code === errors.auth.session_expired) {

@@ -1,7 +1,7 @@
 <template>
   <div v-if="dataLoaded">
-    <!-- delete climb modal -->
-    <asp-modal :modal-id="'delete-place'" @[deletePlaceModalConfirmEvent]="deletePlace">
+    <!-- delete place modal -->
+    <asp-modal v-if="isAdmin" :modal-id="'delete-place'" @[deletePlaceModalConfirmEvent]="deletePlace">
       <template v-slot:modal-title>
         <h1 class="modal-title fs-5">{{ $t('delete.place.title') }}</h1>
       </template>
@@ -179,7 +179,7 @@ export default {
     ...mapWritableState(useUserStore, ['userLoggedIn', 'isAdmin'])
   },
   methods: {
-    ...mapActions(useUserStore, { userStoreSignOut: 'signOut', validateIsAdmin: 'validateUserIsAdmin' }),
+    ...mapActions(useUserStore, { validateIsAdmin: 'validateUserIsAdmin' }),
     setArrowDirectionClass(key, subKey = null) {
       if (subKey !== null) {
         this.arrowDirectionClass[key][subKey] = this.arrowDirectionClass[key][subKey] === 'down' ? 'up' : 'down';
@@ -257,7 +257,6 @@ export default {
       let result = await this.manageDeletePlaceRequest();
 
       if (result.status === status.error) {
-        event.stopPropagation();
         this.mapInvalidResponse(result);
       } else if (result.status === status.success) {
         this.$router.push({ name: 'Home' });

@@ -37,7 +37,7 @@ export default {
           || this.code.includes('errors.routes.login')) {
         return `${ alertColorClass } div-alert`;
       }
-      if (this.hasGlobalMessage || this.code?.length > 0) {
+      if (this.hasGlobalMessage) {
         return `${ alertColorClass } div-global-alert`;
       }
 

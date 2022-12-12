@@ -95,8 +95,10 @@
       </div>
       <!-- Climb results -->
       <div class="col-9">
-        <asp-search-climbs v-if="searchLoaded" :col-class="'col col-lg-6 col-xl-4 p-1'" :items="items" />
-        <div v-if="showLoadMore" class="d-flex justify-content-center mt-3">
+        <asp-search-climbs v-if="searchLoaded" :col-class="'col col-lg-6 col-xl-4 p-1'" :is-admin="isAdmin"
+                           :items="items"
+                           @[climbToDeleteSelected]="setClimbTitle" />
+        <div v-if="hasMoreResult" class="d-flex justify-content-center mt-3">
           <button class="btn btn-lg fs-6 btn-submit" type="submit" @click.prevent.stop="getSearch(true)">
             {{ $t('buttons.load_more') }}
           </button>
@@ -114,12 +116,14 @@ import AspSearchClimbs from '@/components/Climb/Search.vue';
 import errors from '@/includes/errors.json';
 import { status, validationHiddenClass } from '@/includes/enums';
 import InvalidFeedback from '@/components/InvalidFeedback.vue';
-import { getFormData, validateForm, validateRange } from '@/includes/validation';
-import { RATE_SELECTED } from '@/includes/events';
+import { getFormData, getHeaderAuthorization, validateForm, validateRange } from '@/includes/validation';
+import { CLIMB_TO_DELETE_SELECTED, RATE_SELECTED } from '@/includes/events';
 
 const limit = 9;
 export default {
   name: 'Asp-Climbs-View',
+  props: ['isAdmin'],
+  emits: [CLIMB_TO_DELETE_SELECTED],
   components: {
     AspRateForm,
     AspRate,
@@ -148,10 +152,15 @@ export default {
       difficultyLevel: 'down'
     };
     data.rateSelectedEvent = RATE_SELECTED;
-    data.showLoadMore = true;
+    data.climbToDeleteSelected = CLIMB_TO_DELETE_SELECTED;
+    data.hasMoreResult = true;
     return data;
   },
   methods: {
+    setClimbTitle(value) {
+      console.log('climbsView emitting setClimbTitle');
+      this.$emit(CLIMB_TO_DELETE_SELECTED, value);
+    },
     setArrowDirectionClass(key) {
       this.arrowDirectionClass[key] = this.arrowDirectionClass[key] === 'down' ? 'up' : 'down';
     },
@@ -273,19 +282,20 @@ export default {
         response = await fetch(`/api/climb/all/?${ this.getURLSearchParams(loadMore) }`, {
           method: 'GET',
           headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'Authorization': getHeaderAuthorization()
           }
         });
       } catch {
         return {
-          codes: { 'home': errors.route.home },
+          codes: { 'search': errors.routes.home },
           status: status.error
         };
       }
 
       if (response.status === 500) {
         return {
-          codes: { 'home': errors.route.home },
+          codes: { 'search': errors.routes.home },
           status: status.error
         };
       }
@@ -317,7 +327,7 @@ export default {
             this.items = data.result.items;
           }
           this.offset = data.result.offset;
-          this.showLoadMore = data.hasMoreResult;
+          this.hasMoreResult = data.result.hasMoreResult;
         }
       }
     }

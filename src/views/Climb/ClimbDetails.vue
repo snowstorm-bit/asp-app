@@ -1,7 +1,7 @@
 <template>
   <div v-if="dataLoaded">
     <!-- delete climb modal -->
-    <asp-modal :modal-id="'delete-climb'" @[deleteClimbModalConfirmEvent]="deleteClimb">
+    <asp-modal v-if="isAdmin" :modal-id="'delete-climb'" @[deleteClimbModalConfirmEvent]="deleteClimb">
       <template v-slot:modal-title>
         <h1 class="modal-title fs-5">{{ $t('delete.climb.title') }}</h1>
       </template>
@@ -149,7 +149,7 @@ export default {
     ...mapWritableState(useUserStore, ['userLoggedIn', 'isAdmin'])
   },
   methods: {
-    ...mapActions(useUserStore, { userStoreSignOut: 'signOut', validateIsAdmin: 'validateUserIsAdmin' }),
+    ...mapActions(useUserStore, { validateIsAdmin: 'validateUserIsAdmin' }),
     redirectTo404(error = null) {
       if (error !== null) {
         useAlertStore().setMessage('globalMessage', {
@@ -326,7 +326,6 @@ export default {
       let result = await this.manageDeleteClimbRequest();
 
       if (result.status === status.error) {
-        event.stopPropagation();
         this.mapInvalidResponse(result);
       } else if (result.status === status.success) {
         this.$router.push({ name: 'Home' });

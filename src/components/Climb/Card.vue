@@ -9,8 +9,8 @@
           </div>
           <div class="fw-semibold border-bottom d-flex flex-wrap justify-content-between align-items-baseline">
             <div>
-              <router-link :to="{name: 'NotFound'}" aria-disabled="true" class="asp-link asp-link__climb-details"
-                           role="link">
+              <router-link :to="{name: 'ClimbDetails', params: {climbTitle: title}}" aria-disabled="true"
+                           class="asp-link" role="link">
                 {{ title }}
               </router-link>
               &nbsp;>&nbsp;
@@ -23,13 +23,12 @@
           </div>
         </div>
         <p class="text-start overflow-hidden m-0 flex-fill">{{ description }}</p>
-        <div class="d-flex justify-content-end position-relative">
+        <div v-if="isAdmin" class="d-flex justify-content-end position-relative">
           <div class="d-flex justify-content-end position-absolute bottom-0 end-0">
-            <router-link :to="{name: 'NotFound'}" aria-disabled="true"
-                         class="btn btn-sm btn-light asp-link asp-link__climb-details fs-sm"
-                         role="link">
-              {{ $t('links.see_more.details') }}
-            </router-link>
+            <a :data-bs-target="`#delete-climb`" class="btn btn-sm btn-submit asp-link fs-sm" data-bs-toggle="modal"
+               role="link" @click="setClimbTitle">
+              {{ $t('buttons.delete') }}
+            </a>
           </div>
         </div>
       </div>
@@ -43,11 +42,19 @@
 <script>
 
 import AspRate from '@/components/Rate/Display/Rate.vue';
+import { CLIMB_TO_DELETE_SELECTED } from '@/includes/events';
 
 export default {
   name: 'Climb-Card',
   components: { AspRate },
-  props: ['title', 'placeTitle', 'description', 'imageUrl', 'rate', 'votes']
+  props: ['title', 'placeTitle', 'description', 'imageUrl', 'rate', 'votes', 'isAdmin'],
+  emits: [CLIMB_TO_DELETE_SELECTED],
+  methods: {
+    setClimbTitle() {
+      console.log('climb card emitting setClimbTitle');
+      this.$emit(CLIMB_TO_DELETE_SELECTED, this.title);
+    }
+  }
 };
 </script>
 
@@ -59,14 +66,6 @@ export default {
   &:hover {
     text-decoration: underline;
     color: white;
-    filter: brightness(0.75);
-  }
-
-  &__climb-details {
-    text-decoration: none;
-    opacity: 75%;
-    cursor: not-allowed;
-    pointer-events: none;
   }
 }
 
