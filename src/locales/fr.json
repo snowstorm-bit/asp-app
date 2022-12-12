@@ -13,6 +13,12 @@
 		"register_tab": "Créer un compte",
 		"sign_out": "Déconnexion"
 	},
+	"account": {
+		"profile": "Profil utilisateur",
+		"created_places": "Vos lieux",
+		"created_climbs": "Vos grimpes",
+		"rated_climbs": "Vos grimpes notées"
+	},
 	"create": {
 		"place": "Créer un lieu",
 		"climb": "Créer une grimpe"
@@ -62,7 +68,7 @@
 				"popular": "Voir plus de grimples populaires >",
 				"all": "Voir toutes les grimpes >"
 			},
-			"details": "Voir les détails"
+			"profile": "Voir mon profil"
 		},
 		"create": "Créer",
 		"modify": "Modifier",
@@ -289,6 +295,7 @@
 		"style": "Style",
 		"difficulty_level": "Niveau de difficulté",
 		"place_title": "Lieu",
-		"climb_title": "Grimpe"
+		"climb_title": "Grimpe",
+		"welcome": "Bienvenue"
 	}
 }
