@@ -143,7 +143,7 @@ export default {
     data.items = [];
     data.dataLoaded = false;
     data.searchLoaded = false;
-    data.offset = false;
+    data.offset = 0;
     data.searchParams = [];
     data.arrowDirectionClass = {
       rate: 'down',

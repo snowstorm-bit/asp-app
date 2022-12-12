@@ -18,9 +18,11 @@
       </div>
       <!-- Content of selected tab -->
       <div class="col-sm-8">
-        <KeepAlive>
-          <component :is="currentTab"></component>
-        </KeepAlive>
+        <div class="px-4 py-3">
+          <KeepAlive>
+            <component :is="currentTab"></component>
+          </KeepAlive>
+        </div>
       </div>
     </div>
   </div>

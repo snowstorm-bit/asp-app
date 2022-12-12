@@ -17,7 +17,7 @@
 		"profile": "Votre profil",
 		"created_places": "Vos lieux",
 		"created_climbs": "Vos grimpes",
-		"rated_climbs": "Vos grimpes notées"
+		"rated_climbs": "Grimpes notées"
 	},
 	"create": {
 		"place": "Créer un lieu",
@@ -95,10 +95,13 @@
 				"style": "Il n'y a pas de grimpe pour ce style",
 				"difficulty_level": "Il n'y a pas de grimpe pour ce niveau de difficulté",
 				"none": "Il n'y a pas de grimpe pour ce lieu"
-			}
+			},
+			"created": "Vous n'avez pas de lieu associé à votre compte utilisateur"
 		},
 		"climb": {
-			"none": "Il n'y a pas de grimpe à afficher"
+			"none": "Il n'y a pas de grimpe à afficher",
+			"created": "Vous n'avez pas de grimpe associé à votre compte",
+			"rated": "Aucune grimpe notée"
 		}
 	},
 	"successes": {

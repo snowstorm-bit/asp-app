@@ -2,7 +2,7 @@
   <div v-if="dataLoaded">
     <asp-alert v-if="requestStatus.length > 0" :code="requestMessage" :status="requestStatus"
                @[alertClosed]="requestStatus = ''; requestMessage = '';" />
-    <form class="px-4 py-3" novalidate @submit.prevent="validateForm">
+    <form novalidate @submit.prevent="validateForm">
       <h2>{{ $t('account.profile') }}</h2>
       <div class="mb-3 mt-4">
         <label class="form-label input-required-lbl" for="username">{{ $t('fields.username') }}</label>
@@ -238,9 +238,3 @@ export default {
   }
 };
 </script>
-
-<style scoped>
-form {
-  margin: 0 5rem 5rem;
-}
-</style>
