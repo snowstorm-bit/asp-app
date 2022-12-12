@@ -1,10 +1,11 @@
 <template>
+  {{ $t('account.created_climbs') }}
 
 </template>
 
 <script>
 export default {
-  name: 'Rate-User-Rate'
+  name: 'Account-Created-Climbs'
 };
 </script>
 

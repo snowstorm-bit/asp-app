@@ -5,7 +5,7 @@ import PlaceForm from '@/views/Place/PlaceForm.vue';
 import ClimbForm from '@/views/Climb/ClimbForm.vue';
 import PlaceDetails from '@/views/Place/PlaceDetails.vue';
 import ClimbDetails from '@/views/Climb/ClimbDetails.vue';
-import Account from '@/components/Account/Account.vue';
+import Account from '@/views/Account/Account.vue';
 
 const routes = [
     {

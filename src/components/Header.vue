@@ -27,10 +27,12 @@
               <div class="text-center m-2">{{ $t('display_text.welcome') }} {{ username }} !</div>
               <hr class="m-2" />
               <div class="d-flex flex-column align-items-stretch">
-                <router-link :to="{ name: 'Account' }" class="btn btn-sm asp-link">
+                <router-link :to="{ name: 'Account' }" class="btn btn-sm asp-link fs-6">
                   {{ $t('links.see_more.profile') }}
                 </router-link>
-                <a class="asp-link btn btn-sm" @click.prevent="signOut">{{ $t('auth.sign_out') }}</a>
+                <a class="asp-link btn btn-sm fs-6" @click.prevent="signOut">{{
+                    $t('auth.sign_out')
+                                                                             }}</a>
               </div>
             </div>
           </div>

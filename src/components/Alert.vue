@@ -35,14 +35,22 @@ export default {
           || this.code.includes('errors.auth')
           || this.code.includes('errors.routes.register')
           || this.code.includes('errors.routes.login')) {
+        this.divClass = 'div-alert';
         return `${ alertColorClass } div-alert`;
       }
-      if (this.hasGlobalMessage) {
+      if (this.hasGlobalMessage || this.divClass === 'div-global-alert') {
+        this.divClass = 'div-global-alert';
         return `${ alertColorClass } div-global-alert`;
       }
 
+      this.divClass = 'div-alert';
       return `${ alertColorClass } div-alert`;
     }
+  },
+  data() {
+    return {
+      divClass: ''
+    };
   },
   methods: {
     close() {

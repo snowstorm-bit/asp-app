@@ -1,10 +1,11 @@
 <template>
+  {{ $t('account.rated_climbs') }}
 
 </template>
 
 <script>
 export default {
-  name: 'Asp-Account'
+  name: 'Account-Rated-Climbs'
 };
 </script>
 

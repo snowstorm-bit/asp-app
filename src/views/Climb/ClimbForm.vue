@@ -533,6 +533,7 @@ export default {
       }
 
       let data = await response.json();
+
       if (data.status === status.error) {
         return data;
       }
@@ -541,6 +542,7 @@ export default {
         code: data.code,
         status: data.status
       });
+      
       return { status: status.success };
     },
     async getCreateData() {

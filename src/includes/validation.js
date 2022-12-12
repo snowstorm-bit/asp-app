@@ -2,6 +2,7 @@
 
 import errors from '@/includes/errors.json';
 import useUserStore from '@/stores/user';
+import useAlertStore from '@/stores/alert';
 import { toString } from '@/includes/utils';
 import warnings from '@/includes/warnings.json';
 import { status } from '@/includes/enums';
