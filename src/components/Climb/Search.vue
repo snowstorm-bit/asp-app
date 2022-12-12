@@ -1,7 +1,7 @@
 <template>
   <div id="asp-search" class="row position-relative" style="width: 100%;">
     <div v-for="climb in items" v-if="items.length > 0" :key="climb.title" :class="colClass" class="asp__seach-climbs">
-      <climb-card :description="climb.description" :image-url="`/api/${climb.image}`" :is-admin="isAdmin"
+      <climb-card :description="climb.description" :image-url="`/api/${climb.image}`" :can-delete-climb="canDeleteClimb"
                   :place-title="climb.placeTitle" :rate="climb.rate" :title="climb.title"
                   :votes="climb.votes" @[climbToDeleteSelected]="setClimbTitle" />
     </div>
@@ -17,7 +17,7 @@ import { CLIMB_TO_DELETE_SELECTED } from '@/includes/events';
 
 export default {
   name: 'Asp-Search-Climbs',
-  props: ['items', 'colClass', 'isAdmin'],
+  props: ['items', 'colClass', 'canDeleteClimb'],
   emits: [CLIMB_TO_DELETE_SELECTED],
   components: { ClimbCard },
   data() {

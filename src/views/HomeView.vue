@@ -25,7 +25,7 @@
     <div class="d-flex justify-content-between align-self-baseline">
       <h2 class="fw-bold text-start mb-4 fs-4">{{ $t('home.most_popular_climbs').toUpperCase() }}</h2>
     </div>
-    <asp-search-climbs :col-class="'col col-md-6 col-lg-4 col-xl-3'" :is-admin="isAdmin"
+    <asp-search-climbs :can-delete-climb="isAdmin" :col-class="'col col-md-6 col-lg-4 col-xl-3'"
                        :items="items" @[climbToDeleteSelected]="setClimbTitle" />
     <div class="mt-5 mb-5">
       <hr />

@@ -95,7 +95,7 @@
       </div>
       <!-- Climb results -->
       <div class="col-9">
-        <asp-search-climbs v-if="searchLoaded" :col-class="'col col-lg-6 col-xl-4 p-1'" :is-admin="isAdmin"
+        <asp-search-climbs v-if="searchLoaded" :can-delete-climb="isAdmin" :col-class="'col col-lg-6 col-xl-4 p-1'"
                            :items="items"
                            @[climbToDeleteSelected]="setClimbTitle" />
         <div v-if="hasMoreResult" class="d-flex justify-content-center mt-3">

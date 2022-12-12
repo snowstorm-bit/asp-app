@@ -23,7 +23,7 @@
           </div>
         </div>
         <p class="text-start overflow-hidden m-0 flex-fill">{{ description }}</p>
-        <div v-if="isAdmin" class="d-flex justify-content-end position-relative">
+        <div v-if="canDeleteClimb" class="d-flex justify-content-end position-relative">
           <div class="d-flex justify-content-end position-absolute bottom-0 end-0">
             <a :data-bs-target="`#delete-climb`" class="btn btn-sm btn-submit asp-link fs-sm" data-bs-toggle="modal"
                role="link" @click="setClimbTitle">
@@ -47,7 +47,7 @@ import { CLIMB_TO_DELETE_SELECTED } from '@/includes/events';
 export default {
   name: 'Climb-Card',
   components: { AspRate },
-  props: ['title', 'placeTitle', 'description', 'imageUrl', 'rate', 'votes', 'isAdmin'],
+  props: ['title', 'placeTitle', 'description', 'imageUrl', 'rate', 'votes', 'canDeleteClimb'],
   emits: [CLIMB_TO_DELETE_SELECTED],
   methods: {
     setClimbTitle() {

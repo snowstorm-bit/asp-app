@@ -14,7 +14,7 @@
       </div>
     </div>
     <p :class="textRateClass" class="mb-0 me-2">{{ this.rate }} / {{ numberOfStars }}</p>
-    <p :class="textRateClass" class="mb-0">({{ votes }} {{ $t('display_text.rate.votes') }})</p>
+    <p v-if="votes" :class="textRateClass" class="mb-0">({{ votes }} {{ $t('display_text.rate.votes') }})</p>
   </div>
 </template>
 
