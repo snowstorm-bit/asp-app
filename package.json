@@ -6,6 +6,10 @@
 		"build": "vite build",
 		"preview": "vite preview"
 	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/snowstorm-bit/asp-app.git"
+	},
 	"dependencies": {
 		"@vee-validate/rules": "^4.7.3",
 		"bootstrap": "^5.2.3",

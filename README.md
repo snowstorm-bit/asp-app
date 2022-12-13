@@ -29,3 +29,10 @@ lié à la route de la requête et affiche le message associé à ce code.
 Finalement, si l'erreur n'est pas gérée dans la méthode appelant la requête, c'est parce qu'il n'y a rien en particulier
 à faire avec cette erreur et que nous souhaitons tout simplement faire afficher l'alerte à l'utilisateur
 contenant le message d'erreur retourné par la requête.
+
+GIT :
+
+Le répertoire git utilisé pour ce projet est : https://github.com/snowstorm-bit/asp-app.git
+
+Vous pourrez trouver l'ensemble du back-end et du front-end au répertoire git suivant :
+https://gitlab.com/truc123/asp-a2022.git

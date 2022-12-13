@@ -80,7 +80,6 @@ export default {
       return new URLSearchParams(Object.entries({ offset: 0, limit: 'top-10' }));
     },
     setClimbTitle(value) {
-      console.log('home setClimbTitle', value);
       this.climbTitle = value;
     },
     mapInvalidResponse(result) {

@@ -29,7 +29,6 @@ export default {
   components: { StarsStar },
   props: ['rate', 'votes', 'isUserRate', 'textRateClass', 'starRateClass', 'fillEmptyStars'],
   data() {
-    console.log(this.votes);
     let data = {};
     data.numberOfStars = 5;
     data.starHiddenClass = 'empty-star';

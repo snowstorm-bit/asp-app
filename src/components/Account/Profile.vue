@@ -221,7 +221,6 @@ export default {
     }
   },
   async mounted() {
-    console.log('profile mounted');
     if (!useAlertStore().hasAuthInvalidMessage) {
       let data = await this.getData();
       if (data.status === status.error) {

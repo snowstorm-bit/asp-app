@@ -35,11 +35,16 @@
             <i :class="`bi bi-arrow-${arrowDirectionClass.placeTitle}-short pe-1`"></i>
           </div>
           <div :class="{'collapse': arrowDirectionClass.placeTitle === 'up'}" class="mt-3">
-            <div v-for="placeTitle in placeTitles" :key="placeTitle.title" class="form-check">
-              <input :id="placeTitle.title" v-model="ckbPlaceTitles" :value="placeTitle.title" class="form-check-input"
-                     type="checkbox" @change="">
-              <label :for="placeTitle.title" class="form-check-label">{{ placeTitle.title }}</label>
-            </div>
+            <label class="form-label input-required-lbl" for="placeTitle">{{ $t('fields.place_title') }}</label>
+            <select v-model="placeTitle" :class="hiddenClass.placeTitle" class="form-select" required="required"
+                    @focusin="resetValidationOnField('placeTitle')" @focusout="validatePlaceTitleField">
+              <option :selected="placeTitle.length > 0" value="">{{ $t('fields.place_title') }}</option>
+              <option v-for="onePlaceTitle in placeTitles" :key="onePlaceTitle.title"
+                      :selected="placeTitle === onePlaceTitle.title" :value="onePlaceTitle.title">
+                {{ onePlaceTitle.title }}
+              </option>
+            </select>
+            <invalid-feedback :error="errors.placeTitle" />
           </div>
         </div>
         <!-- Style -->
@@ -115,7 +120,13 @@ import AspSearchClimbs from '@/components/Climb/Search.vue';
 import errors from '@/includes/errors.json';
 import { status, validationHiddenClass } from '@/includes/enums';
 import InvalidFeedback from '@/components/InvalidFeedback.vue';
-import { getFormData, getHeaderAuthorization, validateForm, validateRange } from '@/includes/validation';
+import {
+  getFormData,
+  getHeaderAuthorization,
+  validateEmptyOrWhiteSpace,
+  validateForm,
+  validateRange
+} from '@/includes/validation';
 import { CLIMB_TO_DELETE_SELECTED, RATE_SELECTED } from '@/includes/events';
 
 const limit = 9;
@@ -131,11 +142,10 @@ export default {
     AspSearchClimbs
   },
   data() {
-    let data = getFormData(['minRate', 'maxRate', 'difficultyLevelMin', 'difficultyLevelMax']);
+    let data = getFormData(['minRate', 'maxRate', 'placeTitle', 'difficultyLevelMin', 'difficultyLevelMax']);
     data.difficultyLevelsArray = ['5.6', '5.7', '5.8', '5.9', '5.10', '5.11', '5.12', '5.13', '5.14', '5.15'];
     data.minRate = 0;
     data.maxRate = 0;
-    data.ckbPlaceTitles = [];
     data.placeTitles = [];
     data.ckbStyles = [];
     data.styles = [];
@@ -157,7 +167,6 @@ export default {
   },
   methods: {
     setClimbTitle(value) {
-      console.log('climbsView emitting setClimbTitle');
       this.$emit(CLIMB_TO_DELETE_SELECTED, value);
     },
     setArrowDirectionClass(key) {
@@ -180,7 +189,6 @@ export default {
       }
     },
     validateMinRateField(value) {
-      console.log('validateMin');
       let indicateIsValid = typeof this.errors.minRate !== 'string';
       this.errors.minRate = '';
 
@@ -196,7 +204,6 @@ export default {
       this.setValidationOnField('minRate', indicateIsValid);
     },
     validateMaxRateField(value) {
-      console.log('validateMax');
       let indicateIsValid = typeof this.errors.maxRate !== 'string';
       this.errors.maxRate = '';
 
@@ -210,6 +217,19 @@ export default {
 
       this.maxRate = value;
       this.setValidationOnField('maxRate', indicateIsValid);
+    },
+    validatePlaceTitleField() {
+      let indicateIsValid = typeof this.errors.placeTitle !== 'string';
+      this.errors.placeTitle = '';
+      let value = `${ this.placeTitle }`;
+
+      if (!validateEmptyOrWhiteSpace(value)) {
+        this.errors.placeTitle = errors.climb.place_title.empty_or_white_spaces;
+      } else if (!validateRange(value, 3, 50)) {
+        this.errors.placeTitle = errors.climb.place_title.length;
+      }
+
+      this.setValidationOnField('placeTitle', indicateIsValid, false);
     },
     validateDifficultyLevel(value) {
       return this.difficultyLevelsArray.find(d => d === String(value)) !== undefined;
@@ -258,8 +278,8 @@ export default {
         if (this.maxRate > 0) {
           params.push(['rate', this.minRate], ['rate', this.maxRate]);
         }
-        if (this.ckbPlaceTitles.length > 0) {
-          this.ckbPlaceTitles.forEach((p, i) => params.push(['place', p]));
+        if (this.placeTitle.length > 0) {
+          params.push(['place', this.placeTitle]);
         }
         if (this.ckbStyles.length > 0) {
           this.ckbStyles.forEach((s, i) => params.push(['style', s]));
@@ -303,14 +323,17 @@ export default {
     },
     async getSearch(loadMore) {
       if (loadMore
-          || this.minRate > -1
-          || this.maxRate > -1
-          || this.ckbPlaceTitles.length > 0
+          || this.minRate > 0
+          || this.maxRate > 0
+          || this.placeTitle.length > 0
           || this.ckbStyles.length > 0
           || this.difficultyLevelMin !== ''
           && this.difficultyLevelMax !== '') {
         this.validateMinRateField(this.minRate);
         this.validateMaxRateField(this.maxRate);
+        if (this.placeTitle.length > 0) {
+          this.validatePlaceTitleField();
+        }
         this.validateDifficultyLevelMinField();
         this.validateDifficultyLevelMaxField();
 

@@ -51,7 +51,6 @@ export default {
   emits: [CLIMB_TO_DELETE_SELECTED],
   methods: {
     setClimbTitle() {
-      console.log('climb card emitting setClimbTitle');
       this.$emit(CLIMB_TO_DELETE_SELECTED, this.title);
     }
   }

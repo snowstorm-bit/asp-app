@@ -87,7 +87,7 @@
         </div>
         <div class="col-sm-3  p-0">
           <div class="d-flex justify-content-end">
-            <button :disabled="formInValidation||formInSubmission" class="btn btn-lg fs-6 btn-submit text-nowrap"
+            <button :disabled="formInValidation||formInSubmission" class="btn btn-lg fs-6 btn-submit"
                     type="submit">
               <i v-show="formInValidation||formInSubmission" class="bi bi-hourglass-split"></i>
               {{ $t(getFormButtonSubmitCode) }}
