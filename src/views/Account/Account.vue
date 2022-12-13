@@ -1,17 +1,12 @@
 <template>
-  <div v-if="true">
+  <div>
     <div class="row">
       <!-- Account menu -->
       <div class="col-sm-4">
         <ul class="nav nav-pills flex-column">
-          <li v-for="tab in tabs" v-if="Array.isArray(tabs)" :key="tab" class="nav-item">
+          <li v-for="tab in tabs" :key="tab" class="nav-item">
             <a :class="{' active': currentTab === tab }" class="nav-link" @click="currentTab = tab">
               {{ getTabDisplayName(tab) }}
-            </a>
-          </li>
-          <li v-else class="nav-item">
-            <a class="nav-link active">
-              {{ $t('account.profile') }}
             </a>
           </li>
         </ul>
@@ -53,18 +48,16 @@ export default {
   data() {
     return {
       currentTab: profileTab,
-      tabs: this.isAdmin
-          ? profileTab
-          : [profileTab,
-            createdPlaceTab,
-            createdClimbsTab,
-            ratedClimbsTab]
-      ,
-      dataLoaded: false
+      tabs: [
+        profileTab,
+        createdPlaceTab,
+        createdClimbsTab,
+        ratedClimbsTab
+      ]
     };
   },
   computed: {
-    ...mapWritableState(useUserStore, ['userLoggedIn', 'isAdmin']),
+    ...mapWritableState(useUserStore, ['userLoggedIn']),
     getTabDisplayName() {
       return value => {
         switch (value) {
@@ -79,15 +72,6 @@ export default {
         }
       };
     }
-  },
-  methods: {
-    ...mapActions(useUserStore, { validateIsAdmin: 'validateUserIsAdmin' })
-  },
-  async mounted() {
-    this.isAdmin = this.validateIsAdmin();
-
-    // True to display data once it has been loaded
-    this.dataLoaded = true;
   }
 };
 </script>

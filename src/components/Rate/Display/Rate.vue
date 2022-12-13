@@ -14,7 +14,9 @@
       </div>
     </div>
     <p :class="textRateClass" class="mb-0 me-2">{{ this.rate }} / {{ numberOfStars }}</p>
-    <p v-if="votes" :class="textRateClass" class="mb-0">({{ votes }} {{ $t('display_text.rate.votes') }})</p>
+    <p v-if="parseInt(votes) !== NaN" :class="textRateClass" class="mb-0">
+      ({{ votes }} {{ $t('display_text.rate.votes') }})
+    </p>
   </div>
 </template>
 
@@ -27,6 +29,7 @@ export default {
   components: { StarsStar },
   props: ['rate', 'votes', 'isUserRate', 'textRateClass', 'starRateClass', 'fillEmptyStars'],
   data() {
+    console.log(this.votes);
     let data = {};
     data.numberOfStars = 5;
     data.starHiddenClass = 'empty-star';

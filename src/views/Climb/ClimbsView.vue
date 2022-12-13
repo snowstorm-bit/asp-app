@@ -96,8 +96,7 @@
       <!-- Climb results -->
       <div class="col-9">
         <asp-search-climbs v-if="searchLoaded" :can-delete-climb="isAdmin" :col-class="'col col-lg-6 col-xl-4 p-1'"
-                           :items="items"
-                           @[climbToDeleteSelected]="setClimbTitle" />
+                           :items="items" @[climbToDeleteSelected]="setClimbTitle" />
         <div v-if="hasMoreResult" class="d-flex justify-content-center mt-3">
           <button class="btn btn-lg fs-6 btn-submit" type="submit" @click.prevent.stop="getSearch(true)">
             {{ $t('buttons.load_more') }}

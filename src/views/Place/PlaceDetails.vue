@@ -19,18 +19,19 @@
       <h2 :class="{'flex-fill':userLoggedIn}">{{ $t('details.place.details') }}</h2>
       <div v-if="userLoggedIn" class="d-flex">
         [&nbsp;
-        <div v-if="!isAdmin">
+        <div>
           <router-link :to="{name: 'PlaceCreate'}" class="asp-link">
             {{ $t('links.create') }}
           </router-link>
         </div>
-        <div v-if="isCreator && !isAdmin">&nbsp;|&nbsp;<router-link
+        <div v-if="isCreator">&nbsp;|&nbsp;<router-link
             :to="{name: 'PlaceUpdate', params: { placeTitle: placeTitle}}"
             class="asp-link">
           {{ $t('links.modify') }}
         </router-link>
         </div>
-        <div v-if="isAdmin"><a :data-bs-target="`#delete-place`" class="asp-link text-danger" data-bs-toggle="modal">
+        <div v-if="isAdmin">&nbsp;|&nbsp;<a :data-bs-target="`#delete-place`" class="asp-link text-danger"
+                                            data-bs-toggle="modal">
           {{ $t('links.delete') }}
         </a>
         </div>

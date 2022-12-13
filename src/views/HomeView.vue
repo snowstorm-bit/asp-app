@@ -179,7 +179,7 @@ export default {
 
       let data = await response.json();
 
-      let isAuth = await validateIsAuth(data.result.isAuth, 'authentication');
+      let isAuth = await validateIsAuth(data.result.isAuthInvalid, 'authentication');
 
       if (typeof isAuth !== 'boolean') {
         useAlertStore().setMessage('globalMessage', {
