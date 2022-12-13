@@ -81,7 +81,7 @@ export default {
     '$route'() {
       if (this.hasAuthInvalidMessage) {
         this.$refs.authModal.dataset.bsBackdrop = 'static';
-        this.$refs.authModal.dataset.bdKeyboard = this.authIsValid;
+        this.$refs.authModal.dataset.bsKeyboard = this.authIsValid;
         (new bootstrap.Modal($('#auth-modal')[0])).toggle();
         let authInvalid = this.getAuthInvalid();
         if (authInvalid !== undefined) {
@@ -90,7 +90,7 @@ export default {
         }
       } else if (!this.authIsValid) {
         this.$refs.authModal.dataset.bsBackdrop = 'static';
-        this.$refs.authModal.dataset.bdKeyboard = this.authIsValid;
+        this.$refs.authModal.dataset.bsKeyboard = this.authIsValid;
         this.code = errors.auth.login_required;
         this.status = status.error;
       }

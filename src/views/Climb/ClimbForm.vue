@@ -150,7 +150,6 @@ export default {
       let maxInvalid = decimal > 15;
 
       if (getHiddenClass) {
-
         if (minInvalid) {
           this.decrementHiddenClass = 'disabled';
         } else {
@@ -161,17 +160,22 @@ export default {
         } else {
           this.incrementHiddenClass = '';
         }
-      } else return integer < 5 || integer > 5 || minInvalid || maxInvalid;
+      } else {
+        return integer < 5 || integer > 5 || minInvalid || maxInvalid;
+      }
     },
     getDifficultyLevel(value, decrement) {
       value = Number(value);
 
       if (decrement) {
-        if (value === 5.10) {
+        if (value === 5.1) {
           this.difficultyLevelStep = 0.1;
         }
         value -= this.difficultyLevelStep;
       } else {
+        if (value === 5.1) {
+          this.difficultyLevelStep = 0.01;
+        }
         value += this.difficultyLevelStep;
       }
 
@@ -542,7 +546,7 @@ export default {
         code: data.code,
         status: data.status
       });
-      
+
       return { status: status.success };
     },
     async getCreateData() {
@@ -648,9 +652,9 @@ export default {
       if (this.difficultyLevel === '') {
         this.difficultyLevel = '5.6';
       }
-      this.validateDifficultyLevel(this.getDifficultyLevel(Number(this.difficultyLevel), true), true);
+      this.validateDifficultyLevel(this.getDifficultyLevel(this.difficultyLevel, true), true);
       if (this.decrementHiddenClass === '') {
-        this.validateDifficultyLevel(this.getDifficultyLevel(Number(this.difficultyLevel), false), true);
+        this.validateDifficultyLevel(this.getDifficultyLevel(this.difficultyLevel, false), true);
       }
 
       this.climbTitleValid = true;

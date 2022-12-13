@@ -117,8 +117,8 @@
           <h5>{{ $t('details.place.climbs_list') }}</h5>
           <div v-for="(climb, i) in climbs" :id="`climb-${climb.title}`" :key="i"
                class="mb-3 d-flex align-items-center asp__climb">
-            <router-link :to="{name: 'NotFound'}" aria-disabled="true" class="me-3 text-nowrap asp-link__climb-details"
-                         role="link">
+            <router-link :to="{name: 'ClimbDetails', params: {climbTitle: climb.title}}" aria-disabled="true"
+                         class="asp-link me-3 text-nowrap" role="link">
               {{ climb.title }}
             </router-link>
             <asp-rate :fill-empty-stars="true" :isUserRate="false" :rate="climb.rate" :star-rate-class="'fs-5'"
@@ -357,13 +357,6 @@ export default {
 
   &:hover {
     text-decoration: underline;
-  }
-
-  &__climb-details {
-    text-decoration: none;
-    opacity: 50%;
-    cursor: not-allowed;
-    pointer-events: none;
   }
 }
 

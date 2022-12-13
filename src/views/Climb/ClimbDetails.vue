@@ -49,7 +49,7 @@
             <asp-carousel :image-urls="images"
                           :images-from="`${$t('display_text.climb_title')} ${title}`"></asp-carousel>
           </div>
-          <div v-if="userLoggedIn && !isAdmin"
+          <div v-if="userLoggedIn"
                class="d-flex flex-column justify-content-center align-items-center flex-wrap mt-2 m-auto">
             <p class="text-center text-black-50">{{ $t('details.climb.rate') }}</p>
             <div class="d-flex justify-content-center">
